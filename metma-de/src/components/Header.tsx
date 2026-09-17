@@ -16,24 +16,34 @@ export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const [mobileCatsOpen, setMobileCatsOpen] = useState(true);
 
   useEffect(() => {
     setOpen(false);
     setProductsOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white">
-      <div className="container-metma flex h-16 items-center justify-between gap-4 md:h-[4.25rem]">
-        <div className="flex shrink-0 items-center gap-3">
-          <Link href="/" aria-label="METMA Startseite">
+      <div className="container-metma flex h-14 items-center justify-between gap-3 sm:h-16 md:h-[4.25rem]">
+        <div className="flex min-w-0 shrink items-center gap-2.5">
+          <Link href="/" aria-label="METMA Startseite" className="shrink-0">
             <Image
               src="/images/logo.jpg"
               alt="METMA"
               width={150}
               height={45}
               priority
-              className="h-9 w-auto object-contain"
+              className="h-8 w-auto object-contain sm:h-9"
             />
           </Link>
           <EasterInline className="hidden sm:inline-flex" />
@@ -116,80 +126,148 @@ export function Header() {
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center border border-[var(--metma-line)] text-[var(--metma-ink)] md:hidden"
-          aria-label="Menü öffnen"
+          className="relative inline-flex h-11 w-11 items-center justify-center text-[var(--metma-ink)] md:hidden"
+          aria-label={open ? "Menü schließen" : "Menü öffnen"}
           aria-expanded={open}
+          aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
         >
           <span className="sr-only">Menü</span>
-          <span aria-hidden className="flex flex-col gap-1.5">
-            {open ? (
-              <span className="text-xl leading-none">×</span>
-            ) : (
-              <>
-                <span className="block h-0.5 w-5 bg-[var(--metma-ink)]" />
-                <span className="block h-0.5 w-5 bg-[var(--metma-ink)]" />
-                <span className="block h-0.5 w-5 bg-[var(--metma-ink)]" />
-              </>
-            )}
+          <span aria-hidden className="relative block h-3.5 w-5">
+            <span
+              className={`absolute left-0 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-300 ${
+                open ? "top-1.5 rotate-45" : "top-0"
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-1.5 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-200 ${
+                open ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`absolute left-0 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-300 ${
+                open ? "top-1.5 -rotate-45" : "top-3"
+              }`}
+            />
           </span>
         </button>
       </div>
 
-      {open && (
-        <div className="border-t border-[var(--metma-line)] bg-white md:hidden">
-          <div className="container-metma flex flex-col py-2 pb-4">
+      <div
+        id="mobile-nav"
+        className={`border-t border-[var(--metma-line)] bg-white md:hidden ${
+          open ? "block" : "hidden"
+        }`}
+      >
+        <div className="max-h-[min(78vh,560px)] overflow-y-auto overscroll-contain">
+          <nav
+            aria-label="Mobiles Menü"
+            className="container-metma flex flex-col gap-1 py-3 pb-5"
+          >
             {navItems.map((item) => {
               const isProducts = item.label === "Produkte";
               const active = isActivePath(pathname, item.href);
 
-              return (
-                <div key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? "page" : undefined}
-                    className={`flex items-center justify-between border-l-2 py-3 pl-3 text-sm font-semibold transition ${
-                      active
-                        ? "border-[var(--metma-rose)] text-[var(--metma-rose)]"
-                        : "border-transparent text-[var(--metma-ink)]"
-                    }`}
-                  >
-                    {item.label}
-                    {active ? (
-                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--metma-rose)]">
-                        Aktiv
-                      </span>
-                    ) : null}
-                  </Link>
-                  {isProducts && (
-                    <div className="mb-1 ml-1 flex flex-col border-l-2 border-[var(--metma-line)] pl-4">
-                      {productCategories.map((cat) => {
-                        const catActive = isActivePath(pathname, cat.href);
-                        return (
-                          <Link
-                            key={cat.href}
-                            href={cat.href}
-                            onClick={() => setOpen(false)}
-                            aria-current={catActive ? "page" : undefined}
-                            className={`py-2 text-sm ${
-                              catActive
-                                ? "font-semibold text-[var(--metma-rose)]"
-                                : "text-[var(--metma-mute)]"
-                            }`}
-                          >
-                            {cat.label}
-                          </Link>
-                        );
-                      })}
+              if (isProducts) {
+                return (
+                  <div key={item.href} className="mt-1">
+                    <div className="flex gap-2">
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex min-h-12 flex-1 items-center justify-center px-4 text-sm font-semibold text-white transition ${
+                          active
+                            ? "bg-[var(--metma-rose-deep)]"
+                            : "bg-[var(--metma-rose)]"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                      <button
+                        type="button"
+                        className="inline-flex min-h-12 w-12 items-center justify-center border border-[var(--metma-line)] text-[var(--metma-ink)]"
+                        aria-expanded={mobileCatsOpen}
+                        aria-label="Produktkategorien"
+                        onClick={() => setMobileCatsOpen((v) => !v)}
+                      >
+                        <span
+                          aria-hidden
+                          className={`block text-lg leading-none transition ${
+                            mobileCatsOpen ? "rotate-45" : ""
+                          }`}
+                        >
+                          +
+                        </span>
+                      </button>
                     </div>
-                  )}
-                </div>
+                    {mobileCatsOpen ? (
+                      <div className="mt-1 grid grid-cols-1 gap-px bg-[var(--metma-line)]">
+                        {productCategories.map((cat) => {
+                          const catActive = isActivePath(pathname, cat.href);
+                          return (
+                            <Link
+                              key={cat.href}
+                              href={cat.href}
+                              onClick={() => setOpen(false)}
+                              aria-current={catActive ? "page" : undefined}
+                              className={`flex min-h-11 items-center bg-white px-4 text-sm ${
+                                catActive
+                                  ? "font-semibold text-[var(--metma-rose)]"
+                                  : "text-[var(--metma-mute)]"
+                              }`}
+                            >
+                              {cat.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex min-h-12 items-center justify-between border-l-[3px] px-3 text-[0.95rem] font-semibold transition ${
+                    active
+                      ? "border-[var(--metma-rose)] bg-[var(--metma-sand)] text-[var(--metma-rose)]"
+                      : "border-transparent text-[var(--metma-ink)] active:bg-[var(--metma-sand)]"
+                  }`}
+                >
+                  {item.label}
+                  {active ? (
+                    <span className="text-[0.65rem] font-bold uppercase tracking-[0.12em]">
+                      Hier
+                    </span>
+                  ) : null}
+                </Link>
               );
             })}
-          </div>
+
+            <div className="mt-4 border-t border-[var(--metma-line)] pt-4">
+              <EasterInline className="mb-3" />
+              <a
+                href="tel:+359885828771"
+                className="block text-sm font-semibold text-[var(--metma-ink)]"
+              >
+                +359 885 828 771
+              </a>
+              <Link
+                href="/kontakt"
+                onClick={() => setOpen(false)}
+                className="btn-outline mt-3 w-full"
+              >
+                Nachricht senden
+              </Link>
+            </div>
+          </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 }
