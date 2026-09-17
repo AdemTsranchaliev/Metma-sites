@@ -1,0 +1,6 @@
+@Metma.Api_HostAddress = http://localhost:5260
+
+GET {{Metma.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
