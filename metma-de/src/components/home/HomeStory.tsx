@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
 
 const points = [
@@ -33,6 +34,9 @@ export function HomeStory() {
     <section className="bg-[var(--metma-sand)] py-14 sm:py-16 md:py-28">
       <div className="container-metma grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-16">
         <Reveal className="lg:sticky lg:top-28">
+          <div className="mb-3">
+            <EasterInline />
+          </div>
           <p className="eyebrow text-[var(--metma-rose)]">Über METMA</p>
           <h2 className="mt-2.5 font-display text-[clamp(1.85rem,7vw,3.3rem)] font-bold leading-[1.05] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
             METMA

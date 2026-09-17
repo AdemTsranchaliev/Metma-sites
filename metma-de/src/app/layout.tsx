@@ -3,6 +3,7 @@ import { Rubik, Syne } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBar } from "@/components/CookieBar";
+import { EasterScatter } from "@/components/easter/EasterScatter";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -30,11 +31,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="de" className={`${rubik.variable} ${syne.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <CookieBar />
+      <body className="relative flex min-h-full flex-col font-sans">
+        <EasterScatter />
+        <div className="relative z-10 flex min-h-full flex-1 flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <CookieBar />
+        </div>
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
 import { blogPosts } from "@/data/blog";
 
@@ -27,6 +28,7 @@ export function HomeJournal() {
           delayMs={80}
           className="flex flex-col justify-center bg-[var(--metma-lilac)] px-5 py-8 sm:px-10 sm:py-10 md:py-14 lg:px-12"
         >
+          <EasterInline className="mb-3" />
           <p className="eyebrow text-[var(--metma-navy)]">Journal</p>
           <h2 className="mt-3 font-display text-[clamp(1.55rem,5.5vw,2.8rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-4">
             {post.title}

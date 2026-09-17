@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { BunnyIcon, EggIcon } from "@/components/easter/EasterMotifs";
 
 function getEasterSunday(year: number) {
   const a = year % 19;
@@ -67,50 +68,6 @@ function useCountdown(target: Date) {
     minutes: Math.floor((total % 3600) / 60),
     seconds: total % 60,
   };
-}
-
-function EggIcon({
-  fill,
-  pattern = "dots",
-  className = "",
-}: {
-  fill: string;
-  pattern?: "dots" | "stripes" | "zigzag";
-  className?: string;
-}) {
-  return (
-    <svg viewBox="0 0 48 64" className={className} fill="none" aria-hidden>
-      <ellipse cx="24" cy="34" rx="18" ry="24" fill={fill} />
-      {pattern === "dots" && (
-        <>
-          <circle cx="18" cy="26" r="2.2" fill="white" opacity="0.85" />
-          <circle cx="28" cy="22" r="1.8" fill="white" opacity="0.75" />
-          <circle cx="24" cy="34" r="2.4" fill="white" opacity="0.8" />
-          <circle cx="16" cy="40" r="1.6" fill="white" opacity="0.7" />
-          <circle cx="31" cy="42" r="2" fill="white" opacity="0.8" />
-        </>
-      )}
-      {pattern === "stripes" && (
-        <path
-          d="M10 28h28M9 36h30M11 44h26"
-          stroke="white"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          opacity="0.75"
-        />
-      )}
-      {pattern === "zigzag" && (
-        <path
-          d="M12 30l6-4 6 4 6-4 6 4M12 40l6-4 6 4 6-4 6 4"
-          stroke="white"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.8"
-        />
-      )}
-    </svg>
-  );
 }
 
 function CountdownCard({
@@ -195,19 +152,26 @@ export function HomeCountdownStrip() {
               className="inline-flex items-center gap-3 whitespace-nowrap"
             >
               {item}
-              <EggIcon
-                fill={
-                  i % 3 === 0
-                    ? "var(--metma-rose)"
-                    : i % 3 === 1
-                      ? "var(--metma-blue)"
-                      : "#7bc47f"
-                }
-                pattern={
-                  i % 3 === 0 ? "dots" : i % 3 === 1 ? "stripes" : "zigzag"
-                }
-                className="h-5 w-4"
-              />
+              {i % 2 === 0 ? (
+                <EggIcon
+                  fill={
+                    i % 3 === 0
+                      ? "var(--metma-rose)"
+                      : i % 3 === 1
+                        ? "var(--metma-blue)"
+                        : "#7bc47f"
+                  }
+                  pattern={
+                    i % 3 === 0 ? "dots" : i % 3 === 1 ? "stripes" : "zigzag"
+                  }
+                  className="h-5 w-4"
+                />
+              ) : (
+                <BunnyIcon
+                  fill={i % 4 === 1 ? "var(--metma-lilac)" : "var(--metma-peach)"}
+                  className="h-5 w-[1.15rem]"
+                />
+              )}
             </span>
           ))}
         </div>
@@ -219,18 +183,28 @@ export function HomeCountdownStrip() {
           pattern="dots"
           className="pointer-events-none absolute -left-3 top-8 hidden h-16 w-12 rotate-[-16deg] opacity-25 sm:block"
         />
-        <EggIcon
-          fill="var(--metma-blue)"
-          pattern="stripes"
-          className="pointer-events-none absolute -right-2 bottom-8 hidden h-20 w-14 rotate-[12deg] opacity-25 sm:block"
+        <BunnyIcon
+          fill="var(--metma-lilac)"
+          className="pointer-events-none absolute -right-1 bottom-6 hidden h-16 w-14 rotate-[10deg] opacity-25 sm:block"
         />
 
         <div className="container-metma relative">
           <div className="mb-6 text-center sm:mb-8">
             <div className="mb-2.5 flex items-center justify-center gap-2 sm:mb-3">
-              <EggIcon fill="var(--metma-rose)" pattern="dots" className="h-6 w-4 sm:h-7 sm:w-5" />
-              <EggIcon fill="var(--metma-butter)" pattern="stripes" className="h-7 w-5 sm:h-8 sm:w-6" />
-              <EggIcon fill="var(--metma-blue)" pattern="zigzag" className="h-6 w-4 sm:h-7 sm:w-5" />
+              <EggIcon
+                fill="var(--metma-rose)"
+                pattern="dots"
+                className="h-6 w-4 sm:h-7 sm:w-5"
+              />
+              <BunnyIcon
+                fill="var(--metma-butter)"
+                className="h-7 w-6 sm:h-8 sm:w-7"
+              />
+              <EggIcon
+                fill="var(--metma-blue)"
+                pattern="zigzag"
+                className="h-6 w-4 sm:h-7 sm:w-5"
+              />
             </div>
             <p className="eyebrow text-[var(--metma-rose)]">Frohe Ostern</p>
             <h2 className="mt-2 font-display text-[clamp(1.55rem,6vw,2.5rem)] font-bold tracking-tight text-[var(--metma-ink)]">

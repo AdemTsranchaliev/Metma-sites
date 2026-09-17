@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PageIntro } from "@/components/PageIntro";
 import { blogPosts, formatBlogDate } from "@/data/blog";
 
 export const metadata: Metadata = {
@@ -14,17 +15,11 @@ export default function BlogPage() {
 
   return (
     <>
-      <section className="border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-10 md:py-12">
-        <div className="container-metma">
-          <p className="eyebrow text-[var(--metma-rose)]">Journal</p>
-          <h1 className="mt-2 font-display text-[clamp(2rem,4vw,2.9rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-            Blog
-          </h1>
-          <p className="mt-2 max-w-md text-sm leading-7 text-[var(--metma-mute)]">
-            Ostern, Farbe und Tradition — kurze Geschichten von METMA.
-          </p>
-        </div>
-      </section>
+      <PageIntro
+        eyebrow="Journal"
+        title="Blog"
+        subtitle="Ostern, Farbe und Tradition — kurze Geschichten von METMA."
+      />
 
       <section className="bg-white py-12 md:py-16">
         <div className="container-metma">

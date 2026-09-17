@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { navItems, productCategories } from "@/data/home";
 
 export function Footer() {
@@ -24,6 +25,9 @@ export function Footer() {
             <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--metma-mute)]">
               Eierfarben aus eigener Produktion — seit 1999.
             </p>
+            <div className="mt-4">
+              <EasterInline />
+            </div>
           </div>
 
           <div>

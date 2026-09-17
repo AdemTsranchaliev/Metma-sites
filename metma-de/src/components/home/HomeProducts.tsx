@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
 import { productCategories, products } from "@/data/home";
 
@@ -21,6 +22,7 @@ export function HomeProducts() {
       <div className="container-metma">
         <Reveal className="mb-7 flex flex-col gap-4 sm:mb-10 sm:gap-6 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div>
+            <EasterInline className="mb-2" />
             <p className="eyebrow text-[var(--metma-rose)]">Shop</p>
             <h2 className="mt-2 font-display text-[clamp(1.75rem,6vw,3rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
               Ausgewählte Farben

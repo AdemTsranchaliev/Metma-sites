@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { navItems, productCategories } from "@/data/home";
 
 function isActivePath(pathname: string, href: string) {
@@ -24,16 +25,19 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white">
       <div className="container-metma flex h-16 items-center justify-between gap-4 md:h-[4.25rem]">
-        <Link href="/" className="shrink-0" aria-label="METMA Startseite">
-          <Image
-            src="/images/logo.jpg"
-            alt="METMA"
-            width={150}
-            height={45}
-            priority
-            className="h-9 w-auto object-contain"
-          />
-        </Link>
+        <div className="flex shrink-0 items-center gap-3">
+          <Link href="/" aria-label="METMA Startseite">
+            <Image
+              src="/images/logo.jpg"
+              alt="METMA"
+              width={150}
+              height={45}
+              priority
+              className="h-9 w-auto object-contain"
+            />
+          </Link>
+          <EasterInline className="hidden sm:inline-flex" />
+        </div>
 
         <nav
           className="hidden items-center gap-1 md:flex"

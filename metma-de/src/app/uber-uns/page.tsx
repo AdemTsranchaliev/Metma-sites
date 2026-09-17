@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { HomeContact } from "@/components/home/HomeContact";
+import { PageIntro } from "@/components/PageIntro";
 import { Reveal } from "@/components/Reveal";
 import { team } from "@/data/home";
 
@@ -38,17 +39,11 @@ const story = [
 export default function UberUnsPage() {
   return (
     <>
-      <section className="border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-10 md:py-12">
-        <div className="container-metma">
-          <p className="eyebrow text-[var(--metma-rose)]">Unternehmen</p>
-          <h1 className="mt-2 font-display text-[clamp(2rem,4vw,2.9rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-            Über uns
-          </h1>
-          <p className="mt-2 max-w-lg text-sm leading-7 text-[var(--metma-mute)] md:text-base">
-            Eierfarben aus eigener Produktion — seit 1999 in Bulgarien.
-          </p>
-        </div>
-      </section>
+      <PageIntro
+        eyebrow="Unternehmen"
+        title="Über uns"
+        subtitle="Eierfarben aus eigener Produktion — seit 1999 in Bulgarien."
+      />
 
       <section className="bg-white py-10 md:py-14">
         <div className="container-metma">

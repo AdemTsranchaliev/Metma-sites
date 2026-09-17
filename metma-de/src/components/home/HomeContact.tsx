@@ -1,10 +1,17 @@
 import Link from "next/link";
+import { EasterInline } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
 
 export function HomeContact() {
   return (
-    <section className="bg-[var(--metma-peach)] py-12 sm:py-16 md:py-20">
-      <div className="container-metma grid items-end gap-8 md:grid-cols-[1.25fr_0.85fr] md:gap-12">
+    <section className="relative overflow-hidden bg-[var(--metma-peach)] py-12 sm:py-16 md:py-20">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-4 right-6 hidden opacity-40 md:block"
+      >
+        <EasterInline className="scale-150" />
+      </div>
+      <div className="container-metma relative grid items-end gap-8 md:grid-cols-[1.25fr_0.85fr] md:gap-12">
         <Reveal>
           <p className="eyebrow text-[var(--metma-rose)]">Kontakt</p>
           <h2 className="mt-2.5 max-w-xl font-display text-[clamp(1.7rem,6.5vw,3.1rem)] font-bold leading-[1.06] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">

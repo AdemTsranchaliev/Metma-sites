@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
+import { PageIntro } from "@/components/PageIntro";
 import { EmailIcon, LocationIcon, PhoneIcon } from "@/components/icons";
 import { partners } from "@/data/home";
 
@@ -12,17 +13,11 @@ export const metadata: Metadata = {
 export default function KontaktPage() {
   return (
     <>
-      <section className="border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-10 md:py-12">
-        <div className="container-metma">
-          <p className="eyebrow text-[var(--metma-rose)]">Schreiben Sie uns</p>
-          <h1 className="mt-2 font-display text-[clamp(2rem,4vw,2.9rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-            Kontakt
-          </h1>
-          <p className="mt-2 max-w-lg text-sm leading-7 text-[var(--metma-mute)] md:text-base">
-            Fragen zu Sortiment, Displays oder Großhandel? Wir melden uns gerne.
-          </p>
-        </div>
-      </section>
+      <PageIntro
+        eyebrow="Schreiben Sie uns"
+        title="Kontakt"
+        subtitle="Fragen zu Sortiment, Displays oder Großhandel? Wir melden uns gerne."
+      />
 
       <section className="bg-white py-12 md:py-16">
         <div className="container-metma grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-12">
@@ -107,7 +102,13 @@ export default function KontaktPage() {
 
           <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {partners.map((partner) => {
-              const showName = partner.name !== partner.city;
+              const subtitle = [
+                partner.name !== partner.city ? partner.name : null,
+                partner.detail || null,
+              ]
+                .filter(Boolean)
+                .join(" · ");
+
               return (
                 <li key={partner.name} className="bg-white px-5 py-5">
                   <div className="flex items-start gap-2.5">
@@ -116,14 +117,9 @@ export default function KontaktPage() {
                       <p className="font-display text-base font-bold text-[var(--metma-ink)]">
                         {partner.city}
                       </p>
-                      {showName ? (
+                      {subtitle ? (
                         <p className="mt-0.5 text-sm text-[var(--metma-mute)]">
-                          {partner.name}
-                          {partner.detail ? ` · ${partner.detail}` : ""}
-                        </p>
-                      ) : partner.detail ? (
-                        <p className="mt-0.5 text-sm text-[var(--metma-mute)]">
-                          {partner.detail}
+                          {subtitle}
                         </p>
                       ) : null}
                       <div className="mt-3 space-y-1">
