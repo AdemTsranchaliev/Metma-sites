@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EasterInline } from "@/components/easter/EasterMotifs";
 import { navItems, productCategories } from "@/data/home";
 
 export function Footer() {
@@ -8,7 +7,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-[var(--metma-line)] bg-white">
-      <div className="h-1 bg-[linear-gradient(90deg,var(--metma-rose),var(--metma-butter),var(--metma-mint),var(--metma-blue))]" />
+      <div className="h-0.5 bg-[var(--metma-rose)]" />
 
       <div className="container-metma py-10 md:py-12">
         <div className="grid gap-9 md:grid-cols-[1.1fr_0.9fr_0.9fr] md:gap-10">
@@ -25,9 +24,6 @@ export function Footer() {
             <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--metma-mute)]">
               Eierfarben aus eigener Produktion — seit 1999.
             </p>
-            <div className="mt-4">
-              <EasterInline />
-            </div>
           </div>
 
           <div>

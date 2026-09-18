@@ -1,24 +1,27 @@
-import { EasterInline } from "@/components/easter/EasterMotifs";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 
 type Props = {
   eyebrow: string;
   title: string;
   subtitle?: string;
   centered?: boolean;
+  /** Soft Easter accents in this intro band */
+  scatter?: boolean;
 };
 
-/** Shared blue-soft page intro with Easter motifs */
-export function PageIntro({ eyebrow, title, subtitle, centered }: Props) {
+/** Shared blue-soft page intro */
+export function PageIntro({
+  eyebrow,
+  title,
+  subtitle,
+  centered,
+  scatter = true,
+}: Props) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-10 md:py-12">
+      {scatter ? <SectionScatter variant="story" /> : null}
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-4 hidden items-center opacity-30 sm:flex md:right-10 md:opacity-40"
-      >
-        <EasterInline className="scale-125 md:scale-150" />
-      </div>
-      <div
-        className={`container-metma relative ${centered ? "text-center" : ""}`}
+        className={`container-metma relative z-[1] ${centered ? "text-center" : ""}`}
       >
         <p className="eyebrow text-[var(--metma-rose)]">{eyebrow}</p>
         <h1 className="mt-2 font-display text-[clamp(2rem,4vw,2.9rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">

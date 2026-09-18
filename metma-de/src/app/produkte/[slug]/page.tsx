@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 import { ProductCatalog } from "@/components/ProductCatalog";
 import { ProductGrid } from "@/components/ProductGrid";
 import { productCategories, products } from "@/data/home";
@@ -45,8 +46,9 @@ export default async function ProdukteSlugPage({ params }: Props) {
     const filtered = products.filter((p) => p.category === cat.slug);
     return (
       <>
-        <section className="border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-12 md:py-14">
-          <div className="container-metma text-center">
+        <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-12 md:py-14">
+          <SectionScatter variant="story" />
+          <div className="container-metma relative z-[1] text-center">
             <p className="eyebrow text-[var(--metma-rose)]">Sortiment</p>
             <h1 className="mt-3 font-display text-[clamp(2.1rem,4.5vw,3.2rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
               {cat.label}
@@ -78,14 +80,14 @@ export default async function ProdukteSlugPage({ params }: Props) {
 
   const specs = [
     ...product.specs,
-    { label: "Preis", value: "Auf Anfrage" },
     { label: "Produktion", value: "Bulgarien · METMA" },
   ];
 
   return (
     <>
-      <section className="bg-white py-10 md:py-14">
-        <div className="container-metma">
+      <section className="relative overflow-hidden bg-white py-10 md:py-14">
+        <SectionScatter variant="products" />
+        <div className="container-metma relative z-[1]">
           <nav
             aria-label="Brotkrumen"
             className="flex flex-wrap items-center gap-2 text-sm text-[var(--metma-mute)]"
@@ -138,10 +140,6 @@ export default async function ProdukteSlugPage({ params }: Props) {
                 {product.shortDescription}
               </p>
 
-              <p className="mt-5 text-lg font-semibold text-[var(--metma-ink)]">
-                Preis auf Anfrage
-              </p>
-
               <ul className="mt-6 space-y-3 border-y border-[var(--metma-line)] py-6">
                 {product.features.map((item) => (
                   <li
@@ -158,7 +156,10 @@ export default async function ProdukteSlugPage({ params }: Props) {
               </ul>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/kontakt" className="btn-metma">
+                <Link
+                  href={`/kontakt?produkt=${product.slug}`}
+                  className="btn-metma"
+                >
                   Anfrage senden
                 </Link>
                 <Link
@@ -218,8 +219,9 @@ export default async function ProdukteSlugPage({ params }: Props) {
       </section>
 
       {related.length > 0 ? (
-        <section className="border-t border-[var(--metma-line)] bg-white py-14 md:py-16">
-          <div className="container-metma">
+        <section className="relative overflow-hidden border-t border-[var(--metma-line)] bg-white py-14 md:py-16">
+          <SectionScatter variant="story" />
+          <div className="container-metma relative z-[1]">
             <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="eyebrow text-[var(--metma-rose)]">Weiter stöbern</p>

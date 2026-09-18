@@ -11,6 +11,7 @@ public class Page
     public string? BodyHtml { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
+    public string? RedirectUrl { get; set; }
     public bool IsPublished { get; set; } = true;
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAtUtc { get; set; }

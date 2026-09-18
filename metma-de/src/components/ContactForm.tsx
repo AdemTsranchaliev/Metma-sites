@@ -2,7 +2,17 @@
 
 import { FormEvent, useState } from "react";
 
-export function ContactForm() {
+type Props = {
+  defaultSubject?: string;
+  defaultMessage?: string;
+  productInquiry?: boolean;
+};
+
+export function ContactForm({
+  defaultSubject = "",
+  defaultMessage = "",
+  productInquiry = false,
+}: Props) {
   const [sent, setSent] = useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -26,6 +36,8 @@ export function ContactForm() {
 
   const field =
     "w-full border border-[var(--metma-line)] bg-white px-4 py-3 text-[var(--metma-ink)] outline-none transition focus:border-[var(--metma-rose)]";
+  const filledField =
+    "w-full border-2 border-[var(--metma-rose)] bg-[var(--metma-peach)]/50 px-4 py-3 text-[var(--metma-ink)] outline-none transition focus:border-[var(--metma-rose)]";
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -48,23 +60,38 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-[var(--metma-mute)]">
+        <span className="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-medium text-[var(--metma-mute)]">
           Betreff
+          {productInquiry ? (
+            <span className="bg-[var(--metma-rose)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-white">
+              Vorausgefüllt
+            </span>
+          ) : null}
         </span>
-        <input name="your-subject" className={field} />
+        <input
+          name="your-subject"
+          defaultValue={defaultSubject}
+          className={productInquiry ? filledField : field}
+        />
       </label>
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-[var(--metma-mute)]">
+        <span className="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-medium text-[var(--metma-mute)]">
           Ihre Nachricht
+          {productInquiry ? (
+            <span className="bg-[var(--metma-rose)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-white">
+              Vorausgefüllt
+            </span>
+          ) : null}
         </span>
         <textarea
           name="your-message"
-          rows={5}
-          className={`${field} resize-y`}
+          rows={productInquiry ? 8 : 5}
+          defaultValue={defaultMessage}
+          className={`${productInquiry ? filledField : field} resize-y`}
         />
       </label>
       <button type="submit" className="btn-metma mt-1 w-full sm:w-auto">
-        Nachricht senden
+        {productInquiry ? "Anfrage senden" : "Nachricht senden"}
       </button>
     </form>
   );

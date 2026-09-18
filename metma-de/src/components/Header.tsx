@@ -4,8 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { EasterInline } from "@/components/easter/EasterMotifs";
-import { navItems, productCategories } from "@/data/home";
+import { menuCategories, menuContact, menuNav } from "@/data/menu";
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -15,12 +14,11 @@ function isActivePath(pathname: string, href: string) {
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [productsOpen, setProductsOpen] = useState(false);
-  const [mobileCatsOpen, setMobileCatsOpen] = useState(true);
+  const [desktopCats, setDesktopCats] = useState(false);
 
   useEffect(() => {
     setOpen(false);
-    setProductsOpen(false);
+    setDesktopCats(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -33,70 +31,86 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white">
-      <div className="container-metma flex h-14 items-center justify-between gap-3 sm:h-16 md:h-[4.25rem]">
-        <div className="flex min-w-0 shrink items-center gap-2.5">
-          <Link href="/" aria-label="METMA Startseite" className="shrink-0">
-            <Image
-              src="/images/logo.jpg"
-              alt="METMA"
-              width={150}
-              height={45}
-              priority
-              className="h-8 w-auto object-contain sm:h-9"
-            />
-          </Link>
-          <EasterInline className="hidden sm:inline-flex" />
-        </div>
+    <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white/95 backdrop-blur-sm">
+      {/* Top bar */}
+      <div className="container-metma flex h-14 items-center justify-between gap-4 sm:h-16 md:h-[4.25rem]">
+        <Link href="/" aria-label="METMA Startseite" className="shrink-0">
+          <Image
+            src="/images/logo.jpg"
+            alt="METMA"
+            width={150}
+            height={45}
+            priority
+            className="h-8 w-auto object-contain sm:h-9"
+          />
+        </Link>
 
+        {/* Desktop nav */}
         <nav
-          className="hidden items-center gap-1 md:flex"
+          className="hidden items-center gap-0.5 md:flex"
           aria-label="Hauptmenü"
         >
-          {navItems.map((item) => {
+          {menuNav.map((item) => {
             const active = isActivePath(pathname, item.href);
-            const isProducts = item.label === "Produkte";
+            const hasChildren = "children" in item && item.children;
 
-            if (isProducts) {
+            if (hasChildren) {
               return (
                 <div
                   key={item.href}
                   className="relative"
-                  onMouseEnter={() => setProductsOpen(true)}
-                  onMouseLeave={() => setProductsOpen(false)}
+                  onMouseEnter={() => setDesktopCats(true)}
+                  onMouseLeave={() => setDesktopCats(false)}
                 >
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative inline-flex px-4 py-2 text-sm font-semibold transition ${
-                      active
-                        ? "bg-[var(--metma-rose-deep)] text-white after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:bg-[var(--metma-rose)]"
-                        : "bg-[var(--metma-rose)] text-white hover:bg-[var(--metma-rose-deep)]"
-                    }`}
+                    className="btn-metma inline-flex !px-4 !py-2 text-sm"
                   >
                     {item.label}
+                    <span aria-hidden className="ml-1 text-[0.65rem] opacity-80">
+                      ▾
+                    </span>
                   </Link>
-                  {productsOpen && (
-                    <div className="absolute left-0 top-full z-20 min-w-[168px] border border-[var(--metma-line)] bg-white py-1.5 shadow-sm">
-                      {productCategories.map((cat) => {
+
+                  {desktopCats ? (
+                    <div className="absolute left-0 top-full z-30 min-w-[240px] border border-[var(--metma-line)] bg-white py-2 shadow-[0_12px_32px_-16px_rgba(0,0,0,0.25)]">
+                      {menuCategories.map((cat) => {
                         const catActive = isActivePath(pathname, cat.href);
                         return (
                           <Link
                             key={cat.href}
                             href={cat.href}
                             aria-current={catActive ? "page" : undefined}
-                            className={`block px-3.5 py-2.5 text-sm transition hover:bg-[var(--metma-sand)] ${
-                              catActive
-                                ? "font-semibold text-[var(--metma-rose)]"
-                                : "text-[var(--metma-ink)]"
+                            className={`block px-4 py-2.5 transition hover:bg-[var(--metma-sand)] ${
+                              catActive ? "bg-[var(--metma-sand)]" : ""
                             }`}
                           >
-                            {cat.label}
+                            <span
+                              className={`block text-sm font-semibold ${
+                                catActive
+                                  ? "text-[var(--metma-rose)]"
+                                  : "text-[var(--metma-ink)]"
+                              }`}
+                            >
+                              {cat.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs text-[var(--metma-mute)]">
+                              {cat.hint}
+                            </span>
                           </Link>
                         );
                       })}
+                      <div className="mt-1 border-t border-[var(--metma-line)] px-4 py-2.5">
+                        <Link
+                          href="/produkte"
+                          className="text-xs font-semibold text-[var(--metma-rose)] hover:underline"
+                        >
+                          Alle Produkte →
+                        </Link>
+                      </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               );
             }
@@ -116,7 +130,7 @@ export function Header() {
                 {active ? (
                   <span
                     aria-hidden
-                    className="absolute inset-x-3.5 -bottom-0.5 h-0.5 bg-[var(--metma-rose)]"
+                    className="absolute inset-x-3.5 bottom-0 h-0.5 bg-[var(--metma-rose)]"
                   />
                 ) : null}
               </Link>
@@ -124,9 +138,10 @@ export function Header() {
           })}
         </nav>
 
+        {/* Mobile toggle */}
         <button
           type="button"
-          className="relative inline-flex h-11 w-11 items-center justify-center text-[var(--metma-ink)] md:hidden"
+          className="relative inline-flex h-11 w-11 items-center justify-center md:hidden"
           aria-label={open ? "Menü schließen" : "Menü öffnen"}
           aria-expanded={open}
           aria-controls="mobile-nav"
@@ -141,7 +156,7 @@ export function Header() {
             />
             <span
               className={`absolute left-0 top-1.5 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-200 ${
-                open ? "opacity-0" : "opacity-100"
+                open ? "scale-x-0 opacity-0" : "opacity-100"
               }`}
             />
             <span
@@ -153,57 +168,56 @@ export function Header() {
         </button>
       </div>
 
-      <div
-        id="mobile-nav"
-        className={`border-t border-[var(--metma-line)] bg-white md:hidden ${
-          open ? "block" : "hidden"
-        }`}
-      >
-        <div className="max-h-[min(78vh,560px)] overflow-y-auto overscroll-contain">
-          <nav
-            aria-label="Mobiles Menü"
-            className="container-metma flex flex-col gap-1 py-3 pb-5"
-          >
-            {navItems.map((item) => {
-              const isProducts = item.label === "Produkte";
-              const active = isActivePath(pathname, item.href);
+      {/* Mobile panel */}
+      {open ? (
+        <div
+          id="mobile-nav"
+          className="border-t border-[var(--metma-line)] bg-white md:hidden"
+        >
+          <div className="max-h-[min(82vh,640px)] overflow-y-auto overscroll-contain">
+            <nav
+              aria-label="Mobiles Menü"
+              className="container-metma flex flex-col py-2"
+            >
+              {menuNav.map((item) => {
+                const active = isActivePath(pathname, item.href);
+                const hasChildren = "children" in item && item.children;
 
-              if (isProducts) {
                 return (
-                  <div key={item.href} className="mt-1">
-                    <div className="flex gap-2">
+                  <div
+                    key={item.href}
+                    className="border-b border-[var(--metma-line)] last:border-b-0"
+                  >
+                    {hasChildren ? (
                       <Link
                         href={item.href}
                         onClick={() => setOpen(false)}
                         aria-current={active ? "page" : undefined}
-                        className={`flex min-h-12 flex-1 items-center justify-center px-4 text-sm font-semibold text-white transition ${
-                          active
-                            ? "bg-[var(--metma-rose-deep)]"
-                            : "bg-[var(--metma-rose)]"
-                        }`}
+                        className="btn-metma my-3 w-full"
                       >
                         {item.label}
                       </Link>
-                      <button
-                        type="button"
-                        className="inline-flex min-h-12 w-12 items-center justify-center border border-[var(--metma-line)] text-[var(--metma-ink)]"
-                        aria-expanded={mobileCatsOpen}
-                        aria-label="Produktkategorien"
-                        onClick={() => setMobileCatsOpen((v) => !v)}
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex min-h-[3.25rem] items-center justify-between text-[1.05rem] font-semibold ${
+                          active
+                            ? "text-[var(--metma-rose)]"
+                            : "text-[var(--metma-ink)]"
+                        }`}
                       >
-                        <span
-                          aria-hidden
-                          className={`block text-lg leading-none transition ${
-                            mobileCatsOpen ? "rotate-45" : ""
-                          }`}
-                        >
-                          +
-                        </span>
-                      </button>
-                    </div>
-                    {mobileCatsOpen ? (
-                      <div className="mt-1 grid grid-cols-1 gap-px bg-[var(--metma-line)]">
-                        {productCategories.map((cat) => {
+                        {item.label}
+                        {active ? (
+                          <span className="h-1.5 w-1.5 rounded-full bg-[var(--metma-rose)]" />
+                        ) : null}
+                      </Link>
+                    )}
+
+                    {hasChildren ? (
+                      <div className="mb-3 grid gap-1 pb-1">
+                        {menuCategories.map((cat) => {
                           const catActive = isActivePath(pathname, cat.href);
                           return (
                             <Link
@@ -211,13 +225,24 @@ export function Header() {
                               href={cat.href}
                               onClick={() => setOpen(false)}
                               aria-current={catActive ? "page" : undefined}
-                              className={`flex min-h-11 items-center bg-white px-4 text-sm ${
+                              className={`rounded-md px-3 py-2.5 ${
                                 catActive
-                                  ? "font-semibold text-[var(--metma-rose)]"
-                                  : "text-[var(--metma-mute)]"
+                                  ? "bg-[var(--metma-sand)]"
+                                  : "bg-[var(--metma-sand)]/60"
                               }`}
                             >
-                              {cat.label}
+                              <span
+                                className={`block text-sm font-semibold ${
+                                  catActive
+                                    ? "text-[var(--metma-rose)]"
+                                    : "text-[var(--metma-ink)]"
+                                }`}
+                              >
+                                {cat.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-[var(--metma-mute)]">
+                                {cat.hint}
+                              </span>
                             </Link>
                           );
                         })}
@@ -225,49 +250,43 @@ export function Header() {
                     ) : null}
                   </div>
                 );
-              }
+              })}
 
-              return (
+              <div className="mt-4 mb-5 space-y-3 rounded-md bg-[var(--metma-sand)] px-4 py-4">
+                <div>
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-mute)]">
+                    Telefon
+                  </p>
+                  <a
+                    href={menuContact.phoneHref}
+                    className="mt-1 block text-base font-semibold text-[var(--metma-ink)]"
+                  >
+                    {menuContact.phone}
+                  </a>
+                </div>
+                <div>
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-mute)]">
+                    E-Mail
+                  </p>
+                  <a
+                    href={menuContact.emailHref}
+                    className="mt-1 block break-all text-sm text-[var(--metma-ink)]"
+                  >
+                    {menuContact.email}
+                  </a>
+                </div>
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href="/kontakt"
                   onClick={() => setOpen(false)}
-                  aria-current={active ? "page" : undefined}
-                  className={`flex min-h-12 items-center justify-between border-l-[3px] px-3 text-[0.95rem] font-semibold transition ${
-                    active
-                      ? "border-[var(--metma-rose)] bg-[var(--metma-sand)] text-[var(--metma-rose)]"
-                      : "border-transparent text-[var(--metma-ink)] active:bg-[var(--metma-sand)]"
-                  }`}
+                  className="btn-metma mt-1 w-full"
                 >
-                  {item.label}
-                  {active ? (
-                    <span className="text-[0.65rem] font-bold uppercase tracking-[0.12em]">
-                      Hier
-                    </span>
-                  ) : null}
+                  Nachricht senden
                 </Link>
-              );
-            })}
-
-            <div className="mt-4 border-t border-[var(--metma-line)] pt-4">
-              <EasterInline className="mb-3" />
-              <a
-                href="tel:+359885828771"
-                className="block text-sm font-semibold text-[var(--metma-ink)]"
-              >
-                +359 885 828 771
-              </a>
-              <Link
-                href="/kontakt"
-                onClick={() => setOpen(false)}
-                className="btn-outline mt-3 w-full"
-              >
-                Nachricht senden
-              </Link>
-            </div>
-          </nav>
+              </div>
+            </nav>
+          </div>
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }

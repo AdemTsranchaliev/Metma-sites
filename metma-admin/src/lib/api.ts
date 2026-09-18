@@ -1,0 +1,563 @@
+import {
+  MOCK_SITES,
+  mockBlogPosts,
+  mockCategories,
+  mockMedia,
+  mockPages,
+  mockProducts,
+  mockQrLinks,
+} from "./mock-data";
+import {
+  mockDeleteBlog,
+  mockDeleteCategory,
+  mockDeleteMedia,
+  mockDeletePage,
+  mockDeleteProduct,
+  mockDeleteQrLink,
+  mockGetBlog,
+  mockGetCategories,
+  mockGetMedia,
+  mockGetPageBySlug,
+  mockGetPages,
+  mockGetProducts,
+  mockGetQrLinkByCode,
+  mockGetQrLinks,
+  mockSaveBlog,
+  mockSaveCategory,
+  mockSaveMedia,
+  mockSavePage,
+  mockSaveProduct,
+  mockSaveQrLink,
+} from "./mock-store";
+import type {
+  BlogPost,
+  MediaAsset,
+  Page,
+  Product,
+  ProductCategory,
+  ProductCategorySlug,
+  QrLink,
+  Site,
+  SiteCode,
+} from "./types";
+import { DEFAULT_PRODUCT_CATEGORIES } from "./types";
+import { newId } from "./utils";
+
+export type {
+  BlogPost,
+  MediaAsset,
+  Page,
+  Product,
+  ProductCategory,
+  ProductCategorySlug,
+  QrLink,
+  Site,
+  SiteCode,
+} from "./types";
+export { DEFAULT_PRODUCT_CATEGORIES, PRODUCT_CATEGORIES } from "./types";
+
+export const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5080";
+
+/** When true (default via .env.local), use local demo store + /api/upload */
+export const useMockData =
+  process.env.NEXT_PUBLIC_USE_MOCK_DATA !== "false";
+
+function normalizeSiteCode(code: Site["code"]): SiteCode | null {
+  if (code === "Bg" || code === 1 || code === "1") return "Bg";
+  if (code === "De" || code === 2 || code === "2") return "De";
+  if (code === "Usa" || code === 3 || code === "3") return "Usa";
+  if (typeof code === "string") {
+    const c = code.toLowerCase();
+    if (c === "bg") return "Bg";
+    if (c === "de") return "De";
+    if (c === "usa") return "Usa";
+  }
+  return null;
+}
+
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(
+      `${response.status} ${response.statusText} — ${path}${text ? `: ${text}` : ""}`,
+    );
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json();
+}
+
+export async function getSites() {
+  if (useMockData) return MOCK_SITES;
+
+  const sites = await apiFetch<Site[]>("/api/sites");
+  return sites.map((s) => ({
+    ...s,
+    code: normalizeSiteCode(s.code) ?? "De",
+  })) as (Site & { code: SiteCode })[];
+}
+
+export async function resolveSiteId(siteCode: SiteCode) {
+  const sites = await getSites();
+  const match = sites.find((s) => s.code === siteCode);
+  if (!match) throw new Error(`Site not found: ${siteCode}`);
+  return match.id;
+}
+
+export async function getProducts(siteCode: SiteCode, featuredOnly = false) {
+  if (useMockData) {
+    const list =
+      typeof window === "undefined"
+        ? mockProducts(siteCode)
+        : mockGetProducts(siteCode);
+    return featuredOnly ? list.filter((p) => p.isFeatured) : list;
+  }
+
+  const params = new URLSearchParams({
+    siteCode,
+    featuredOnly: String(featuredOnly),
+  });
+  return apiFetch<Product[]>(`/api/products?${params}`);
+}
+
+export async function getPages(siteCode: SiteCode) {
+  if (useMockData) {
+    return typeof window === "undefined"
+      ? mockPages(siteCode)
+      : mockGetPages(siteCode);
+  }
+  const siteId = await resolveSiteId(siteCode);
+  return apiFetch<Page[]>(`/api/pages?siteId=${siteId}`);
+}
+
+export async function getPageBySlug(siteCode: SiteCode, slug: string) {
+  if (useMockData) {
+    if (typeof window === "undefined") {
+      return mockPages(siteCode).find((p) => p.slug === slug && p.isPublished) ?? null;
+    }
+    return mockGetPageBySlug(siteCode, slug);
+  }
+  try {
+    return await apiFetch<Page>(
+      `/api/pages/by-slug?siteCode=${siteCode}&slug=${encodeURIComponent(slug)}`,
+    );
+  } catch {
+    return null;
+  }
+}
+
+export async function getBlogPosts(siteCode: SiteCode, publishedOnly = false) {
+  if (useMockData) {
+    const list =
+      typeof window === "undefined"
+        ? mockBlogPosts(siteCode)
+        : mockGetBlog(siteCode);
+    return publishedOnly ? list.filter((p) => p.isPublished) : list;
+  }
+
+  const siteId = await resolveSiteId(siteCode);
+  const params = new URLSearchParams({
+    siteId,
+    publishedOnly: String(publishedOnly),
+  });
+  return apiFetch<BlogPost[]>(`/api/blogposts?${params}`);
+}
+
+export async function getMedia(siteCode: SiteCode) {
+  if (useMockData) {
+    return typeof window === "undefined"
+      ? mockMedia(siteCode)
+      : mockGetMedia(siteCode);
+  }
+  const siteId = await resolveSiteId(siteCode);
+  return apiFetch<MediaAsset[]>(`/api/media?siteId=${siteId}`);
+}
+
+export async function getCategories(siteCode: SiteCode) {
+  if (useMockData) {
+    return typeof window === "undefined"
+      ? mockCategories(siteCode)
+      : mockGetCategories(siteCode);
+  }
+  // Live API: categories endpoint not wired yet — fall back to defaults
+  const siteId = await resolveSiteId(siteCode);
+  return DEFAULT_PRODUCT_CATEGORIES.map((c, i) => ({
+    id: `default-${c.slug}`,
+    siteId,
+    ...c,
+    sortOrder: c.sortOrder || i + 1,
+  }));
+}
+
+export type CategoryInput = {
+  name: string;
+  slug: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+};
+
+export async function saveCategory(
+  siteCode: SiteCode,
+  input: CategoryInput,
+  id?: string,
+) {
+  const siteId = await resolveSiteId(siteCode);
+  if (useMockData) {
+    const category: ProductCategory = {
+      id: id ?? newId(),
+      siteId,
+      ...input,
+    };
+    return mockSaveCategory(siteCode, category);
+  }
+  throw new Error("Категориите през API още не са налични.");
+}
+
+export async function deleteCategory(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeleteCategory(siteCode, id);
+    return;
+  }
+  throw new Error("Категориите през API още не са налични.");
+}
+
+/* ─── Mutations ─── */
+
+export type ProductInput = {
+  sku: string;
+  name: string;
+  slug: string;
+  category?: ProductCategorySlug | null;
+  shortDescription?: string | null;
+  description?: string | null;
+  /** Always null — Metma sites do not sell by price online */
+  price?: number | null;
+  currency: string;
+  imageUrl?: string | null;
+  imageUrls?: string[];
+  videoUrl?: string | null;
+  isFeatured: boolean;
+  isActive: boolean;
+  sortOrder: number;
+};
+
+export async function saveProduct(
+  siteCode: SiteCode,
+  input: ProductInput,
+  id?: string,
+) {
+  const siteId = await resolveSiteId(siteCode);
+  const imageUrls = input.imageUrls?.length
+    ? input.imageUrls
+    : input.imageUrl
+      ? [input.imageUrl]
+      : [];
+  const imageUrl = imageUrls[0] ?? null;
+  const normalized = { ...input, imageUrls, imageUrl, videoUrl: input.videoUrl ?? null };
+
+  if (useMockData) {
+    const product: Product = {
+      id: id ?? newId(),
+      siteId,
+      ...normalized,
+    };
+    return mockSaveProduct(siteCode, product);
+  }
+
+  if (id) {
+    return apiFetch<Product>(`/api/products/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        categoryId: null,
+        sku: normalized.sku,
+        name: normalized.name,
+        slug: normalized.slug,
+        shortDescription: normalized.shortDescription,
+        description: normalized.description,
+        price: null,
+        currency: "EUR",
+        imageUrl: normalized.imageUrl,
+        isFeatured: normalized.isFeatured,
+        isActive: normalized.isActive,
+        sortOrder: normalized.sortOrder,
+      }),
+    });
+  }
+
+  return apiFetch<Product>("/api/products", {
+    method: "POST",
+    body: JSON.stringify({
+      siteId,
+      categoryId: null,
+      sku: normalized.sku,
+      name: normalized.name,
+      slug: normalized.slug,
+      shortDescription: normalized.shortDescription,
+      description: normalized.description,
+      price: null,
+      currency: "EUR",
+      imageUrl: normalized.imageUrl,
+      isFeatured: normalized.isFeatured,
+      sortOrder: normalized.sortOrder,
+    }),
+  });
+}
+
+export async function deleteProduct(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeleteProduct(siteCode, id);
+    return;
+  }
+  await apiFetch(`/api/products/${id}`, { method: "DELETE" });
+}
+
+export type PageInput = {
+  title: string;
+  slug: string;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+  bodyHtml?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  isPublished: boolean;
+};
+
+export async function savePage(
+  siteCode: SiteCode,
+  input: PageInput,
+  id?: string,
+) {
+  const siteId = await resolveSiteId(siteCode);
+
+  if (useMockData) {
+    const page: Page = { id: id ?? newId(), siteId, ...input };
+    return mockSavePage(siteCode, page);
+  }
+
+  if (id) {
+    return apiFetch<Page>(`/api/pages/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input),
+    });
+  }
+
+  return apiFetch<Page>("/api/pages", {
+    method: "POST",
+    body: JSON.stringify({ siteId, ...input }),
+  });
+}
+
+export async function deletePage(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeletePage(siteCode, id);
+    return;
+  }
+  throw new Error("Изтриването на страници все още не се поддържа от API.");
+}
+
+export type QrLinkInput = {
+  code: string;
+  redirectUrl: string;
+  productId?: string | null;
+  productName?: string | null;
+  productSlug?: string | null;
+};
+
+export async function getQrLinks(siteCode: SiteCode) {
+  if (useMockData) {
+    return typeof window === "undefined"
+      ? mockQrLinks(siteCode)
+      : mockGetQrLinks(siteCode);
+  }
+  throw new Error("QR API все още не е налично — включете mock режима.");
+}
+
+export async function getQrLinkByCode(siteCode: SiteCode, code: string) {
+  if (useMockData) {
+    if (typeof window === "undefined") {
+      return mockQrLinks(siteCode).find((q) => q.code === code) ?? null;
+    }
+    return mockGetQrLinkByCode(siteCode, code);
+  }
+  throw new Error("QR API все още не е налично — включете mock режима.");
+}
+
+export async function saveQrLink(
+  siteCode: SiteCode,
+  input: QrLinkInput,
+  id?: string,
+) {
+  const siteId = await resolveSiteId(siteCode);
+  if (useMockData) {
+    const existing = id
+      ? mockGetQrLinks(siteCode).find((q) => q.id === id)
+      : null;
+    const link: QrLink = {
+      id: id ?? newId(),
+      siteId,
+      code: input.code,
+      redirectUrl: input.redirectUrl.trim(),
+      productId: input.productId || null,
+      productName: input.productName || null,
+      productSlug: input.productSlug || null,
+      createdAtUtc: existing?.createdAtUtc ?? new Date().toISOString(),
+    };
+    return mockSaveQrLink(siteCode, link);
+  }
+  throw new Error("QR API все още не е налично — включете mock режима.");
+}
+
+export async function deleteQrLink(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeleteQrLink(siteCode, id);
+    return;
+  }
+  throw new Error("QR API все още не е налично — включете mock режима.");
+}
+
+export type BlogInput = {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  bodyHtml?: string | null;
+  coverImageUrl?: string | null;
+  isPublished: boolean;
+};
+
+export async function saveBlogPost(
+  siteCode: SiteCode,
+  input: BlogInput,
+  id?: string,
+) {
+  const siteId = await resolveSiteId(siteCode);
+
+  if (useMockData) {
+    const post: BlogPost = {
+      id: id ?? newId(),
+      siteId,
+      ...input,
+      publishedAtUtc: input.isPublished
+        ? new Date().toISOString()
+        : null,
+    };
+    return mockSaveBlog(siteCode, post);
+  }
+
+  if (id) {
+    return apiFetch<BlogPost>(`/api/blogposts/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input),
+    });
+  }
+
+  return apiFetch<BlogPost>("/api/blogposts", {
+    method: "POST",
+    body: JSON.stringify({ siteId, ...input }),
+  });
+}
+
+export async function deleteBlogPost(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeleteBlog(siteCode, id);
+    return;
+  }
+  throw new Error("Изтриването на блог публикации все още не се поддържа от API.");
+}
+
+export type UploadResult = {
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+  publicUrl: string;
+  altText?: string | null;
+  r2Key: string;
+};
+
+export async function uploadFile(
+  siteCode: SiteCode,
+  file: File,
+  altText?: string,
+): Promise<UploadResult> {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("site", siteCode);
+  if (altText) form.append("altText", altText);
+
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    body: form,
+  });
+
+  if (!response.ok) {
+    const data = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
+    throw new Error(data.error ?? "Неуспешно качване");
+  }
+
+  return response.json();
+}
+
+export async function registerMedia(
+  siteCode: SiteCode,
+  upload: UploadResult,
+): Promise<MediaAsset> {
+  const siteId = await resolveSiteId(siteCode);
+
+  if (useMockData) {
+    const asset: MediaAsset = {
+      id: newId(),
+      siteId,
+      fileName: upload.fileName,
+      contentType: upload.contentType,
+      sizeBytes: upload.sizeBytes,
+      publicUrl: upload.publicUrl,
+      altText: upload.altText ?? null,
+    };
+    return mockSaveMedia(siteCode, asset);
+  }
+
+  return apiFetch<MediaAsset>("/api/media/register", {
+    method: "POST",
+    body: JSON.stringify({
+      siteId,
+      fileName: upload.fileName,
+      contentType: upload.contentType,
+      sizeBytes: upload.sizeBytes,
+      r2Key: upload.r2Key,
+      publicUrl: upload.publicUrl,
+      altText: upload.altText ?? null,
+    }),
+  });
+}
+
+export async function uploadAndRegister(
+  siteCode: SiteCode,
+  file: File,
+  altText?: string,
+) {
+  const upload = await uploadFile(siteCode, file, altText);
+  return registerMedia(siteCode, upload);
+}
+
+export async function deleteMedia(siteCode: SiteCode, id: string) {
+  if (useMockData) {
+    mockDeleteMedia(siteCode, id);
+    return;
+  }
+  await apiFetch(`/api/media/${id}`, { method: "DELETE" });
+}

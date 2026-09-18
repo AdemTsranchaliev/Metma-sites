@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 import { HomeContact } from "@/components/home/HomeContact";
 import { PageIntro } from "@/components/PageIntro";
 import { Reveal } from "@/components/Reveal";
@@ -111,8 +112,9 @@ export default function UberUnsPage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-14 md:py-16">
-        <div className="container-metma">
+      <section className="relative overflow-hidden border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-14 md:py-16">
+        <SectionScatter variant="story" />
+        <div className="container-metma relative z-[1]">
           <Reveal>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 import { blogPosts, formatBlogDate, getBlogPost } from "@/data/blog";
 
 type Props = {
@@ -35,8 +36,9 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <article>
       {/* Header */}
-      <section className="border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)]">
-        <div className="container-metma max-w-3xl py-10 md:py-12">
+      <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)]">
+        <SectionScatter variant="story" />
+        <div className="container-metma relative z-[1] max-w-3xl py-10 md:py-12">
           <nav
             aria-label="Brotkrumen"
             className="flex flex-wrap items-center gap-2 text-sm text-[var(--metma-mute)]"
@@ -152,8 +154,9 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* Related */}
       {related.length > 0 ? (
-        <section className="border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-14">
-          <div className="container-metma max-w-4xl">
+        <section className="relative overflow-hidden border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-14">
+          <SectionScatter variant="story" />
+          <div className="container-metma relative z-[1] max-w-4xl">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="eyebrow text-[var(--metma-rose)]">Journal</p>
@@ -209,8 +212,9 @@ export default async function BlogPostPage({ params }: Props) {
       ) : null}
 
       {/* Shop CTA */}
-      <section className="bg-[var(--metma-peach)] py-10 md:py-11">
-        <div className="container-metma flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+      <section className="relative overflow-hidden bg-[var(--metma-peach)] py-10 md:py-11">
+        {related.length === 0 ? <SectionScatter variant="contact" /> : null}
+        <div className="container-metma relative z-[1] flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
           <div>
             <p className="eyebrow text-[var(--metma-rose)]">Sortiment</p>
             <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight text-[var(--metma-ink)] md:text-2xl">

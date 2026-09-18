@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 import { PageIntro } from "@/components/PageIntro";
 import { EmailIcon, LocationIcon, PhoneIcon } from "@/components/icons";
-import { partners } from "@/data/home";
+import { partners, products } from "@/data/home";
 
 export const metadata: Metadata = {
   title: "Kontakt – METMA Ltd. – Eierfarbe",
@@ -10,13 +13,52 @@ export const metadata: Metadata = {
     "Kontaktieren Sie METMA — Adresse, Telefon und Nachricht für Sortiment, Displays und Großhandel.",
 };
 
-export default function KontaktPage() {
+type Props = {
+  searchParams: Promise<{ produkt?: string }>;
+};
+
+const categoryLabels: Record<string, string> = {
+  farbstoffe: "Farbstoffe",
+  sets: "Sets",
+  dekorationen: "Dekorationen",
+};
+
+export default async function KontaktPage({ searchParams }: Props) {
+  const { produkt: slug } = await searchParams;
+  const product = slug
+    ? products.find((p) => p.slug === slug) ?? null
+    : null;
+
+  const defaultSubject = product
+    ? `Anfrage: ${product.name} (Art. ${product.id})`
+    : "";
+
+  const defaultMessage = product
+    ? [
+        `Hallo METMA,`,
+        ``,
+        `ich interessiere mich für folgendes Produkt:`,
+        ``,
+        `• ${product.name}`,
+        `• Art.-Nr.: ${product.id}`,
+        `• Kategorie: ${categoryLabels[product.category] ?? product.category}`,
+        ``,
+        `Bitte senden Sie mir weitere Informationen / ein Angebot.`,
+        ``,
+        `Mit freundlichen Grüßen`,
+      ].join("\n")
+    : "";
+
   return (
     <>
       <PageIntro
-        eyebrow="Schreiben Sie uns"
-        title="Kontakt"
-        subtitle="Fragen zu Sortiment, Displays oder Großhandel? Wir melden uns gerne."
+        eyebrow={product ? "Produktanfrage" : "Schreiben Sie uns"}
+        title={product ? "Anfrage senden" : "Kontakt"}
+        subtitle={
+          product
+            ? `Zu „${product.name}“ — Betreff und Nachricht sind bereits ausgefüllt.`
+            : "Fragen zu Sortiment, Displays oder Großhandel? Wir melden uns gerne."
+        }
       />
 
       <section className="bg-white py-12 md:py-16">
@@ -73,21 +115,62 @@ export default function KontaktPage() {
           </div>
 
           <div className="bg-[var(--metma-sand)] px-5 py-7 sm:px-8 sm:py-8">
+            {product ? (
+              <div className="mb-6 flex gap-4 border-2 border-[var(--metma-rose)] bg-white p-3 sm:p-4">
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-[linear-gradient(145deg,var(--metma-blue-soft),var(--metma-peach),var(--metma-butter))] sm:h-24 sm:w-24">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-2"
+                    sizes="96px"
+                  />
+                </div>
+                <div className="min-w-0 flex-1 self-center">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-rose)]">
+                    Ausgewähltes Produkt
+                  </p>
+                  <p className="mt-1 font-display text-base font-bold leading-snug tracking-tight text-[var(--metma-ink)] sm:text-lg">
+                    {product.name}
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--metma-mute)]">
+                    Art. {product.id}
+                    {" · "}
+                    {categoryLabels[product.category] ?? product.category}
+                  </p>
+                  <Link
+                    href={`/produkte/${product.slug}`}
+                    className="mt-2 inline-block text-xs font-semibold text-[var(--metma-ink)] underline-offset-4 hover:text-[var(--metma-rose)] hover:underline"
+                  >
+                    Produkt ansehen →
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+
             <h2 className="font-display text-xl font-bold tracking-tight text-[var(--metma-ink)]">
-              Nachricht senden
+              {product ? "Anfrage vervollständigen" : "Nachricht senden"}
             </h2>
             <p className="mt-1.5 text-sm leading-6 text-[var(--metma-mute)]">
-              Schreiben Sie uns — wir antworten so schnell wie möglich.
+              {product
+                ? "Name und E-Mail eintragen — der Rest ist schon für dieses Produkt vorbereitet."
+                : "Schreiben Sie uns — wir antworten so schnell wie möglich."}
             </p>
             <div className="mt-5">
-              <ContactForm />
+              <ContactForm
+                key={product?.slug ?? "general"}
+                defaultSubject={defaultSubject}
+                defaultMessage={defaultMessage}
+                productInquiry={Boolean(product)}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-14">
-        <div className="container-metma">
+      <section className="relative overflow-hidden border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-14">
+        <SectionScatter variant="contact" />
+        <div className="container-metma relative z-[1]">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="eyebrow text-[var(--metma-rose)]">Standorte</p>

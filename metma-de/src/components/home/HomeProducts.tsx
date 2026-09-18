@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EasterInline } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 import { productCategories, products } from "@/data/home";
 
 const featured = products.slice(0, 8);
@@ -10,7 +10,7 @@ const swatches = [
   "var(--metma-peach)",
   "var(--metma-mint)",
   "var(--metma-lilac)",
-  "#fff4d6",
+  "var(--metma-butter-soft)",
   "var(--metma-peach)",
   "var(--metma-butter)",
   "var(--metma-blue-soft)",
@@ -18,11 +18,11 @@ const swatches = [
 
 export function HomeProducts() {
   return (
-    <section className="bg-white py-14 sm:py-20 md:py-28">
-      <div className="container-metma">
+    <section className="relative overflow-hidden bg-white py-14 sm:py-20 md:py-24">
+      <SectionScatter variant="products" />
+      <div className="container-metma relative z-[1]">
         <Reveal className="mb-7 flex flex-col gap-4 sm:mb-10 sm:gap-6 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div>
-            <EasterInline className="mb-2" />
             <p className="eyebrow text-[var(--metma-rose)]">Shop</p>
             <h2 className="mt-2 font-display text-[clamp(1.75rem,6vw,3rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
               Ausgewählte Farben

@@ -10,6 +10,7 @@ public record PageDto(
     string? BodyHtml,
     string? MetaTitle,
     string? MetaDescription,
+    string? RedirectUrl,
     bool IsPublished);
 
 public record CreatePageRequest(
@@ -21,6 +22,7 @@ public record CreatePageRequest(
     string? BodyHtml,
     string? MetaTitle,
     string? MetaDescription,
+    string? RedirectUrl,
     bool IsPublished);
 
 public record UpdatePageRequest(
@@ -31,4 +33,5 @@ public record UpdatePageRequest(
     string? BodyHtml,
     string? MetaTitle,
     string? MetaDescription,
+    string? RedirectUrl,
     bool IsPublished);

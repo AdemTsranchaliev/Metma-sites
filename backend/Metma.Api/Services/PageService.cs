@@ -40,6 +40,7 @@ public class PageService(MetmaDbContext db) : IPageService
             BodyHtml = request.BodyHtml,
             MetaTitle = request.MetaTitle,
             MetaDescription = request.MetaDescription,
+            RedirectUrl = request.RedirectUrl,
             IsPublished = request.IsPublished
         };
 
@@ -63,6 +64,7 @@ public class PageService(MetmaDbContext db) : IPageService
         page.BodyHtml = request.BodyHtml;
         page.MetaTitle = request.MetaTitle;
         page.MetaDescription = request.MetaDescription;
+        page.RedirectUrl = request.RedirectUrl;
         page.IsPublished = request.IsPublished;
         page.UpdatedAtUtc = DateTime.UtcNow;
 
@@ -81,5 +83,6 @@ public class PageService(MetmaDbContext db) : IPageService
             page.BodyHtml,
             page.MetaTitle,
             page.MetaDescription,
+            page.RedirectUrl,
             page.IsPublished);
 }

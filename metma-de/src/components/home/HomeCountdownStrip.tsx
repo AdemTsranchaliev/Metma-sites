@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BunnyIcon, EggIcon } from "@/components/easter/EasterMotifs";
+import { SectionScatter } from "@/components/easter/EasterScatter";
 
 function getEasterSunday(year: number) {
   const a = year % 19;
@@ -143,8 +144,12 @@ export function HomeCountdownStrip() {
   const items = [...loop, ...loop];
 
   return (
-    <section aria-label="Countdown bis Ostern">
-      <div className="overflow-hidden bg-[var(--metma-butter)]">
+    <section
+      aria-label="Countdown bis Ostern"
+      className="relative overflow-hidden"
+    >
+      <SectionScatter variant="countdown" />
+      <div className="relative z-[1] overflow-hidden bg-[var(--metma-butter)]">
         <div className="marquee py-3 text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-ink)] md:text-sm">
           {items.map((item, i) => (
             <span
@@ -177,7 +182,7 @@ export function HomeCountdownStrip() {
         </div>
       </div>
 
-      <div className="relative overflow-hidden bg-[linear-gradient(165deg,var(--metma-peach)_0%,#ffe8c8_50%,var(--metma-butter)_100%)] py-10 sm:py-12 md:py-14">
+      <div className="relative z-[1] overflow-hidden bg-[linear-gradient(165deg,var(--metma-peach)_0%,#ffe8c8_50%,var(--metma-butter)_100%)] py-10 sm:py-12 md:py-14">
         <EggIcon
           fill="var(--metma-rose)"
           pattern="dots"
