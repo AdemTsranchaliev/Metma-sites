@@ -37,14 +37,14 @@ export function Header() {
         <Link
           href="/"
           aria-label="METMA Startseite"
-          className="relative block h-8 w-[6.75rem] shrink-0 sm:h-9 sm:w-[7.6rem]"
+          className="relative block h-9 w-[8.75rem] shrink-0 sm:h-10 sm:w-[10rem] md:h-11 md:w-[11rem]"
         >
           <Image
-            src="/images/logo-mark.png"
+            src="/images/logo-brand-v3.png"
             alt="METMA"
             fill
             priority
-            sizes="122px"
+            sizes="176px"
             className="object-contain object-left"
           />
         </Link>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { blogPosts } from "@/data/blog";
 
@@ -34,12 +35,11 @@ export function HomeJournal() {
           <p className="mt-3 max-w-md text-[0.95rem] leading-7 text-[var(--metma-mute)] sm:mt-5 sm:text-base sm:leading-8">
             {post.excerpt}
           </p>
-          <Link
-            href={`/blog/${post.slug}`}
-            className="btn-metma mt-6 w-full self-start sm:mt-8 sm:w-auto"
-          >
-            Artikel lesen
-          </Link>
+          <MagneticCta className="mt-6 w-full self-start sm:mt-8 sm:w-auto">
+            <Link href={`/blog/${post.slug}`} className="btn-metma">
+              Artikel lesen
+            </Link>
+          </MagneticCta>
         </Reveal>
       </div>
     </section>

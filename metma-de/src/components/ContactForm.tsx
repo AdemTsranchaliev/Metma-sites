@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { MagneticCta } from "@/components/MagneticCta";
 
 type Props = {
   defaultSubject?: string;
@@ -90,9 +91,11 @@ export function ContactForm({
           className={`${productInquiry ? filledField : field} resize-y`}
         />
       </label>
-      <button type="submit" className="btn-metma mt-1 w-full sm:w-auto">
-        {productInquiry ? "Anfrage senden" : "Nachricht senden"}
-      </button>
+      <MagneticCta className="mt-1 w-full sm:w-auto">
+        <button type="submit" className="btn-metma">
+          {productInquiry ? "Anfrage senden" : "Nachricht senden"}
+        </button>
+      </MagneticCta>
     </form>
   );
 }

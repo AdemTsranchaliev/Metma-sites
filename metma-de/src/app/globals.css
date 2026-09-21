@@ -41,7 +41,7 @@
   --color-metma-sand: var(--metma-sand);
   --color-metma-navy: var(--metma-navy);
   --font-sans: var(--font-rubik);
-  --font-display: var(--font-syne);
+  --font-display: var(--font-fredoka);
 }
 
 * {
@@ -93,7 +93,47 @@ img {
 }
 
 .font-display {
-  font-family: var(--font-syne), Syne, sans-serif;
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Logo-like METMA wordmarks */
+.brand-mark {
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  font-weight: 700;
+  color: var(--metma-rose);
+  line-height: 0.95;
+  paint-order: stroke fill;
+}
+
+/* A — soft sticker (previous) */
+.brand-mark--soft {
+  letter-spacing: 0.04em;
+  -webkit-text-stroke: 0.055em #ffffff;
+  text-shadow:
+    0.045em 0.065em 0 rgba(23, 23, 23, 0.18),
+    0.08em 0.11em 0.12em rgba(23, 23, 23, 0.12);
+}
+
+/* B — comic / bounce (active on hero) */
+.brand-mark--comic {
+  display: inline-flex;
+  letter-spacing: 0.02em;
+  -webkit-text-stroke: 0.07em #ffffff;
+  filter: drop-shadow(0.05em 0.07em 0 rgba(23, 23, 23, 0.28));
+}
+
+.brand-mark__letter {
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+/* C — flat bold red, thin cream outline */
+.brand-mark--flat {
+  letter-spacing: 0.06em;
+  color: var(--metma-rose-deep);
+  -webkit-text-stroke: 0.028em #fff8ef;
+  text-shadow: 0.03em 0.04em 0 rgba(23, 23, 23, 0.14);
 }
 
 .btn-metma,
@@ -112,6 +152,18 @@ img {
     color 0.22s ease,
     border-color 0.22s ease,
     transform 0.22s var(--ease);
+}
+
+.btn-metma:active,
+.btn-dark:active,
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+.magnetic-cta > .btn-metma,
+.magnetic-cta > .btn-dark,
+.magnetic-cta > .btn-outline {
+  width: 100%;
 }
 
 @media (min-width: 640px) {
@@ -203,8 +255,43 @@ img {
   transition: transform 0.45s var(--ease);
 }
 
+.product-tile::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      rgba(228, 87, 46, 0.38),
+      transparent 46%
+    ),
+    radial-gradient(
+      circle at 78% 68%,
+      rgba(61, 122, 181, 0.32),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 52% 92%,
+      rgba(242, 201, 76, 0.36),
+      transparent 48%
+    );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+}
+
+.product-tile > * {
+  position: relative;
+  z-index: 1;
+}
+
 .group:hover .product-tile {
   transform: translateY(-5px);
+}
+
+.group:hover .product-tile::before {
+  opacity: 1;
 }
 
 .product-search::-webkit-search-decoration,
@@ -328,7 +415,7 @@ img {
   bottom: 78%;
   z-index: 4;
   translate: -50% 0;
-  font-family: var(--font-syne), Syne, sans-serif;
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
   font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -617,6 +704,7 @@ img {
   .hero-media img,
   .hero-copy,
   .product-tile,
+  .product-tile::before,
   .egg-wobble,
   .egg-float,
   .egg-float-delay,
@@ -625,6 +713,10 @@ img {
     animation: none !important;
     transition: none !important;
     transform: none !important;
+  }
+
+  .group:hover .product-tile::before {
+    opacity: 0 !important;
   }
 
   .egg-knock-left,

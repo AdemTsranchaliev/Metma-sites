@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/BrandMark";
+import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 
 const points = [
@@ -31,9 +33,12 @@ export function HomeStory() {
       <div className="container-metma grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-16">
         <Reveal className="lg:sticky lg:top-28">
           <p className="eyebrow text-[var(--metma-rose)]">Über METMA</p>
-          <h2 className="mt-2.5 font-display text-[clamp(1.85rem,7vw,3.3rem)] font-bold leading-[1.05] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
-            METMA
-            <span className="mt-1.5 block text-[clamp(1.1rem,4.2vw,1.85rem)] font-semibold leading-snug tracking-[-0.02em] text-[var(--metma-blue)] sm:mt-2">
+          <h2 className="mt-2.5 sm:mt-3">
+            <BrandMark
+              variant="soft"
+              className="block text-[clamp(1.85rem,7vw,3.3rem)]"
+            />
+            <span className="mt-1.5 block font-display text-[clamp(1.1rem,4.2vw,1.85rem)] font-semibold leading-snug tracking-[-0.02em] text-[var(--metma-blue)] sm:mt-2">
               Das einzige Unternehmen für Eierfärben in Bulgarien
             </span>
           </h2>
@@ -43,9 +48,11 @@ export function HomeStory() {
             Einzelhandelsketten in Bulgarien und Europa — kompromisslos in
             Qualität und Service.
           </p>
-          <Link href="/uber-uns" className="btn-metma mt-6 w-full sm:mt-8 sm:w-auto">
-            Mehr erfahren
-          </Link>
+          <MagneticCta className="mt-6 w-full sm:mt-8 sm:w-auto">
+            <Link href="/uber-uns" className="btn-metma">
+              Mehr erfahren
+            </Link>
+          </MagneticCta>
         </Reveal>
 
         <div className="flex flex-col gap-3">

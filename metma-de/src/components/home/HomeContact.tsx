@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 
@@ -16,9 +17,11 @@ export function HomeContact() {
             Fragen zu Sortiment, Displays oder Großhandel? Wir helfen gerne
             weiter.
           </p>
-          <Link href="/kontakt" className="btn-metma mt-6 w-full sm:mt-8 sm:w-auto">
-            Nachricht senden
-          </Link>
+          <MagneticCta className="mt-6 w-full sm:mt-8 sm:w-auto">
+            <Link href="/kontakt" className="btn-metma">
+              Nachricht senden
+            </Link>
+          </MagneticCta>
         </Reveal>
 
         <Reveal delayMs={70}>

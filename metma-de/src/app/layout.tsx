@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Rubik, Syne } from "next/font/google";
+import { Fredoka, Rubik } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBar } from "@/components/CookieBar";
@@ -11,10 +11,11 @@ const rubik = Rubik({
   display: "swap",
 });
 
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-syne",
+const fredoka = Fredoka({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-fredoka",
   display: "swap",
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +30,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className={`${rubik.variable} ${syne.variable} h-full antialiased`}>
+    <html
+      lang="de"
+      className={`${rubik.variable} ${fredoka.variable} h-full antialiased`}
+    >
       <body className="relative flex min-h-full flex-col font-sans">
         <div className="relative z-10 flex min-h-full flex-1 flex-col">
           <Header />

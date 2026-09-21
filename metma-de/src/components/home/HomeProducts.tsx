@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 import { productCategories, products } from "@/data/home";
@@ -70,9 +71,11 @@ export function HomeProducts() {
         </div>
 
         <Reveal className="mt-10 text-center sm:mt-12 md:mt-14">
-          <Link href="/produkte" className="btn-metma w-full sm:w-auto">
-            Alle Produkte
-          </Link>
+          <MagneticCta>
+            <Link href="/produkte" className="btn-metma w-full sm:w-auto">
+              Alle Produkte
+            </Link>
+          </MagneticCta>
         </Reveal>
       </div>
     </section>
