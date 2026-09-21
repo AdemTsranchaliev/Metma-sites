@@ -232,8 +232,13 @@ img {
 }
 
 .hero-media img {
-  animation: hero-drift 16s ease-in-out infinite alternate;
   will-change: transform;
+}
+
+@media (min-width: 640px) {
+  .hero-media img {
+    animation: hero-drift 16s ease-in-out infinite alternate;
+  }
 }
 
 .hero-copy {
