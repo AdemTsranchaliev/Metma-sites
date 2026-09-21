@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SectionScatter } from "@/components/easter/EasterScatter";
 
 export function HomeHero() {
   return (
@@ -21,8 +20,6 @@ export function HomeHero() {
         aria-hidden
         className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,40,75,0.25)_0%,rgba(15,40,75,0.55)_42%,rgba(15,40,75,0.82)_100%)] md:bg-[linear-gradient(105deg,rgba(15,40,75,0.7)_0%,rgba(15,40,75,0.4)_36%,rgba(15,40,75,0.1)_56%,transparent_70%)]"
       />
-
-      <SectionScatter variant="hero" className="z-[5]" />
 
       <div className="hero-copy relative z-10 flex min-h-[min(58vh,520px)] flex-col justify-end px-0 pb-9 pt-8 sm:min-h-[min(64vh,580px)] sm:pb-12 md:min-h-[min(72vh,680px)] md:justify-center md:pb-16 md:pt-12">
         <div className="container-metma max-w-xl">

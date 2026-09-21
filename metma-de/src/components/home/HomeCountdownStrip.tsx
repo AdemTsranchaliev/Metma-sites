@@ -55,14 +55,19 @@ function formatDate(d: Date) {
 }
 
 function useCountdown(target: Date) {
-  const [now, setNow] = useState(() => Date.now());
+  // null until mount so SSR/static HTML matches the first client render
+  const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const total = Math.max(0, Math.floor((target.getTime() - now) / 1000));
+  const total =
+    now === null
+      ? 0
+      : Math.max(0, Math.floor((target.getTime() - now) / 1000));
   return {
     days: Math.floor(total / 86400),
     hours: Math.floor((total % 86400) / 3600),

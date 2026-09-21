@@ -34,14 +34,18 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white/95 backdrop-blur-sm">
       {/* Top bar */}
       <div className="container-metma flex h-14 items-center justify-between gap-4 sm:h-16 md:h-[4.25rem]">
-        <Link href="/" aria-label="METMA Startseite" className="shrink-0">
+        <Link
+          href="/"
+          aria-label="METMA Startseite"
+          className="relative block h-8 w-[6.75rem] shrink-0 sm:h-9 sm:w-[7.6rem]"
+        >
           <Image
-            src="/images/logo.jpg"
+            src="/images/logo-mark.png"
             alt="METMA"
-            width={150}
-            height={45}
+            fill
             priority
-            className="h-8 w-auto object-contain sm:h-9"
+            sizes="122px"
+            className="object-contain object-left"
           />
         </Link>
 

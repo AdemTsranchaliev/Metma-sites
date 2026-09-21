@@ -12,13 +12,17 @@ export function Footer() {
       <div className="container-metma py-10 md:py-12">
         <div className="grid gap-9 md:grid-cols-[1.1fr_0.9fr_0.9fr] md:gap-10">
           <div>
-            <Link href="/" aria-label="METMA Startseite" className="inline-block">
+            <Link
+              href="/"
+              aria-label="METMA Startseite"
+              className="relative inline-block h-8 w-[6.75rem] sm:h-9 sm:w-[7.6rem]"
+            >
               <Image
-                src="/images/logo.jpg"
+                src="/images/logo-mark.png"
                 alt="METMA"
-                width={150}
-                height={45}
-                className="h-8 w-auto object-contain sm:h-9"
+                fill
+                sizes="122px"
+                className="object-contain object-left"
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--metma-mute)]">

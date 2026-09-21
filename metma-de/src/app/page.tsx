@@ -10,10 +10,10 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
+      <HomeCountdownStrip />
       <HomeStory />
       <HomeProducts />
       <EggKnock />
-      <HomeCountdownStrip />
       <HomeJournal />
       <HomeContact />
     </>

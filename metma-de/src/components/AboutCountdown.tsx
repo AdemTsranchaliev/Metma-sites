@@ -95,9 +95,11 @@ export function AboutCountdown() {
     return { catholic, orthodox };
   }, []);
 
-  const [now, setNow] = useState(() => new Date());
+  // null until mount so SSR/static HTML matches the first client render
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
@@ -142,8 +144,14 @@ export function AboutCountdown() {
           <p className="mb-6 text-center text-lg font-semibold text-[var(--metma-yellow)] md:text-left">
             Zeit bis Ostern
           </p>
-          <CountdownBlock label="CATHOLIC" value={diffTo(targets.catholic, now)} />
-          <CountdownBlock label="ORTHODOX" value={diffTo(targets.orthodox, now)} />
+          <CountdownBlock
+            label="CATHOLIC"
+            value={diffTo(targets.catholic, now ?? targets.catholic)}
+          />
+          <CountdownBlock
+            label="ORTHODOX"
+            value={diffTo(targets.orthodox, now ?? targets.orthodox)}
+          />
         </Reveal>
       </div>
     </section>

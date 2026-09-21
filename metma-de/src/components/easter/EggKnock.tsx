@@ -5,9 +5,18 @@ export function EggKnock() {
   return (
     <section
       aria-label="Ostereier klopfen"
-      className="border-y border-[var(--metma-line)] bg-white py-12 md:py-14"
+      className="relative overflow-hidden border-y border-[var(--metma-peach)]/50 bg-[linear-gradient(160deg,var(--metma-mint)_0%,#fff6e8_48%,var(--metma-lilac)_100%)] py-12 md:py-14"
     >
-      <div className="container-metma flex flex-col items-center text-center">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-[var(--metma-butter)]/35 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-12 bottom-0 h-44 w-44 rounded-full bg-[var(--metma-rose)]/15 blur-3xl"
+      />
+
+      <div className="container-metma relative z-[1] flex flex-col items-center text-center">
         <p className="eyebrow text-[var(--metma-rose)]">Ostern-Tradition</p>
         <h2 className="mt-2 font-display text-[clamp(1.45rem,3vw,2rem)] font-bold tracking-tight text-[var(--metma-ink)]">
           Wer knackt zuerst?
@@ -19,7 +28,7 @@ export function EggKnock() {
         <div className="egg-knock relative mt-9 h-32 w-full max-w-[260px] sm:mt-10 sm:h-36 sm:max-w-[300px]">
           <div
             aria-hidden
-            className="egg-knock-ground absolute inset-x-10 bottom-2 h-2.5 rounded-[100%] bg-[var(--metma-ink)]/8"
+            className="egg-knock-ground absolute inset-x-10 bottom-2 h-2.5 rounded-[100%] bg-[var(--metma-ink)]/10"
           />
           <span aria-hidden className="egg-knock-spark" />
 
