@@ -16,7 +16,9 @@ import {
   QrCode,
   X,
 } from "lucide-react";
+import { useFirebase } from "@/lib/api";
 import { SITE_OPTIONS, siteLocalOrigin, type SiteCode } from "@/lib/sites";
+import { useAuth } from "@/lib/firebase/auth";
 
 const nav = [
   { href: "/", label: "Табло", icon: LayoutDashboard },
@@ -45,6 +47,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const site = (searchParams.get("site") as SiteCode) || "De";
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   function onSiteChange(next: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -132,6 +135,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </option>
             ))}
           </select>
+          {useFirebase && user ? (
+            <button
+              type="button"
+              onClick={() => void logout()}
+              className="mt-3 w-full rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              Изход ({user.email})
+            </button>
+          ) : null}
         </div>
       </aside>
 
@@ -215,6 +227,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   ))}
                 </select>
               </div>
+              {useFirebase && user ? (
+                <button
+                  type="button"
+                  onClick={() => void logout()}
+                  className="w-full rounded-lg border border-white/15 px-3 py-2.5 text-xs font-semibold text-white/70 transition hover:bg-white/10 hover:text-white"
+                >
+                  Изход
+                </button>
+              ) : null}
               <a
                 href={siteLocalOrigin(site)}
                 target="_blank"

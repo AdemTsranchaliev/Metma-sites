@@ -3,17 +3,6 @@ import Link from "next/link";
 import type { Product } from "@/data/home";
 import { Reveal } from "@/components/Reveal";
 
-const swatches = [
-  "var(--metma-blue-soft)",
-  "var(--metma-peach)",
-  "var(--metma-mint)",
-  "var(--metma-lilac)",
-  "#fff4d6",
-  "var(--metma-peach)",
-  "var(--metma-butter)",
-  "var(--metma-blue-soft)",
-] as const;
-
 type Props = {
   products: Product[];
   columns?: "3" | "4";
@@ -35,17 +24,18 @@ export function ProductGrid({
       {products.map((product, index) => {
         const card = (
           <Link href={`/produkte/${product.slug}`} className="group block">
-            <div
-              className="product-tile relative mb-3 aspect-square overflow-hidden"
-              style={{ background: swatches[index % swatches.length] }}
-            >
+            <div className="product-tile relative mb-3 aspect-square overflow-hidden bg-white">
               <Image
                 src={product.image}
                 alt={product.name}
                 fill
-                quality={70}
-                className="object-contain p-4 transition duration-500 group-hover:scale-[1.04] sm:p-5"
+                quality={80}
+                className="object-contain p-3 transition duration-500 group-hover:scale-[1.04] sm:p-4"
                 sizes="(max-width:768px) 45vw, 25vw"
+                unoptimized={
+                  product.image.startsWith("http") ||
+                  product.image.endsWith(".png")
+                }
               />
             </div>
             <p className="text-[0.65rem] tracking-wider text-[var(--metma-mute)] sm:text-xs">
@@ -63,11 +53,14 @@ export function ProductGrid({
         );
 
         if (!animated) {
-          return <div key={product.id}>{card}</div>;
+          return <div key={`${product.id}-${product.slug}`}>{card}</div>;
         }
 
         return (
-          <Reveal key={product.id} delayMs={(index % 4) * 50}>
+          <Reveal
+            key={`${product.id}-${product.slug}`}
+            delayMs={(index % 4) * 50}
+          >
             {card}
           </Reveal>
         );

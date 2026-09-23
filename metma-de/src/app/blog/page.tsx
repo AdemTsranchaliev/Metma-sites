@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/PageIntro";
-import { blogPosts, formatBlogDate } from "@/data/blog";
+import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Blog – METMA Ltd. – Eierfarbe",
@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     "Geschichten, Traditionen und Inspiration rund um Ostern und Eierfarben von METMA.",
 };
 
-export default function BlogPage() {
+export const revalidate = 60;
+
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
   const [featured, ...rest] = blogPosts;
 
   return (
@@ -37,6 +40,7 @@ export default function BlogPage() {
                   quality={80}
                   className="object-cover transition duration-500 group-hover:scale-[1.03]"
                   sizes="(max-width:1024px) 100vw, 580px"
+                  unoptimized={featured.image.startsWith("http")}
                 />
               </Link>
 
@@ -102,6 +106,7 @@ export default function BlogPage() {
                           quality={75}
                           className="object-cover transition duration-500 group-hover:scale-[1.04]"
                           sizes="(max-width:768px) 100vw, 400px"
+                          unoptimized={post.image.startsWith("http")}
                         />
                         <span className="absolute left-3 top-3 bg-white/95 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--metma-ink)]">
                           {String(index + 2).padStart(2, "0")}

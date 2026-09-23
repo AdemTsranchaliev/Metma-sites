@@ -5,30 +5,35 @@ import { notFound } from "next/navigation";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 import { ProductCatalog } from "@/components/ProductCatalog";
 import { ProductGrid } from "@/components/ProductGrid";
-import { productCategories, products } from "@/data/home";
+import {
+  getCategories,
+  getProductBySlug,
+  getProducts,
+} from "@/lib/catalog";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-const categoryLabels: Record<string, string> = {
-  farbstoffe: "Farbstoffe",
-  sets: "Sets",
-  dekorationen: "Dekorationen",
-};
+export const revalidate = 60;
 
 export async function generateStaticParams() {
+  const [cats, products] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
   return [
-    ...productCategories.map((c) => ({ slug: c.slug })),
+    ...cats.map((c) => ({ slug: c.slug })),
     ...products.map((p) => ({ slug: p.slug })),
   ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cat = productCategories.find((c) => c.slug === slug);
+  const cats = await getCategories();
+  const cat = cats.find((c) => c.slug === slug);
   if (cat) return { title: `${cat.label} – METMA Ltd. – Eierfarbe` };
-  const product = products.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (product) {
     return {
       title: `${product.name} – METMA Ltd. – Eierfarbe`,
@@ -40,7 +45,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProdukteSlugPage({ params }: Props) {
   const { slug } = await params;
-  const cat = productCategories.find((c) => c.slug === slug);
+  const [cats, products] = await Promise.all([
+    getCategories(),
+    getProducts(),
+  ]);
+  const cat = cats.find((c) => c.slug === slug);
 
   if (cat) {
     const filtered = products.filter((p) => p.category === cat.slug);
@@ -76,7 +85,7 @@ export default async function ProdukteSlugPage({ params }: Props) {
     .slice(0, 4);
 
   const categoryLabel =
-    categoryLabels[product.category] ?? product.category;
+    cats.find((c) => c.slug === product.category)?.label ?? product.category;
 
   const specs = [
     ...product.specs,
@@ -110,15 +119,19 @@ export default async function ProdukteSlugPage({ params }: Props) {
           </nav>
 
           <div className="mt-8 grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-            <div className="relative aspect-square overflow-hidden bg-[linear-gradient(145deg,var(--metma-blue-soft),var(--metma-peach),var(--metma-butter))]">
+            <div className="relative aspect-square overflow-hidden bg-white">
               <Image
                 src={product.image}
                 alt={product.name}
                 fill
                 priority
                 quality={85}
-                className="object-contain p-10 md:p-14"
+                className="object-contain p-5 transition duration-500 md:p-8"
                 sizes="(max-width:1024px) 90vw, 520px"
+                unoptimized={
+                  product.image.startsWith("http") ||
+                  product.image.endsWith(".png")
+                }
               />
             </div>
 

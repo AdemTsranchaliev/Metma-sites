@@ -3,21 +3,15 @@ import Link from "next/link";
 import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { SectionScatter } from "@/components/easter/EasterScatter";
-import { productCategories, products } from "@/data/home";
+import { getCategories, getProducts } from "@/lib/catalog";
 
-const featured = products.slice(0, 8);
-const swatches = [
-  "var(--metma-blue-soft)",
-  "var(--metma-peach)",
-  "var(--metma-mint)",
-  "var(--metma-lilac)",
-  "var(--metma-butter-soft)",
-  "var(--metma-peach)",
-  "var(--metma-butter)",
-  "var(--metma-blue-soft)",
-] as const;
+export async function HomeProducts() {
+  const [featured, productCategories] = await Promise.all([
+    getProducts({ featuredOnly: true }),
+    getCategories(),
+  ]);
+  const items = featured.slice(0, 8);
 
-export function HomeProducts() {
   return (
     <section className="relative overflow-hidden bg-white py-14 sm:py-20 md:py-24">
       <SectionScatter variant="products" />
@@ -42,27 +36,27 @@ export function HomeProducts() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-x-4 sm:gap-y-8 md:gap-x-6 md:gap-y-10 lg:grid-cols-4">
-          {featured.map((product, index) => (
-            <Reveal key={product.id} delayMs={(index % 4) * 50}>
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4 md:gap-6">
+          {items.map((product, index) => (
+            <Reveal key={product.slug} delayMs={(index % 4) * 45}>
               <Link href={`/produkte/${product.slug}`} className="group block">
-                <div
-                  className="product-tile relative mb-2.5 aspect-square overflow-hidden sm:mb-3"
-                  style={{ background: swatches[index % swatches.length] }}
-                >
+                <div className="relative mb-3 aspect-square overflow-hidden bg-white">
                   <Image
                     src={product.image}
                     alt={product.name}
                     fill
-                    quality={70}
-                    className="object-contain p-3 transition duration-500 group-hover:scale-[1.04] sm:p-5"
-                    sizes="(max-width:768px) 45vw, 25vw"
+                    className="object-contain p-3 transition duration-500 group-hover:scale-105 sm:p-4"
+                    sizes="(max-width:640px) 45vw, 22vw"
+                    unoptimized={
+                      product.image.startsWith("http") ||
+                      product.image.endsWith(".png")
+                    }
                   />
                 </div>
-                <p className="text-[0.6rem] tracking-wider text-[var(--metma-mute)] sm:text-xs">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--metma-mute)]">
                   {product.id}
                 </p>
-                <h3 className="mt-0.5 line-clamp-2 text-[0.78rem] font-semibold leading-snug text-[var(--metma-ink)] transition group-hover:text-[var(--metma-rose)] sm:mt-1 sm:text-sm">
+                <h3 className="mt-1 font-display text-sm font-bold leading-snug text-[var(--metma-ink)] sm:text-base">
                   {product.name}
                 </h3>
               </Link>
@@ -70,9 +64,9 @@ export function HomeProducts() {
           ))}
         </div>
 
-        <Reveal className="mt-10 text-center sm:mt-12 md:mt-14">
+        <Reveal className="mt-10 flex justify-center sm:mt-12">
           <MagneticCta>
-            <Link href="/produkte" className="btn-metma w-full sm:w-auto">
+            <Link href="/produkte" className="btn-metma">
               Alle Produkte
             </Link>
           </MagneticCta>

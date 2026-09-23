@@ -1,8 +1,8 @@
 /** Hardcoded nav for design — replace with CMS later */
 export const menuNav = [
-  { label: "Home", href: "/" },
+  { label: "Startseite", href: "/" },
   { label: "Produkte", href: "/produkte", children: true },
-  { label: "Blog", href: "/blog" },
+  { label: "Journal", href: "/blog" },
   { label: "Über uns", href: "/uber-uns" },
   { label: "Kontakt", href: "/kontakt" },
 ] as const;

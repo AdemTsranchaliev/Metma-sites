@@ -3,19 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionScatter } from "@/components/easter/EasterScatter";
-import { blogPosts, formatBlogDate, getBlogPost } from "@/data/blog";
+import {
+  formatBlogDate,
+  getBlogPostBySlug,
+  getBlogPosts,
+} from "@/lib/catalog";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPostBySlug(slug);
   if (!post) return { title: "Blog – METMA Ltd. – Eierfarbe" };
   return {
     title: `${post.title} – METMA Ltd. – Eierfarbe`,
@@ -25,17 +32,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const blogPosts = await getBlogPosts();
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) notFound();
 
   const index = blogPosts.findIndex((p) => p.slug === post.slug);
   const prev = index > 0 ? blogPosts[index - 1] : null;
-  const next = index >= 0 && index < blogPosts.length - 1 ? blogPosts[index + 1] : null;
+  const next =
+    index >= 0 && index < blogPosts.length - 1 ? blogPosts[index + 1] : null;
   const related = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 2);
 
   return (
     <article>
-      {/* Header */}
       <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)]">
         <SectionScatter variant="story" />
         <div className="container-metma relative z-[1] max-w-3xl py-10 md:py-12">
@@ -43,7 +51,10 @@ export default async function BlogPostPage({ params }: Props) {
             aria-label="Brotkrumen"
             className="flex flex-wrap items-center gap-2 text-sm text-[var(--metma-mute)]"
           >
-            <Link href="/blog" className="transition hover:text-[var(--metma-rose)]">
+            <Link
+              href="/blog"
+              className="transition hover:text-[var(--metma-rose)]"
+            >
               Blog
             </Link>
             <span aria-hidden>/</span>
@@ -66,7 +77,6 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Hero image */}
       <section className="bg-white">
         <div className="container-metma -mt-0 max-w-4xl py-0 pt-8 md:pt-10">
           <div className="relative aspect-[16/10] overflow-hidden bg-[var(--metma-sand)] md:aspect-[2/1]">
@@ -78,12 +88,12 @@ export default async function BlogPostPage({ params }: Props) {
               quality={85}
               className="object-cover"
               sizes="(max-width:768px) 100vw, 920px"
+              unoptimized={post.image.startsWith("http")}
             />
           </div>
         </div>
       </section>
 
-      {/* Body */}
       <section className="bg-white py-10 md:py-14">
         <div className="container-metma max-w-2xl">
           <div className="space-y-6">
@@ -101,7 +111,6 @@ export default async function BlogPostPage({ params }: Props) {
             ))}
           </div>
 
-          {/* Prev / next */}
           {(prev || next) && (
             <nav
               aria-label="Weitere Artikel"
@@ -152,7 +161,6 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Related */}
       {related.length > 0 ? (
         <section className="relative overflow-hidden border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-14">
           <SectionScatter variant="story" />
@@ -191,6 +199,7 @@ export default async function BlogPostPage({ params }: Props) {
                       quality={70}
                       className="object-cover transition duration-500 group-hover:scale-[1.04]"
                       sizes="(max-width:640px) 110px, 400px"
+                      unoptimized={item.image.startsWith("http")}
                     />
                   </div>
                   <div className="flex flex-col justify-center sm:pt-4">
@@ -211,7 +220,6 @@ export default async function BlogPostPage({ params }: Props) {
         </section>
       ) : null}
 
-      {/* Shop CTA */}
       <section className="relative overflow-hidden bg-[var(--metma-peach)] py-10 md:py-11">
         {related.length === 0 ? <SectionScatter variant="contact" /> : null}
         <div className="container-metma relative z-[1] flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">

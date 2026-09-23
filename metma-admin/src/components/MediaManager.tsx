@@ -76,6 +76,9 @@ export function MediaManager({ site }: { site: SiteCode }) {
 
       <div className="mb-6 flex flex-col gap-3 rounded-[var(--admin-radius)] border border-[var(--admin-line)] bg-[var(--admin-paper)] p-4 sm:flex-row sm:items-end">
         <div className="flex-1">
+          <p className="mb-2 text-xs text-[var(--admin-mute)]">
+            Общо място за файлове: Cloudinary (виж MEDIA.md). Без Blaze.
+          </p>
           <Field label="Alt текст (по избор)">
             <input
               className={inputClass}

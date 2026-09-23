@@ -1,4 +1,4 @@
-export type ProductCategorySlug = "farbstoffe" | "sets" | "dekorationen";
+export type ProductCategorySlug = string;
 
 export type Product = {
   id: string;
@@ -13,6 +13,7 @@ export type Product = {
     label: string;
     value: string;
   }[];
+  isFeatured?: boolean;
 };
 
 export const products: Product[] = [
@@ -283,10 +284,10 @@ export const products: Product[] = [
 ];
 
 export const navItems = [
-  { label: "Home", href: "/" },
+  { label: "Startseite", href: "/" },
   { label: "Produkte", href: "/produkte", highlight: true },
-  { label: "Blog", href: "/blog" },
-  { label: "Über Uns", href: "/uber-uns" },
+  { label: "Journal", href: "/blog" },
+  { label: "Über uns", href: "/uber-uns" },
   { label: "Kontakt", href: "/kontakt" },
 ] as const;
 

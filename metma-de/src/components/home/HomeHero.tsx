@@ -40,9 +40,12 @@ export function HomeHero() {
             />
           </h1>
 
-          <p className="mt-2.5 max-w-md text-[0.9rem] leading-snug text-[var(--metma-mute)] sm:mt-4 sm:text-base sm:leading-relaxed md:text-lg">
-            Neue Art, Ostern zu färben — Sets und Displays aus eigener
-            Produktion.
+          <p className="mt-3 max-w-md font-display text-[1.15rem] font-bold leading-snug tracking-[-0.02em] text-[var(--metma-ink)] sm:mt-5 sm:text-[1.35rem] md:text-[1.5rem]">
+            Mit unserer Farbe geschehen Wunder!
+          </p>
+
+          <p className="mt-2 max-w-md text-[0.9rem] leading-snug text-[var(--metma-mute)] sm:text-base sm:leading-relaxed">
+            Sets und Displays aus eigener Produktion — seit 1999.
           </p>
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:mt-8 sm:flex sm:flex-row sm:flex-wrap sm:gap-3">

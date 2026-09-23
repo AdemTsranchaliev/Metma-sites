@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { AdminShell } from "@/components/AdminShell";
+import { AuthGate } from "@/components/AuthGate";
+import { AuthProvider } from "@/lib/firebase/auth";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -34,7 +36,11 @@ export default function RootLayout({
             <div className="p-8 text-sm text-[var(--admin-mute)]">Зареждане…</div>
           }
         >
-          <AdminShell>{children}</AdminShell>
+          <AuthProvider>
+            <AuthGate>
+              <AdminShell>{children}</AdminShell>
+            </AuthGate>
+          </AuthProvider>
         </Suspense>
       </body>
     </html>

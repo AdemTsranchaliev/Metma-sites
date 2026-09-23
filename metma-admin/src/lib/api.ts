@@ -1,12 +1,4 @@
-import {
-  MOCK_SITES,
-  mockBlogPosts,
-  mockCategories,
-  mockMedia,
-  mockPages,
-  mockProducts,
-  mockQrLinks,
-} from "./mock-data";
+import { MOCK_SITES } from "./mock-data";
 import {
   mockDeleteBlog,
   mockDeleteCategory,
@@ -29,6 +21,30 @@ import {
   mockSaveProduct,
   mockSaveQrLink,
 } from "./mock-store";
+import { isFirebaseConfigured } from "./firebase/client";
+import {
+  fbDeleteBlog,
+  fbDeleteCategory,
+  fbDeleteMedia,
+  fbDeletePage,
+  fbDeleteProduct,
+  fbDeleteQrLink,
+  fbGetBlog,
+  fbGetCategories,
+  fbGetMedia,
+  fbGetPageBySlug,
+  fbGetPages,
+  fbGetProducts,
+  fbGetQrLinkByCode,
+  fbGetQrLinks,
+  fbSaveBlog,
+  fbSaveCategory,
+  fbSaveMedia,
+  fbSavePage,
+  fbSaveProduct,
+  fbSaveQrLink,
+  siteIdFor,
+} from "./firebase/store";
 import type {
   BlogPost,
   MediaAsset,
@@ -59,9 +75,17 @@ export { DEFAULT_PRODUCT_CATEGORIES, PRODUCT_CATEGORIES } from "./types";
 export const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5080";
 
-/** When true (default via .env.local), use local demo store + /api/upload */
+/**
+ * Data mode:
+ * - firebase: NEXT_PUBLIC_USE_FIREBASE=true (+ configured keys)
+ * - mock: default localStorage demo
+ * - api: legacy ASP.NET (USE_MOCK=false, USE_FIREBASE≠true)
+ */
+export const useFirebase =
+  process.env.NEXT_PUBLIC_USE_FIREBASE === "true" && isFirebaseConfigured;
+
 export const useMockData =
-  process.env.NEXT_PUBLIC_USE_MOCK_DATA !== "false";
+  !useFirebase && process.env.NEXT_PUBLIC_USE_MOCK_DATA !== "false";
 
 function normalizeSiteCode(code: Site["code"]): SiteCode | null {
   if (code === "Bg" || code === 1 || code === "1") return "Bg";
@@ -101,7 +125,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function getSites() {
-  if (useMockData) return MOCK_SITES;
+  if (useFirebase || useMockData) return MOCK_SITES;
 
   const sites = await apiFetch<Site[]>("/api/sites");
   return sites.map((s) => ({
@@ -111,6 +135,7 @@ export async function getSites() {
 }
 
 export async function resolveSiteId(siteCode: SiteCode) {
+  if (useFirebase) return siteIdFor(siteCode);
   const sites = await getSites();
   const match = sites.find((s) => s.code === siteCode);
   if (!match) throw new Error(`Site not found: ${siteCode}`);
@@ -118,10 +143,12 @@ export async function resolveSiteId(siteCode: SiteCode) {
 }
 
 export async function getProducts(siteCode: SiteCode, featuredOnly = false) {
+  if (useFirebase) return fbGetProducts(siteCode, featuredOnly);
+
   if (useMockData) {
     const list =
       typeof window === "undefined"
-        ? mockProducts(siteCode)
+        ? (await import("./mock-data")).mockProducts(siteCode)
         : mockGetProducts(siteCode);
     return featuredOnly ? list.filter((p) => p.isFeatured) : list;
   }
@@ -134,9 +161,10 @@ export async function getProducts(siteCode: SiteCode, featuredOnly = false) {
 }
 
 export async function getPages(siteCode: SiteCode) {
+  if (useFirebase) return fbGetPages(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
-      ? mockPages(siteCode)
+      ? (await import("./mock-data")).mockPages(siteCode)
       : mockGetPages(siteCode);
   }
   const siteId = await resolveSiteId(siteCode);
@@ -144,9 +172,11 @@ export async function getPages(siteCode: SiteCode) {
 }
 
 export async function getPageBySlug(siteCode: SiteCode, slug: string) {
+  if (useFirebase) return fbGetPageBySlug(siteCode, slug);
   if (useMockData) {
     if (typeof window === "undefined") {
-      return mockPages(siteCode).find((p) => p.slug === slug && p.isPublished) ?? null;
+      const pages = (await import("./mock-data")).mockPages(siteCode);
+      return pages.find((p) => p.slug === slug && p.isPublished) ?? null;
     }
     return mockGetPageBySlug(siteCode, slug);
   }
@@ -160,10 +190,11 @@ export async function getPageBySlug(siteCode: SiteCode, slug: string) {
 }
 
 export async function getBlogPosts(siteCode: SiteCode, publishedOnly = false) {
+  if (useFirebase) return fbGetBlog(siteCode, publishedOnly);
   if (useMockData) {
     const list =
       typeof window === "undefined"
-        ? mockBlogPosts(siteCode)
+        ? (await import("./mock-data")).mockBlogPosts(siteCode)
         : mockGetBlog(siteCode);
     return publishedOnly ? list.filter((p) => p.isPublished) : list;
   }
@@ -177,9 +208,10 @@ export async function getBlogPosts(siteCode: SiteCode, publishedOnly = false) {
 }
 
 export async function getMedia(siteCode: SiteCode) {
+  if (useFirebase) return fbGetMedia(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
-      ? mockMedia(siteCode)
+      ? (await import("./mock-data")).mockMedia(siteCode)
       : mockGetMedia(siteCode);
   }
   const siteId = await resolveSiteId(siteCode);
@@ -187,12 +219,12 @@ export async function getMedia(siteCode: SiteCode) {
 }
 
 export async function getCategories(siteCode: SiteCode) {
+  if (useFirebase) return fbGetCategories(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
-      ? mockCategories(siteCode)
+      ? (await import("./mock-data")).mockCategories(siteCode)
       : mockGetCategories(siteCode);
   }
-  // Live API: categories endpoint not wired yet — fall back to defaults
   const siteId = await resolveSiteId(siteCode);
   return DEFAULT_PRODUCT_CATEGORIES.map((c, i) => ({
     id: `default-${c.slug}`,
@@ -215,6 +247,8 @@ export async function saveCategory(
   input: CategoryInput,
   id?: string,
 ) {
+  if (useFirebase) return fbSaveCategory(siteCode, input, id);
+
   const siteId = await resolveSiteId(siteCode);
   if (useMockData) {
     const category: ProductCategory = {
@@ -228,14 +262,16 @@ export async function saveCategory(
 }
 
 export async function deleteCategory(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeleteCategory(id);
+    return;
+  }
   if (useMockData) {
     mockDeleteCategory(siteCode, id);
     return;
   }
   throw new Error("Категориите през API още не са налични.");
 }
-
-/* ─── Mutations ─── */
 
 export type ProductInput = {
   sku: string;
@@ -244,7 +280,6 @@ export type ProductInput = {
   category?: ProductCategorySlug | null;
   shortDescription?: string | null;
   description?: string | null;
-  /** Always null — Metma sites do not sell by price online */
   price?: number | null;
   currency: string;
   imageUrl?: string | null;
@@ -260,14 +295,25 @@ export async function saveProduct(
   input: ProductInput,
   id?: string,
 ) {
-  const siteId = await resolveSiteId(siteCode);
   const imageUrls = input.imageUrls?.length
     ? input.imageUrls
     : input.imageUrl
       ? [input.imageUrl]
       : [];
   const imageUrl = imageUrls[0] ?? null;
-  const normalized = { ...input, imageUrls, imageUrl, videoUrl: input.videoUrl ?? null };
+  const normalized = {
+    ...input,
+    imageUrls,
+    imageUrl,
+    videoUrl: input.videoUrl ?? null,
+    price: null as number | null,
+  };
+
+  if (useFirebase) {
+    return fbSaveProduct(siteCode, normalized, id);
+  }
+
+  const siteId = await resolveSiteId(siteCode);
 
   if (useMockData) {
     const product: Product = {
@@ -318,6 +364,10 @@ export async function saveProduct(
 }
 
 export async function deleteProduct(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeleteProduct(id);
+    return;
+  }
   if (useMockData) {
     mockDeleteProduct(siteCode, id);
     return;
@@ -341,6 +391,8 @@ export async function savePage(
   input: PageInput,
   id?: string,
 ) {
+  if (useFirebase) return fbSavePage(siteCode, input, id);
+
   const siteId = await resolveSiteId(siteCode);
 
   if (useMockData) {
@@ -362,6 +414,10 @@ export async function savePage(
 }
 
 export async function deletePage(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeletePage(id);
+    return;
+  }
   if (useMockData) {
     mockDeletePage(siteCode, id);
     return;
@@ -378,22 +434,25 @@ export type QrLinkInput = {
 };
 
 export async function getQrLinks(siteCode: SiteCode) {
+  if (useFirebase) return fbGetQrLinks(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
-      ? mockQrLinks(siteCode)
+      ? (await import("./mock-data")).mockQrLinks(siteCode)
       : mockGetQrLinks(siteCode);
   }
-  throw new Error("QR API все още не е налично — включете mock режима.");
+  throw new Error("QR API все още не е налично — включете Firebase или mock.");
 }
 
 export async function getQrLinkByCode(siteCode: SiteCode, code: string) {
+  if (useFirebase) return fbGetQrLinkByCode(siteCode, code);
   if (useMockData) {
     if (typeof window === "undefined") {
-      return mockQrLinks(siteCode).find((q) => q.code === code) ?? null;
+      const list = (await import("./mock-data")).mockQrLinks(siteCode);
+      return list.find((q) => q.code === code) ?? null;
     }
     return mockGetQrLinkByCode(siteCode, code);
   }
-  throw new Error("QR API все още не е налично — включете mock режима.");
+  throw new Error("QR API все още не е налично — включете Firebase или mock.");
 }
 
 export async function saveQrLink(
@@ -401,6 +460,20 @@ export async function saveQrLink(
   input: QrLinkInput,
   id?: string,
 ) {
+  if (useFirebase) {
+    const existing = id
+      ? (await fbGetQrLinks(siteCode)).find((q) => q.id === id)
+      : null;
+    return fbSaveQrLink(
+      siteCode,
+      {
+        ...input,
+        createdAtUtc: existing?.createdAtUtc,
+      },
+      id,
+    );
+  }
+
   const siteId = await resolveSiteId(siteCode);
   if (useMockData) {
     const existing = id
@@ -418,15 +491,19 @@ export async function saveQrLink(
     };
     return mockSaveQrLink(siteCode, link);
   }
-  throw new Error("QR API все още не е налично — включете mock режима.");
+  throw new Error("QR API все още не е налично — включете Firebase или mock.");
 }
 
 export async function deleteQrLink(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeleteQrLink(id);
+    return;
+  }
   if (useMockData) {
     mockDeleteQrLink(siteCode, id);
     return;
   }
-  throw new Error("QR API все още не е налично — включете mock режима.");
+  throw new Error("QR API все още не е налично — включете Firebase или mock.");
 }
 
 export type BlogInput = {
@@ -443,6 +520,17 @@ export async function saveBlogPost(
   input: BlogInput,
   id?: string,
 ) {
+  if (useFirebase) {
+    return fbSaveBlog(
+      siteCode,
+      {
+        ...input,
+        publishedAtUtc: input.isPublished ? new Date().toISOString() : null,
+      },
+      id,
+    );
+  }
+
   const siteId = await resolveSiteId(siteCode);
 
   if (useMockData) {
@@ -450,9 +538,7 @@ export async function saveBlogPost(
       id: id ?? newId(),
       siteId,
       ...input,
-      publishedAtUtc: input.isPublished
-        ? new Date().toISOString()
-        : null,
+      publishedAtUtc: input.isPublished ? new Date().toISOString() : null,
     };
     return mockSaveBlog(siteCode, post);
   }
@@ -471,11 +557,17 @@ export async function saveBlogPost(
 }
 
 export async function deleteBlogPost(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeleteBlog(id);
+    return;
+  }
   if (useMockData) {
     mockDeleteBlog(siteCode, id);
     return;
   }
-  throw new Error("Изтриването на блог публикации все още не се поддържа от API.");
+  throw new Error(
+    "Изтриването на блог публикации все още не се поддържа от API.",
+  );
 }
 
 export type UploadResult = {
@@ -485,6 +577,7 @@ export type UploadResult = {
   publicUrl: string;
   altText?: string | null;
   r2Key: string;
+  storagePath?: string;
 };
 
 export async function uploadFile(
@@ -492,6 +585,7 @@ export async function uploadFile(
   file: File,
   altText?: string,
 ): Promise<UploadResult> {
+  // Local site hosting (no Firebase Storage / Blaze)
   const form = new FormData();
   form.append("file", file);
   form.append("site", siteCode);
@@ -516,6 +610,17 @@ export async function registerMedia(
   siteCode: SiteCode,
   upload: UploadResult,
 ): Promise<MediaAsset> {
+  if (useFirebase) {
+    return fbSaveMedia(siteCode, {
+      fileName: upload.fileName,
+      contentType: upload.contentType,
+      sizeBytes: upload.sizeBytes,
+      publicUrl: upload.publicUrl,
+      altText: upload.altText ?? null,
+      storagePath: upload.storagePath ?? upload.r2Key,
+    });
+  }
+
   const siteId = await resolveSiteId(siteCode);
 
   if (useMockData) {
@@ -555,6 +660,10 @@ export async function uploadAndRegister(
 }
 
 export async function deleteMedia(siteCode: SiteCode, id: string) {
+  if (useFirebase) {
+    await fbDeleteMedia(id);
+    return;
+  }
   if (useMockData) {
     mockDeleteMedia(siteCode, id);
     return;

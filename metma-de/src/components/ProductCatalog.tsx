@@ -93,18 +93,24 @@ export function ProductCatalog({
       ) : (
         <div className="px-6 py-16 text-center">
           <p className="font-display text-xl font-bold text-[var(--metma-ink)]">
-            Keine Produkte gefunden
+            {products.length === 0
+              ? "Noch keine Produkte"
+              : "Keine Produkte gefunden"}
           </p>
           <p className="mt-2 text-sm text-[var(--metma-mute)]">
-            Versuche einen anderen Suchbegriff.
+            {products.length === 0
+              ? "Produkte aus dem Admin (Site: DE) erscheinen hier automatisch."
+              : "Versuche einen anderen Suchbegriff."}
           </p>
-          <button
-            type="button"
-            onClick={() => setQuery("")}
-            className="mt-6 text-sm font-semibold text-[var(--metma-rose)] underline-offset-4 hover:underline"
-          >
-            Suche leeren
-          </button>
+          {hasQuery ? (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="mt-6 text-sm font-semibold text-[var(--metma-rose)] underline-offset-4 hover:underline"
+            >
+              Suche leeren
+            </button>
+          ) : null}
         </div>
       )}
     </div>

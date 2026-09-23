@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { PageIntro } from "@/components/PageIntro";
 import { ProductCatalog } from "@/components/ProductCatalog";
-import { products } from "@/data/home";
+import { getProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Produkte – METMA Ltd. – Eierfarbe",
 };
 
-export default function ProduktePage() {
+export const revalidate = 60;
+
+export default async function ProduktePage() {
+  const products = await getProducts();
+
   return (
     <>
       <PageIntro

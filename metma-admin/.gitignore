@@ -2,6 +2,8 @@ node_modules
 .next
 out
 .env*.local
+SECRETS.local.md
+*.local.md
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts

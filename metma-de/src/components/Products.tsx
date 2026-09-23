@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { ProductGrid } from "@/components/ProductGrid";
 import { Reveal } from "@/components/Reveal";
-import { products } from "@/data/home";
+import { getProducts } from "@/lib/catalog";
 
-export function Products() {
+export async function Products() {
+  const products = await getProducts({ featuredOnly: true });
+
   return (
     <section className="relative bg-[var(--metma-bg-soft)] pb-20 pt-4">
       <svg

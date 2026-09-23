@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
-import { blogPosts } from "@/data/blog";
+import { getBlogPosts } from "@/lib/catalog";
 
-const post = blogPosts[0];
-
-export function HomeJournal() {
+export async function HomeJournal() {
+  const posts = await getBlogPosts();
+  const post = posts[0];
   if (!post) return null;
 
   return (
@@ -21,6 +21,7 @@ export function HomeJournal() {
               quality={72}
               className="object-cover"
               sizes="(max-width:1024px) 100vw, 560px"
+              unoptimized={post.image.startsWith("http")}
             />
           </div>
         </Reveal>
