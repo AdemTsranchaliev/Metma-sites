@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/site";
 import { HomeStory } from "@/components/home/HomeStory";
 import { HomeBrands } from "@/components/home/HomeBrands";
 import { HomeProducts } from "@/components/home/HomeProducts";
-import { EggKnock } from "@/components/easter/EggKnock";
+import { EggPainter } from "@/components/easter/EggPainter";
 import { HomeCountdownStrip } from "@/components/home/HomeCountdownStrip";
 import { HomeJournal } from "@/components/home/HomeJournal";
 import { HomeContact } from "@/components/home/HomeContact";
@@ -23,7 +23,7 @@ export default function HomePage() {
       <HomeCountdownStrip />
       <HomeStory />
       <HomeProducts />
-      <EggKnock />
+      <EggPainter />
       <HomeJournal />
       <HomeContact />
     </>

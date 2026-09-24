@@ -172,10 +172,10 @@ const brands: Brand[] = [
 ];
 
 const fans = [
-  "left-0 top-[4%] z-[1] w-[42%] -rotate-6",
-  "right-0 top-0 z-[2] w-[42%] rotate-6",
-  "left-[24%] top-[24%] z-[3] w-[44%]",
-  "left-[16%] bottom-[2%] z-[4] w-[40%] rotate-2",
+  "md:absolute md:left-0 md:top-[4%] md:z-[1] md:w-[42%] md:-rotate-6",
+  "md:absolute md:right-0 md:top-0 md:z-[2] md:w-[42%] md:rotate-6",
+  "md:absolute md:left-[24%] md:top-[24%] md:z-[3] md:w-[44%]",
+  "md:absolute md:left-[16%] md:bottom-[2%] md:z-[4] md:w-[40%] md:rotate-2",
 ];
 
 const orderedBrands = [
@@ -204,7 +204,7 @@ export function HomeBrands() {
       />
 
       <div className="container-metma relative z-[1]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow" style={{ color: active.ink }}>
               METMA е основната
@@ -213,7 +213,7 @@ export function HomeBrands() {
               Нашите марки
             </h2>
           </div>
-          <div className="flex items-end gap-3">
+          <div className="flex w-full items-end justify-between gap-1 sm:w-auto sm:justify-end sm:gap-3">
             {orderedBrands.map((brand) => {
               const selected = brand.id === active.id;
               const main = brand.id === "metma";
@@ -225,7 +225,7 @@ export function HomeBrands() {
                     aria-label={main ? "METMA, основната марка" : brand.name}
                     onClick={() => setActiveId(brand.id)}
                     className={`relative overflow-hidden rounded-full bg-white shadow-sm transition duration-300 ${
-                      main ? "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]" : "h-14 w-14 sm:h-16 sm:w-16"
+                      main ? "h-14 w-14 sm:h-[4.5rem] sm:w-[4.5rem]" : "h-12 w-12 sm:h-16 sm:w-16"
                     }`}
                     style={{
                       outline: selected ? `3px solid ${brand.ink}` : "3px solid transparent",
@@ -242,7 +242,7 @@ export function HomeBrands() {
                     />
                   </button>
                   <span
-                    className="text-[0.62rem] font-bold uppercase tracking-[0.12em]"
+                    className="max-w-[4.5rem] text-center text-[0.58rem] font-bold uppercase leading-tight tracking-[0.06em] sm:max-w-none sm:text-[0.62rem] sm:tracking-[0.12em]"
                     style={{ color: main || selected ? brand.ink : "rgba(23,23,23,0.45)" }}
                   >
                     {main ? "Основна" : brand.name}
@@ -281,7 +281,7 @@ export function HomeBrands() {
             </Link>
           </div>
 
-          <div className="relative mx-auto h-[28rem] w-full max-w-2xl sm:h-[32rem]">
+          <div className="grid grid-cols-2 gap-3 md:relative md:mx-auto md:block md:h-[32rem] md:max-w-2xl">
             {active.products.map((product, index) => {
               const frame = (
                 <span className="relative block h-full w-full bg-white shadow-[0_18px_40px_-24px_rgba(23,23,23,0.45)]">
@@ -293,12 +293,12 @@ export function HomeBrands() {
                     sizes="280px"
                     unoptimized={product.image.endsWith(".png")}
                   />
-                  <span className="absolute bottom-2 left-2 bg-white/90 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--metma-ink)]">
+                  <span className="absolute bottom-2 left-2 right-2 line-clamp-2 bg-white/90 px-2 py-1 text-[0.65rem] font-bold uppercase leading-tight tracking-wide text-[var(--metma-ink)]">
                     {product.name}
                   </span>
                 </span>
               );
-              const className = `brand-pop absolute aspect-square ${fans[index] ?? fans[0]}`;
+              const className = `brand-pop relative aspect-square ${fans[index] ?? fans[0]}`;
               const style = { animationDelay: `${index * 80}ms` };
               return product.href ? (
                 <Link key={product.code} href={product.href} className={className} style={style}>

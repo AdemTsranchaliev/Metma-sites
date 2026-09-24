@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "build:gh-pages": "GITHUB_PAGES=true next build && node scripts/fix-image-basepath.mjs",
     "start": "next start",
     "lint": "eslint"
   },

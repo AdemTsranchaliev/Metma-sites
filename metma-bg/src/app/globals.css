@@ -82,7 +82,7 @@ img {
 }
 
 .container-metma {
-  width: min(1120px, calc(100% - 1.5rem));
+  width: min(1120px, calc(100% - 2rem));
   margin-inline: auto;
 }
 
@@ -575,6 +575,311 @@ img {
   }
 }
 
+.egg-duel-cta {
+  min-height: 3.4rem;
+  background: var(--metma-rose);
+  color: #fff;
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 6px 0 #9d3118;
+}
+
+.egg-duel-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #9d3118;
+}
+
+.egg-duel-cta:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #9d3118;
+}
+
+.egg-win-title {
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--metma-rose);
+  animation: egg-win-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.egg-win-burst {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  z-index: 5;
+  width: 0;
+  height: 0;
+}
+
+.egg-win-burst i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: egg-confetti 0.9s ease-out both;
+}
+
+.egg-win-burst i:nth-child(1) { background: #e10600; --dx: -46px; --dy: -58px; }
+.egg-win-burst i:nth-child(2) { background: #ffe100; --dx: 52px; --dy: -48px; animation-delay: 0.04s; }
+.egg-win-burst i:nth-child(3) { background: #22a84a; --dx: -28px; --dy: -72px; animation-delay: 0.08s; }
+.egg-win-burst i:nth-child(4) { background: #0072ef; --dx: 34px; --dy: -70px; }
+.egg-win-burst i:nth-child(5) { background: #ff4d88; --dx: -64px; --dy: -24px; animation-delay: 0.06s; }
+.egg-win-burst i:nth-child(6) { background: #ff7a00; --dx: 68px; --dy: -18px; }
+.egg-win-burst i:nth-child(7) { background: #7a2fbe; --dx: -10px; --dy: -80px; animation-delay: 0.1s; }
+.egg-win-burst i:nth-child(8) { background: #e8c45a; --dx: 12px; --dy: -64px; border-radius: 50%; }
+
+.egg-break-cap {
+  position: absolute;
+  top: 6%;
+  left: 38%;
+  z-index: 4;
+  width: 16px;
+  height: 12px;
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(#fffaf3, #e7d3b4);
+  box-shadow: 0 1px 0 #c4a882;
+  opacity: 0;
+}
+
+.is-knocking .egg-break-cap,
+.egg-tap-cracked .egg-break-cap {
+  animation: egg-cap-fly 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) 0.5s both;
+}
+
+.egg-tap-left,
+.egg-tap-right {
+  filter: drop-shadow(0 10px 8px rgba(23, 23, 23, 0.14));
+}
+
+.egg-tap-left {
+  transform: translateX(-22px) rotate(-12deg);
+  transform-origin: 80% 28%;
+}
+
+.egg-tap-right {
+  transform: translateX(22px) rotate(12deg);
+  transform-origin: 20% 28%;
+}
+
+.egg-arena.is-live {
+  animation: egg-arena-shake 1.4s linear both;
+}
+
+.egg-tap-left.is-knocking {
+  animation: egg-tap-left 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.egg-tap-right.is-knocking {
+  animation: egg-tap-right 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.egg-tap-left.is-knocking.is-loser {
+  animation-name: egg-tap-left-lose;
+}
+
+.egg-tap-right.is-knocking.is-loser {
+  animation-name: egg-tap-right-lose;
+}
+
+.egg-tap-left.egg-tap-cracked {
+  transform: translateX(6px) rotate(16deg) translateY(28px);
+  opacity: 0.92;
+}
+
+.egg-tap-right.egg-tap-cracked {
+  transform: translateX(-6px) rotate(-16deg) translateY(28px);
+  opacity: 0.92;
+}
+
+.egg-tap-spark {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  z-index: 3;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffe7a3 45%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.egg-tap-spark.is-on,
+.egg-tap-ring.is-on {
+  animation: egg-tap-spark 1.4s ease-out both;
+}
+
+.egg-tap-ring {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border: 2px solid rgba(255, 236, 180, 0.9);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.egg-tap-ring.is-on {
+  animation-name: egg-tap-ring;
+}
+
+.egg-shell-chip {
+  position: absolute;
+  top: 22%;
+  z-index: 4;
+  width: 7px;
+  height: 5px;
+  border-radius: 40% 60% 55% 45%;
+  background: #f4e4cc;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.egg-tap-left .egg-shell-chip {
+  right: 8%;
+}
+
+.egg-tap-right .egg-shell-chip {
+  left: 8%;
+}
+
+.is-knocking .egg-shell-chip,
+.egg-tap-cracked .egg-shell-chip {
+  animation: egg-chip-fall 0.85s ease-in 0.5s both;
+}
+
+.egg-chip-b {
+  width: 5px;
+  height: 4px;
+  animation-name: egg-chip-fall-b !important;
+}
+
+.egg-chip-c {
+  width: 8px;
+  height: 6px;
+  background: #e7d3b4;
+  animation-name: egg-chip-fall-c !important;
+}
+
+.egg-crack {
+  opacity: 0;
+}
+
+.is-knocking .egg-crack {
+  animation: egg-crack-in 0.18s ease-out 0.5s forwards;
+}
+
+.egg-tap-cracked .egg-crack {
+  opacity: 1;
+}
+
+@keyframes egg-arena-shake {
+  0%, 48% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+  53% { transform: translateX(4px); }
+  56% { transform: translateX(-2px); }
+  60%, 100% { transform: translateX(0); }
+}
+
+@keyframes egg-tap-left {
+  0%, 16% { transform: translateX(-42px) rotate(-18deg); }
+  30% { transform: translateX(-62px) rotate(-26deg); }
+  46% { transform: translateX(20px) rotate(10deg); }
+  52% { transform: translateX(8px) rotate(2deg) scale(0.88, 1.1); }
+  66% { transform: translateX(-20px) rotate(-12deg); }
+  100% { transform: translateX(-16px) rotate(-8deg); }
+}
+
+@keyframes egg-tap-right {
+  0%, 16% { transform: translateX(42px) rotate(18deg); }
+  30% { transform: translateX(62px) rotate(26deg); }
+  46% { transform: translateX(-20px) rotate(-10deg); }
+  52% { transform: translateX(-8px) rotate(-2deg) scale(0.88, 1.1); }
+  66% { transform: translateX(20px) rotate(12deg); }
+  100% { transform: translateX(16px) rotate(8deg); }
+}
+
+@keyframes egg-tap-left-lose {
+  0%, 16% { transform: translateX(-42px) rotate(-18deg); }
+  30% { transform: translateX(-62px) rotate(-26deg); }
+  46% { transform: translateX(22px) rotate(12deg); }
+  52% { transform: translateX(6px) rotate(0deg) scale(0.84, 1.14); }
+  72% { transform: translateX(-2px) rotate(-4deg) translateY(8px); }
+  100% { transform: translateX(6px) rotate(16deg) translateY(28px); }
+}
+
+@keyframes egg-tap-right-lose {
+  0%, 16% { transform: translateX(42px) rotate(18deg); }
+  30% { transform: translateX(62px) rotate(26deg); }
+  46% { transform: translateX(-22px) rotate(-12deg); }
+  52% { transform: translateX(-6px) rotate(0deg) scale(0.84, 1.14); }
+  72% { transform: translateX(2px) rotate(4deg) translateY(8px); }
+  100% { transform: translateX(-6px) rotate(-16deg) translateY(28px); }
+}
+
+@keyframes egg-tap-spark {
+  0%, 46% { opacity: 0; transform: scale(0.15); }
+  50% { opacity: 1; transform: scale(1.6); }
+  68% { opacity: 0; transform: scale(2.4); }
+  100% { opacity: 0; }
+}
+
+@keyframes egg-tap-ring {
+  0%, 46% { opacity: 0; transform: scale(0.3); }
+  52% { opacity: 0.95; transform: scale(1); }
+  78% { opacity: 0; transform: scale(2.8); }
+  100% { opacity: 0; }
+}
+
+@keyframes egg-crack-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes egg-crack-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes egg-cap-fly {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(22px, -36px) rotate(70deg); }
+}
+
+@keyframes egg-win-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes egg-confetti {
+  0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(160deg) scale(0.6); }
+}
+
+@keyframes egg-chip-fall {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(16px, 58px) rotate(110deg); }
+}
+
+@keyframes egg-chip-fall-b {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-18px, 50px) rotate(-90deg); }
+}
+
+@keyframes egg-chip-fall-c {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  16% { opacity: 1; }
+  100% { opacity: 0; transform: translate(6px, 70px) rotate(40deg); }
+}
+
 @keyframes egg-knock-ground {
   0%,
   30% {
@@ -589,6 +894,55 @@ img {
   100% {
     transform: scaleX(1);
     opacity: 0.35;
+  }
+}
+
+.egg-dye-rise {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: egg-dye-rise 0.72s var(--ease) both;
+}
+
+.egg-sheen {
+  animation: egg-sheen 2.8s ease-in-out infinite;
+}
+
+.egg-crystal {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: egg-crystal 1.8s ease-in-out infinite;
+}
+
+.egg-crystal-delay {
+  animation-delay: 0.55s;
+}
+
+@keyframes egg-dye-rise {
+  from {
+    transform: translateY(72%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes egg-sheen {
+  0%,
+  100% {
+    transform: translateX(-18px);
+  }
+  50% {
+    transform: translateX(78px);
+  }
+}
+
+@keyframes egg-crystal {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
@@ -751,11 +1105,26 @@ img {
 
   .egg-knock-left,
   .egg-knock-right,
+  .egg-tap-left.is-knocking,
+  .egg-tap-right.is-knocking,
+  .egg-duel-cta:hover,
+  .egg-duel-cta:active,
+  .egg-win-title,
+  .egg-win-burst i,
+  .egg-break-cap,
+  .egg-arena.is-live,
+  .egg-tap-spark.is-on,
+  .egg-tap-ring.is-on,
+  .egg-shell-chip,
+  .is-knocking .egg-crack,
   .egg-knock-spark,
   .egg-knock-ring,
   .egg-knock-chip,
   .egg-knock-word,
-  .egg-knock-ground {
+  .egg-knock-ground,
+  .egg-dye-rise,
+  .egg-sheen,
+  .egg-crystal {
     animation: none !important;
   }
 

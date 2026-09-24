@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { brands, isBrandId } from "@/data/brands";
 import type { Product } from "@/data/home";
 import { BrandSwitch } from "@/components/BrandSwitch";
 import { ProductCatalog } from "@/components/ProductCatalog";
+
+function BrandFromQuery({ onBrand }: { onBrand: (id: string) => void }) {
+  const marka = useSearchParams().get("marka");
+
+  useEffect(() => {
+    onBrand(isBrandId(marka ?? undefined) ? marka! : "all");
+  }, [marka, onBrand]);
+
+  return null;
+}
 
 type Props = {
   products: Product[];
@@ -24,12 +34,7 @@ export function CatalogShell({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const marka = useSearchParams().get("marka");
   const [brand, setBrand] = useState(initialBrand);
-
-  useEffect(() => {
-    setBrand(isBrandId(marka ?? undefined) ? marka! : "all");
-  }, [marka]);
   const active = brands.find((item) => item.id === brand);
   const wash = active?.wash ?? "#f4f1ec";
 
@@ -51,6 +56,9 @@ export function CatalogShell({
 
   return (
     <div style={{ background: wash }} className="transition-colors duration-700">
+      <Suspense fallback={null}>
+        <BrandFromQuery onBrand={setBrand} />
+      </Suspense>
       <div className="container-metma flex flex-col gap-8 py-10 md:flex-row md:items-end md:justify-between md:py-14">
         <div key={brand} className="brand-reveal min-w-0">
           <h1 className="font-display text-[clamp(3.2rem,8vw,6rem)] font-bold leading-[0.86] tracking-[-0.05em] text-[var(--metma-ink)]">

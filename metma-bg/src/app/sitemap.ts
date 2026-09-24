@@ -3,6 +3,8 @@ import { brands } from "@/data/brands";
 import { getBlogPosts, getCategories, getProducts } from "@/lib/catalog";
 import { absoluteUrl } from "@/lib/seo";
 
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, products, posts] = await Promise.all([
     getCategories(),

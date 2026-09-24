@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBrand, isBrandId } from "@/data/brands";
+import { getBrand } from "@/data/brands";
 import { BrandWash } from "@/components/BrandWash";
 import { CatalogShell } from "@/components/CatalogShell";
 import { ExpandableText } from "@/components/ExpandableText";
@@ -18,7 +18,6 @@ import { siteConfig } from "@/lib/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ marka?: string }>;
 };
 
 export async function generateStaticParams() {
@@ -56,9 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function ProductSlugPage({ params, searchParams }: Props) {
+export default async function ProductSlugPage({ params }: Props) {
   const { slug } = await params;
-  const { marka } = await searchParams;
   const [cats, products] = await Promise.all([getCategories(), getProducts()]);
   const cat = cats.find((c) => c.slug === slug);
 
@@ -75,7 +73,6 @@ export default async function ProductSlugPage({ params, searchParams }: Props) {
         <CatalogShell
           products={filtered}
           activeCategory={cat.slug}
-          initialBrand={isBrandId(marka) ? marka : "all"}
           title={cat.label}
           subtitle={`${filtered.length} продукта в тази категория`}
         />

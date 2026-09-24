@@ -34,7 +34,7 @@ export function HomeHero() {
         className="egg-wobble pointer-events-none absolute right-[18%] top-24 z-[1] hidden h-12 w-9 opacity-70 md:block"
       />
 
-      <div className="hero-copy relative z-10 flex min-h-[min(72svh,560px)] flex-col justify-end px-0 pb-5 pt-6 sm:min-h-[min(64vh,580px)] sm:pb-12 sm:pt-8 md:min-h-[min(72vh,680px)] md:justify-center md:pb-16 md:pt-12">
+      <div className="hero-copy relative z-10 flex min-h-[min(58svh,460px)] flex-col justify-end px-0 pb-6 pt-8 sm:min-h-[min(64vh,580px)] sm:pb-12 sm:pt-8 md:min-h-[min(72vh,680px)] md:justify-center md:pb-16 md:pt-12">
         <div className="container-metma max-w-xl">
           <p className="eyebrow text-[0.62rem] text-[var(--metma-rose)] sm:text-[0.7rem]">
             Боя · Великден · От 1999

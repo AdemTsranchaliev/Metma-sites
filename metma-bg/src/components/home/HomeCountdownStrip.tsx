@@ -127,7 +127,7 @@ function CountdownCard({
                 {pad(unit.value)}
               </span>
             </p>
-            <p className="mt-0.5 text-[0.55rem] font-bold uppercase tracking-[0.1em] text-[var(--metma-navy)]/65 sm:mt-1 sm:text-[0.6rem] sm:tracking-[0.12em]">
+            <p className="mt-0.5 text-[0.58rem] font-bold uppercase tracking-normal text-[var(--metma-navy)]/65 sm:mt-1 sm:text-[0.6rem] sm:tracking-[0.12em]">
               {unit.label}
             </p>
           </div>

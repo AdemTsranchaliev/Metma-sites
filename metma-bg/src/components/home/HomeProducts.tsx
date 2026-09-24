@@ -53,7 +53,7 @@ export async function HomeProducts() {
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--metma-mute)]">
                   {product.id}
                 </p>
-                <h3 className="mt-1 font-display text-sm font-bold leading-snug text-[var(--metma-ink)] sm:text-base">
+                <h3 className="mt-1 line-clamp-3 font-display text-sm font-bold leading-snug text-[var(--metma-ink)] sm:text-base">
                   {product.name}
                 </h3>
               </Link>
