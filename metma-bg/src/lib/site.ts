@@ -1,33 +1,32 @@
 export const siteConfig = {
   code: "Bg" as const,
-  name: "МЕТМА",
-  legalName: "МЕТМА ООД",
+  name: "METMA ЕАД",
+  shortName: "METMA",
+  legalName: "МЕТМА ЕАД",
   locale: "bg",
-  domain: "metma.bg",
-  tagline: "Механизми за мебели",
-  phone: "+359 (0) 34 443 888",
-  phoneHref: "tel:+35934443888",
-  mobile: "+359 (0) 884 624 024",
-  mobileHref: "tel:+359884624024",
-  fax: "+359 (0) 34 443 888",
-  email: "metma@abv.bg",
-  addressLines: ["Генерал Гурко 6, ет. 3", "Пазарджик, България"],
-  mapHref:
-    "https://www.google.com/maps/search/?api=1&query=%D0%93%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D0%BB+%D0%93%D1%83%D1%80%D0%BA%D0%BE+6+%D0%9F%D0%B0%D0%B7%D0%B0%D1%80%D0%B4%D0%B6%D0%B8%D0%BA",
+  ogLocale: "bg_BG",
+  domain: "metma-bg.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://metma-bg.com",
+  email: "contacts@metma-bg.com",
+  phone: "+359 884 624 024",
+  phoneE164: "+359884624024",
+  phoneAlt: "+359 885 828 771",
+  phoneAltE164: "+359885828771",
+  phoneOffice: "+359 34 443 888",
+  defaultTitle: "METMA | Боя за яйца и великденски украси",
+  defaultDescription:
+    "Единствената фирма за боя за яйца в България с изцяло затворено производство. Бои, комплекти, украси и рекламни дисплеи от 1999 г.",
+  ogImage: "/images/hero/metma-baner.png",
+  address: {
+    street: "Генерал Гурко 6, ет. 3",
+    city: "Пазарджик",
+    postalCode: "4400",
+    country: "BG",
+  },
+  social: {
+    facebook: "https://www.facebook.com/MetmaBulgaria",
+    instagram: "https://www.instagram.com/metma_bg/",
+    tiktok: "https://www.tiktok.com/@metma.eu",
+    youtube: "https://www.youtube.com/channel/UCzY6FBzb_mcHeoCmr82m7Og",
+  },
 };
-
-export const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5080";
-
-export const aboutParagraphs = [
-  "През последните години МЕТМА ООД се специализира в производството на механизми, модули и детайли за мебелната промишленост, като приоритет е производството на механизми за мека мебел. Основната дейност е свързана със серийно производство на механизми с европейско качество, от които се поддържат постоянни наличности. За производството фирмата е оборудвана със специфични за дейността машини и приспособления.",
-  "МЕТМА ООД разполага с екип от професионалисти, който се стреми към удовлетвореността на клиентите и непрекъснато разширява производствената номенклатура, като изпълнява и индивидуални поръчки.",
-];
-
-export const nav = [
-  { href: "/", label: "Начало" },
-  { href: "/produkti", label: "Продукти" },
-  { href: "/za-nas", label: "За нас" },
-  { href: "/blog", label: "Блог" },
-  { href: "/kontakti", label: "Контакти" },
-];

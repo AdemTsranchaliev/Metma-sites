@@ -5,11 +5,14 @@ import { notFound } from "next/navigation";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 import { ProductCatalog } from "@/components/ProductCatalog";
 import { ProductGrid } from "@/components/ProductGrid";
+import { JsonLd } from "@/components/JsonLd";
 import {
   getCategories,
   getProductBySlug,
   getProducts,
 } from "@/lib/catalog";
+import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -32,15 +35,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cats = await getCategories();
   const cat = cats.find((c) => c.slug === slug);
-  if (cat) return { title: `${cat.label} – METMA Ltd. – Eierfarbe` };
+  if (cat) {
+    return pageMetadata({
+      title: cat.label,
+      description: `${cat.label} von METMA — Eierfarben und Osterprodukte aus eigener Produktion.`,
+      path: `/produkte/${cat.slug}`,
+    });
+  }
   const product = await getProductBySlug(slug);
   if (product) {
-    return {
-      title: `${product.name} – METMA Ltd. – Eierfarbe`,
-      description: product.shortDescription,
-    };
+    return pageMetadata({
+      title: product.name,
+      description: product.shortDescription || product.description,
+      path: `/produkte/${product.slug}`,
+      image: product.image,
+    });
   }
-  return { title: "Produkte – METMA Ltd. – Eierfarbe" };
+  return pageMetadata({
+    title: "Produkte",
+    description: "Sortiment von METMA.",
+    path: "/produkte",
+  });
 }
 
 export default async function ProdukteSlugPage({ params }: Props) {
@@ -55,6 +70,12 @@ export default async function ProdukteSlugPage({ params }: Props) {
     const filtered = products.filter((p) => p.category === cat.slug);
     return (
       <>
+        <JsonLd
+          data={breadcrumbJsonLd([
+            { name: "Produkte", path: "/produkte" },
+            { name: cat.label, path: `/produkte/${cat.slug}` },
+          ])}
+        />
         <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-12 md:py-14">
           <SectionScatter variant="story" />
           <div className="container-metma relative z-[1] text-center">
@@ -94,6 +115,30 @@ export default async function ProdukteSlugPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Produkte", path: "/produkte" },
+            { name: categoryLabel, path: `/produkte/${product.category}` },
+            { name: product.name, path: `/produkte/${product.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            description: product.description || product.shortDescription,
+            sku: product.id,
+            image: absoluteUrl(product.image),
+            brand: { "@type": "Brand", name: siteConfig.shortName },
+            category: categoryLabel,
+            manufacturer: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+            },
+          },
+        ]}
+      />
       <section className="relative overflow-hidden bg-white py-10 md:py-14">
         <SectionScatter variant="products" />
         <div className="container-metma relative z-[1]">

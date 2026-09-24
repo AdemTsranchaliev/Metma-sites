@@ -1,77 +1,57 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { ContactForm } from "@/components/ContactForm";
-import { PageHead } from "@/components/PageHead";
+import { PageIntro } from "@/components/PageIntro";
+import { pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Контакти",
-  description: `Контакти на ${siteConfig.legalName}: ${siteConfig.addressLines.join(", ")}. Телефон ${siteConfig.phone}.`,
-};
+  description:
+    "Свържете се с METMA — телефон, имейл и адрес в Пазарджик. Запитвания за бои, комплекти и дисплеи.",
+  path: "/kontakti",
+});
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ produkt?: string }>;
-}) {
-  const { produkt } = await searchParams;
-
+export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
-      <PageHead
-        eyebrow="Пазарджик"
+    <>
+      <PageIntro
+        eyebrow="Контакт"
         title="Контакти"
-        lede="Наличности, серийни механизми и поръчки по заявка."
+        subtitle="Изпратете ни съобщение и ние ще се свържем с вас."
       />
-      <div className="mt-12 grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-        <div>
-          <a href={siteConfig.mobileHref} className="display block text-4xl hover:text-brand sm:text-5xl">
-            {siteConfig.mobile}
-          </a>
-          <div className="mt-8">
-          <Info label="Адрес">
-            <p>{siteConfig.addressLines[0]}</p>
-            <p>{siteConfig.addressLines[1]}</p>
-            <a
-              href={siteConfig.mapHref}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-block text-sm font-semibold text-brand-deep hover:underline"
-            >
-              Отвори в карта
-            </a>
-          </Info>
-          <Info label="Телефон">
-            <a className="block hover:text-brand-deep" href={siteConfig.phoneHref}>
-              {siteConfig.phone}
-            </a>
-            <a className="mt-1 block hover:text-brand-deep" href={siteConfig.mobileHref}>
-              {siteConfig.mobile}
-            </a>
-          </Info>
-          <Info label="Факс">
-            <p>{siteConfig.fax}</p>
-          </Info>
-          <Info label="Имейл">
-            <a className="hover:text-brand-deep" href={`mailto:${siteConfig.email}`}>
-              {siteConfig.email}
-            </a>
-          </Info>
+      <section className="bg-white py-12 md:py-16">
+        <div className="container-metma grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="space-y-6 text-sm leading-7 text-[var(--metma-mute)]">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-ink)]">Адрес</p>
+              <p className="mt-2">
+                {siteConfig.address.street}
+                <br />
+                {siteConfig.address.postalCode} {siteConfig.address.city}, България
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-ink)]">Телефон</p>
+              <a className="mt-2 block font-semibold text-[var(--metma-ink)] hover:text-[var(--metma-rose)]" href={`tel:${siteConfig.phoneE164}`}>
+                {siteConfig.phone}
+              </a>
+              <a className="block font-semibold text-[var(--metma-ink)] hover:text-[var(--metma-rose)]" href={`tel:${siteConfig.phoneAltE164}`}>
+                {siteConfig.phoneAlt}
+              </a>
+              <a className="block hover:text-[var(--metma-rose)]" href="tel:+35934443888">
+                {siteConfig.phoneOffice}
+              </a>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-ink)]">Имейл</p>
+              <a className="mt-2 block font-semibold text-[var(--metma-ink)] hover:text-[var(--metma-rose)]" href={`mailto:${siteConfig.email}`}>
+                {siteConfig.email}
+              </a>
+            </div>
           </div>
+          <ContactForm />
         </div>
-        <div className="rounded-[1.5rem] border border-line bg-foam px-6 py-8 sm:px-8">
-          <ContactForm product={produkt} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Info({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="border-b border-line py-4">
-      <p className="eyebrow">{label}</p>
-      <div className="mt-2 text-lg">{children}</div>
-    </div>
+      </section>
+    </>
   );
 }

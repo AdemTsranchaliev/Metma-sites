@@ -8,25 +8,56 @@ import {
 } from "firebase/firestore";
 import { getDb } from "./client";
 import { optimizeMediaUrl } from "@/lib/media";
+import type { BlogBlock } from "@/data/blog";
 
 const SITE = "De" as const;
 
-function htmlToParagraphs(html: string | null | undefined): string[] {
+function decodeText(value: string): string {
+  let current = value;
+  let previous = "";
+  while (current !== previous) {
+    previous = current;
+    current = current
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+  }
+  return current.replace(/\s+/g, " ").trim();
+}
+
+function htmlToBlocks(html: string | null | undefined): BlogBlock[] {
   if (!html?.trim()) return [];
-  const text = html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n\n")
-    .replace(/<\/div>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .trim();
-  return text
+  const blocks: BlogBlock[] = [];
+  const list: string[] = [];
+  const flushList = () => {
+    if (list.length === 0) return;
+    blocks.push({ type: "ul", items: [...list] });
+    list.length = 0;
+  };
+  const pattern = /<(h2|h3|p|li)\b[^>]*>([\s\S]*?)<\/\1>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(html))) {
+    const tag = match[1].toLowerCase();
+    const text = decodeText(match[2].replace(/<[^>]+>/g, " "));
+    if (!text) continue;
+    if (tag === "li") {
+      list.push(text);
+      continue;
+    }
+    flushList();
+    if (tag === "h2" || tag === "h3") blocks.push({ type: "h2", text });
+    else blocks.push({ type: "p", text });
+  }
+  flushList();
+  if (blocks.length > 0) return blocks;
+  return decodeText(html.replace(/<[^>]+>/g, " "))
     .split(/\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+    .map((text) => text.trim())
+    .filter(Boolean)
+    .map((text) => ({ type: "p" as const, text }));
 }
 
 export type StoreProduct = {
@@ -55,7 +86,7 @@ export type StoreBlogPost = {
   date: string;
   category: string;
   image: string;
-  content: string[];
+  content: BlogBlock[];
 };
 
 function mapProduct(id: string, data: DocumentData): StoreProduct | null {
@@ -154,11 +185,11 @@ export async function readBlogPosts(): Promise<StoreBlogPost[]> {
       const data = d.data();
       if (!data.isPublished) return null;
       const bodyHtml = data.bodyHtml as string | null | undefined;
-      const content = htmlToParagraphs(bodyHtml);
+      const content = htmlToBlocks(bodyHtml);
       return {
         slug: String(data.slug ?? d.id),
-        title: String(data.title ?? ""),
-        excerpt: String(data.excerpt ?? ""),
+        title: decodeText(String(data.title ?? "")),
+        excerpt: decodeText(String(data.excerpt ?? "")),
         date: String(
           data.publishedAtUtc ?? new Date().toISOString().slice(0, 10),
         ),
@@ -170,7 +201,12 @@ export async function readBlogPosts(): Promise<StoreBlogPost[]> {
         content:
           content.length > 0
             ? content
-            : [String(data.excerpt ?? data.title ?? "")],
+            : [
+                {
+                  type: "p" as const,
+                  text: decodeText(String(data.excerpt ?? data.title ?? "")),
+                },
+              ],
       } satisfies StoreBlogPost;
     })
     .filter((p): p is StoreBlogPost => p !== null);

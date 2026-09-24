@@ -1,76 +1,111 @@
-export type Post = {
+export type BlogBlock =
+  | { type: "h2"; text: string }
+  | { type: "p"; text: string }
+  | { type: "ul"; items: string[] };
+
+export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  dateLabel: string;
+  date: string;
+  category: string;
   image: string;
-  cover: boolean;
-  categoryHref: string;
-  categoryLabel: string;
-  paragraphs: string[];
-  products: string[];
+  images?: string[];
+  content: BlogBlock[];
+  kind?: "story" | "declaration";
 };
 
-export const posts: Post[] = [
+export const blogPosts: BlogPost[] = [
   {
-    slug: "mehanizmi-za-povdigane-na-matrak",
-    title: "Повдигане на матрак",
-    excerpt: "Подматрак, 45° и вариант с амортисьор.",
-    dateLabel: "12 септември 2026",
-    image: "/images/products/meh8.jpg",
-    cover: false,
-    categoryHref: "/produkti?kategoria=mechanisms",
-    categoryLabel: "Механизми",
-    paragraphs: [
-      "Серийни механизми за мека мебел: малък и голям подматрак, включително 2-КА и 3-КА.",
-      "Отделно са моделите на 45° — малък, голям и за амортисьор. Анкона и Стефи са именувани позиции. Размер и наличност — при запитване.",
-    ],
-    products: [
-      "mehanizam-za-povdigane-na-matrak-45-za-amortisor",
-      "mehanizam-ankona",
-      "mehanizam-stefi",
+    slug: "deklaratsiya-sotsialna-otgovornost",
+    title: "Декларация Метма ЕООД – Политика за социална отговорност",
+    excerpt:
+      "Политика за социална отговорност на Метма ЕООД — ангажимент към хората, условията на труд и общността.",
+    date: "2023-06-08",
+    category: "Компания",
+    kind: "declaration",
+    image: "/images/blog/img19-scaled.jpg",
+    content: [
+      {
+        type: "p",
+        text: "Метма ЕООД публикува декларация за политиката си по социална отговорност. Документът описва ангажимента на фирмата към служителите, безопасните условия на труд и отговорното отношение към обществото.",
+      },
     ],
   },
   {
-    slug: "ramkovi-mehanizmi-za-fotoyli-i-kuhnya",
-    title: "Рамки за фотьойл и кухня",
-    excerpt: "Поли, Аква, Габи и кухненски ъгъл.",
-    dateLabel: "5 септември 2026",
-    image: "/images/products/ram16.jpg",
-    cover: false,
-    categoryHref: "/produkti?kategoria=frame",
-    categoryLabel: "Рамкови механизми",
-    paragraphs: [
-      "Рамки за фотьойли, кухненски ъгли и ламелни системи. Серийно, в няколко дължини.",
-      "Фотьойли: Поли, Аква, Джеси, Албена, Нона, Габи, Марти. Дължината често е в името — например Габи 1150–1960.",
-    ],
-    products: [
-      "mehanizam-fotoyl-poli",
-      "ramkov-mehanizam-gabi-1150-1270-1420-1960",
-      "ramkov-mehanizam-kuhnenski-agal-1290-1410-1530",
+    slug: "politika-po-kachestvo",
+    title: "Декларация за политиката по качество на фирма Метма ЕООД",
+    excerpt:
+      "Политика по качество: затворено производство и контрол от рецептата до опаковката.",
+    date: "2023-06-08",
+    category: "Качество",
+    kind: "declaration",
+    image: "/images/blog/img7-1-scaled.jpg",
+    content: [
+      {
+        type: "p",
+        text: "Декларацията за политиката по качество описва как Метма контролира производството на бои за яйца и великденски продукти — от суровините до готовата опаковка.",
+      },
     ],
   },
   {
-    slug: "darveni-displei-i-kutii-za-vino",
-    title: "Дървени дисплеи",
-    excerpt: "Кенди, ИНО и кутии за вино.",
-    dateLabel: "28 август 2026",
-    image: "/images/products/displey-kendi.jpg",
-    cover: true,
-    categoryHref: "/produkti?kategoria=displays",
-    categoryLabel: "Дървени дисплеи",
-    paragraphs: [
-      "Отделна линия до металните механизми: Кенди, ИНО, дисплей № 3 и № 4.",
-      "Също мини дисплеи и кутии за вино, плюс великденски поставки. Наличност и поръчка по заявка — в Пазарджик.",
+    slug: "politika-okolna-sreda",
+    title: "Политика по околна среда на Метма ЕООД",
+    excerpt:
+      "Как фирмата подхожда към опазването на околната среда в производството.",
+    date: "2023-06-08",
+    category: "Околна среда",
+    kind: "declaration",
+    image: "/images/blog/img7-scaled.jpg",
+    content: [
+      {
+        type: "p",
+        text: "Политиката по околна среда на Метма ЕООД задава правилата за отговорно производство и намаляване на въздействието върху природата.",
+      },
     ],
-    products: [
-      "darven-displey-kendi",
-      "kutii-za-vino-razlichni-razmeri",
-      "mini-displei-za-vino",
+  },
+  {
+    slug: "podkrepa-sredni-predpriyatiya-covid-19",
+    title:
+      "Подкрепа за средни предприятия за преодоляване на икономическите последствия от пандемията COVID-19",
+    excerpt:
+      "Информация за проекта за подкрепа на средни предприятия след пандемията COVID-19.",
+    date: "2023-06-08",
+    category: "Проекти",
+    kind: "declaration",
+    image: "/images/blog/1.1.-Publikacia-za-Proekt-na-sajta_Metma-1.jpg",
+    content: [
+      {
+        type: "p",
+        text: "Публикация за проекта на Метма за подкрепа на средни предприятия при преодоляване на икономическите последствия от пандемията COVID-19.",
+      },
+    ],
+  },
+  {
+    slug: "istoriya-na-praznika-velikden",
+    title: "История на празника Великден",
+    excerpt:
+      "Великден е празникът, около който се събира семейството — и боядисаното яйце е в центъра му.",
+    date: "2019-10-01",
+    category: "Традиция",
+    image: "/images/blog/EASTER_holiday_5616x3744-scaled-e1582745422831.jpg",
+    content: [
+      {
+        type: "p",
+        text: "Великден събира семейството около боядисаното яйце. МЕТМА произвежда бои, комплекти и украси, с които тази традиция остава жива — у дома и по рафтовете на търговските вериги.",
+      },
     ],
   },
 ];
 
-export function getPost(slug: string) {
-  return posts.find((post) => post.slug === slug);
+export function getBlogPost(slug: string) {
+  return blogPosts.find((post) => post.slug === slug);
+}
+
+export function formatBlogDate(date: string) {
+  return new Date(date).toLocaleDateString("bg-BG", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }

@@ -1,65 +1,92 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { PageHead } from "@/components/PageHead";
-import { posts } from "@/data/blog";
+import { PageIntro } from "@/components/PageIntro";
+import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Блог",
-  description: "Кратки бележки за механизмите, рамките и дървените дисплеи на МЕТМА.",
-};
+  description: "Истории за Великден и боите за яйца на METMA.",
+  path: "/blog",
+});
 
-export default function BlogPage() {
-  const [lead, ...rest] = posts;
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
+  const [featured, ...rest] = blogPosts;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
-      <PageHead eyebrow="Бележки" title="Блог" lede="Три кратки текста от каталога." />
-
-      {lead ? (
-        <Link href={`/blog/${lead.slug}`} className="group mt-12 grid items-center gap-8 lg:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-mist">
-            <Image
-              src={lead.image}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className={`transition duration-700 group-hover:scale-[1.03] ${
-                lead.cover ? "object-cover" : "object-contain p-8"
-              }`}
-            />
-          </div>
-          <div>
-            <p className="text-sm text-muted">{lead.dateLabel}</p>
-            <h2 className="display mt-3 text-4xl group-hover:text-brand sm:text-5xl">{lead.title}</h2>
-            <p className="mt-4 max-w-md text-lg text-muted">{lead.excerpt}</p>
-          </div>
-        </Link>
-      ) : null}
-
-      {rest.length > 0 ? (
-        <div className="mt-14 grid gap-8 border-t border-line pt-12 sm:grid-cols-2">
-          {rest.map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-mist">
+    <>
+      <PageIntro
+        eyebrow="Журнал"
+        title="Блог"
+        subtitle="Великден, цвят и традиции — от METMA."
+      />
+      <section className="bg-white py-12 md:py-16">
+        <div className="container-metma">
+          {featured ? (
+            <article className="overflow-hidden lg:grid lg:grid-cols-[1.05fr_0.95fr]">
+              <Link
+                href={`/blog/${featured.slug}`}
+                className="group relative block aspect-[16/10] bg-[var(--metma-sand)] lg:aspect-auto lg:min-h-[440px]"
+              >
                 <Image
-                  src={post.image}
-                  alt=""
+                  src={featured.image}
+                  alt={featured.title}
                   fill
-                  sizes="(min-width: 1024px) 40vw, 50vw"
-                  className={`transition duration-700 group-hover:scale-[1.03] ${
-                    post.cover ? "object-cover" : "object-contain p-8"
-                  }`}
+                  priority
+                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  sizes="(max-width:1024px) 100vw, 580px"
                 />
+              </Link>
+              <div className="relative flex flex-col justify-center bg-[var(--metma-sand)] px-7 py-10 sm:px-10 lg:px-12 lg:py-14">
+                <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
+                  <span className="text-[var(--metma-rose)]">{featured.category}</span>
+                  <span aria-hidden>·</span>
+                  <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
+                </div>
+                <h2 className="mt-4 font-display text-[clamp(1.65rem,2.8vw,2.35rem)] font-bold leading-[1.12] tracking-[-0.03em]">
+                  <Link href={`/blog/${featured.slug}`} className="transition hover:text-[var(--metma-rose)]">
+                    {featured.title}
+                  </Link>
+                </h2>
+                <p className="mt-4 max-w-md text-[0.95rem] leading-7 text-[var(--metma-mute)]">
+                  {featured.excerpt}
+                </p>
+                <Link href={`/blog/${featured.slug}`} className="btn-metma mt-8 self-start">
+                  Прочети
+                </Link>
               </div>
-              <p className="mt-4 text-sm text-muted">{post.dateLabel}</p>
-              <h2 className="mt-1 text-2xl font-medium group-hover:text-brand">{post.title}</h2>
-              <p className="mt-2 text-sm text-muted">{post.excerpt}</p>
-            </Link>
-          ))}
+            </article>
+          ) : null}
+
+          <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+            {rest.map((post) => (
+              <li key={post.slug}>
+                <Link href={`/blog/${post.slug}`} className="group block overflow-hidden bg-[var(--metma-sand)]">
+                  <span className="relative block aspect-[16/10]">
+                    <Image
+                      src={post.image}
+                      alt=""
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                      sizes="50vw"
+                    />
+                  </span>
+                  <span className="block px-5 py-5">
+                    <span className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-rose)]">
+                      {post.category}
+                    </span>
+                    <span className="mt-2 block font-display text-xl font-bold leading-snug text-[var(--metma-ink)]">
+                      {post.title}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-      ) : null}
-    </div>
+      </section>
+    </>
   );
 }

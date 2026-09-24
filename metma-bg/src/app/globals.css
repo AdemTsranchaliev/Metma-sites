@@ -1,124 +1,780 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f6f4;
-  --foreground: #242220;
+  /* Rich brand colors — not chalky pastels */
+  --metma-rose: #e4572e;
+  --metma-rose-deep: #c94520;
+  --metma-blue: #3d7ab5;
+  --metma-blue-soft: #d6e6f4;
+  --metma-mint: #c8e2d4;
+  --metma-lilac: #cfc0e4;
+  --metma-peach: #f0c9b0;
+  --metma-butter: #f2c94c;
+  --metma-butter-soft: #fff4d6;
+  --metma-yellow: #f2c94c;
+  --metma-ink: #171717;
+  --metma-mute: #5a5a5a;
+  --metma-line: #e6e6e6;
+  --metma-paper: #ffffff;
+  --metma-sand: #f5f5f5;
+  --metma-navy: #2f3b4c;
+  --metma-orange: var(--metma-rose);
+  --metma-orange-dark: var(--metma-rose-deep);
+  --background: #ffffff;
+  --foreground: #171717;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
-  --color-paper: #f7f6f4;
-  --color-mist: #f1f0ed;
-  --color-ink: #242220;
-  --color-muted: #6a6661;
-  --color-line: #e6e3de;
-  --color-brand: #e10600;
-  --color-brand-deep: #c10500;
-  --color-foam: #ffffff;
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display-face);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-metma-orange: var(--metma-rose);
+  --color-metma-blue: var(--metma-blue);
+  --color-metma-yellow: var(--metma-yellow);
+  --color-metma-mint: var(--metma-mint);
+  --color-metma-lilac: var(--metma-lilac);
+  --color-metma-peach: var(--metma-peach);
+  --color-metma-butter: var(--metma-butter);
+  --color-metma-ink: var(--metma-ink);
+  --color-metma-mute: var(--metma-mute);
+  --color-metma-paper: var(--metma-paper);
+  --color-metma-sand: var(--metma-sand);
+  --color-metma-navy: var(--metma-navy);
+  --font-sans: var(--font-rubik);
+  --font-display: var(--font-fredoka);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-rubik), Rubik, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: #e10600;
-  color: #fff;
+  background: var(--metma-lilac);
+  color: var(--metma-ink);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 :focus-visible {
-  outline: 2px solid #e10600;
+  outline: 2px solid var(--metma-blue);
   outline-offset: 3px;
 }
 
-.display {
-  font-family: var(--font-display), sans-serif;
+.container-metma {
+  width: min(1120px, calc(100% - 1.5rem));
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .container-metma {
+    width: min(1120px, calc(100% - 2.5rem));
+  }
+}
+
+.font-display {
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Logo-like METMA wordmarks */
+.brand-mark {
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  font-weight: 700;
+  color: var(--metma-rose);
+  line-height: 0.95;
+  paint-order: stroke fill;
+}
+
+/* A — soft sticker (previous) */
+.brand-mark--soft {
+  letter-spacing: 0.04em;
+  -webkit-text-stroke: 0.055em #ffffff;
+  text-shadow:
+    0.045em 0.065em 0 rgba(23, 23, 23, 0.18),
+    0.08em 0.11em 0.12em rgba(23, 23, 23, 0.12);
+}
+
+/* B — comic / bounce (active on hero) */
+.brand-mark--comic {
+  display: inline-flex;
+  letter-spacing: 0.02em;
+  -webkit-text-stroke: 0.07em #ffffff;
+  filter: drop-shadow(0.05em 0.07em 0 rgba(23, 23, 23, 0.28));
+}
+
+.brand-mark__letter {
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+/* C — flat bold red, thin cream outline */
+.brand-mark--flat {
+  letter-spacing: 0.06em;
+  color: var(--metma-rose-deep);
+  -webkit-text-stroke: 0.028em #fff8ef;
+  text-shadow: 0.03em 0.04em 0 rgba(23, 23, 23, 0.14);
+}
+
+.btn-metma,
+.btn-dark,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 0.92;
+  font-size: 0.875rem;
+  padding: 0.85rem 1.35rem;
+  border: none;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s var(--ease);
+}
+
+.btn-metma:active,
+.btn-dark:active,
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+.magnetic-cta > .btn-metma,
+.magnetic-cta > .btn-dark,
+.magnetic-cta > .btn-outline {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btn-metma,
+  .btn-dark,
+  .btn-outline {
+    font-size: 0.9rem;
+    padding: 0.95rem 1.55rem;
+  }
+}
+
+.btn-metma {
+  background: var(--metma-rose);
+  color: #fff;
+}
+
+.btn-metma:hover {
+  background: var(--metma-rose-deep);
+  transform: translateY(-1px);
+}
+
+.btn-dark {
+  background: var(--metma-ink);
+  color: #fff;
+}
+
+.btn-dark:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--metma-ink);
+  border: 1px solid #cfcfcf;
+}
+
+.btn-outline:hover {
+  border-color: var(--metma-ink);
+  background: #fff;
 }
 
 .eyebrow {
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-muted);
 }
 
-@utility btn {
-  @apply inline-flex items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-deep;
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
-@utility btn-quiet {
-  @apply inline-flex items-center justify-center rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition hover:border-ink;
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-@utility surface {
-  @apply rounded-xl border border-line bg-foam;
+.hero-media {
+  animation: hero-in 1.25s var(--ease) both;
 }
 
-@keyframes lift-lid {
+.hero-media img {
+  will-change: transform;
+}
+
+@media (min-width: 640px) {
+  .hero-media img {
+    animation: hero-drift 16s ease-in-out infinite alternate;
+  }
+}
+
+.hero-copy {
+  animation: copy-in 0.85s var(--ease) 0.1s both;
+}
+
+.marquee {
+  display: flex;
+  gap: 2.5rem;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+.product-tile {
+  transition: transform 0.45s var(--ease);
+}
+
+.product-tile::before {
+  content: none;
+}
+
+.product-tile > * {
+  position: relative;
+  z-index: 1;
+}
+
+.group:hover .product-tile {
+  transform: translateY(-4px);
+}
+
+.group:hover .product-tile::before {
+  opacity: 1;
+}
+
+.product-search::-webkit-search-decoration,
+.product-search::-webkit-search-cancel-button,
+.product-search::-webkit-search-results-button,
+.product-search::-webkit-search-results-decoration {
+  display: none;
+}
+
+.product-search::-ms-clear {
+  display: none;
+}
+
+.egg-wobble {
+  animation: egg-wobble 2.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.egg-float {
+  animation: egg-float 5s ease-in-out infinite;
+}
+
+.egg-float-delay {
+  animation: egg-float 5.8s ease-in-out 0.8s infinite;
+}
+
+.egg-num {
+  animation: egg-num 0.35s var(--ease);
+}
+
+.egg-tick-pop {
+  animation: egg-tick-pop 1s var(--ease) infinite;
+}
+
+/* Two eggs knocking — anticipation → strike → bounce */
+.egg-knock-left {
+  transform: translateX(calc(-100% - 2.6rem)) rotate(-12deg);
+  transform-origin: 75% 85%;
+  filter: drop-shadow(0 8px 10px rgba(23, 23, 23, 0.12));
+  animation: egg-knock-left 2.8s cubic-bezier(0.33, 0.1, 0.2, 1) infinite;
+}
+
+.egg-knock-right {
+  transform: translateX(2.6rem) rotate(12deg);
+  transform-origin: 25% 85%;
+  filter: drop-shadow(0 8px 10px rgba(23, 23, 23, 0.12));
+  animation: egg-knock-right 2.8s cubic-bezier(0.33, 0.1, 0.2, 1) infinite;
+}
+
+.egg-knock-ground {
+  animation: egg-knock-ground 2.8s ease-out infinite;
+}
+
+.egg-knock-spark {
+  position: absolute;
+  left: 50%;
+  bottom: 58%;
+  z-index: 3;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: #fff6a8;
+  opacity: 0;
+  box-shadow:
+    0 0 0 4px rgba(242, 201, 76, 0.45),
+    -16px -10px 0 -2px var(--metma-rose),
+    16px -10px 0 -2px var(--metma-blue),
+    0 -20px 0 -3px #7bc47f,
+    -12px 8px 0 -3px var(--metma-lilac),
+    12px 8px 0 -3px var(--metma-peach);
+  animation: egg-knock-spark 2.8s ease-out infinite;
+}
+
+.egg-knock-ring {
+  position: absolute;
+  left: 50%;
+  bottom: 48%;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  border: 2px solid var(--metma-butter);
+  border-radius: 50%;
+  opacity: 0;
+  animation: egg-knock-ring 2.8s ease-out infinite;
+}
+
+.egg-knock-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 62%;
+  z-index: 3;
+  width: 7px;
+  height: 5px;
+  margin-left: -3px;
+  border-radius: 40% 60% 50% 50%;
+  opacity: 0;
+  background: var(--metma-peach);
+  animation: egg-knock-chip 2.8s ease-out infinite;
+}
+
+.egg-knock-chip-a {
+  background: var(--metma-rose);
+  animation-name: egg-knock-chip-a;
+}
+
+.egg-knock-chip-b {
+  background: var(--metma-blue);
+  animation-name: egg-knock-chip-b;
+}
+
+.egg-knock-chip-c {
+  background: var(--metma-butter);
+  animation-name: egg-knock-chip-c;
+}
+
+.egg-knock-word {
+  position: absolute;
+  left: 50%;
+  bottom: 78%;
+  z-index: 4;
+  translate: -50% 0;
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--metma-rose);
+  opacity: 0;
+  pointer-events: none;
+  animation: egg-knock-word 2.8s ease-out infinite;
+}
+
+@keyframes egg-knock-left {
   0%,
+  8% {
+    transform: translateX(calc(-100% - 2.8rem)) rotate(-14deg) scale(1);
+  }
   18% {
-    transform: rotate(0deg);
+    transform: translateX(calc(-100% - 3.1rem)) rotate(-18deg) scale(1.02, 0.98);
   }
-  42%,
-  64% {
-    transform: rotate(-42deg);
+  32% {
+    transform: translateX(calc(-100% + 0.2rem)) rotate(6deg) scale(0.92, 1.08);
   }
-  88%,
+  38% {
+    transform: translateX(calc(-100% - 0.9rem)) rotate(-16deg) scale(1.04, 0.96);
+  }
+  52% {
+    transform: translateX(calc(-100% - 2.2rem)) rotate(-8deg) scale(1);
+  }
+  70%,
   100% {
-    transform: rotate(0deg);
+    transform: translateX(calc(-100% - 2.8rem)) rotate(-14deg) scale(1);
   }
 }
 
-@keyframes lift-strut {
+@keyframes egg-knock-right {
   0%,
+  8% {
+    transform: translateX(2.8rem) rotate(14deg) scale(1);
+  }
   18% {
-    transform: rotate(24deg) scaleY(1);
+    transform: translateX(3.1rem) rotate(18deg) scale(1.02, 0.98);
   }
-  42%,
-  64% {
-    transform: rotate(-14deg) scaleY(2.15);
+  32% {
+    transform: translateX(-0.2rem) rotate(-6deg) scale(0.92, 1.08);
   }
-  88%,
+  38% {
+    transform: translateX(0.9rem) rotate(16deg) scale(1.04, 0.96);
+  }
+  52% {
+    transform: translateX(2.2rem) rotate(8deg) scale(1);
+  }
+  70%,
   100% {
-    transform: rotate(24deg) scaleY(1);
+    transform: translateX(2.8rem) rotate(14deg) scale(1);
   }
 }
 
-.lift-lid,
-.lift-strut {
-  transform-box: view-box;
-  animation-duration: 6.4s;
-  animation-timing-function: cubic-bezier(0.45, 0.05, 0.2, 1);
-  animation-iteration-count: infinite;
+@keyframes egg-knock-spark {
+  0%,
+  30% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  33% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  46% {
+    opacity: 0;
+    transform: scale(1.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
 }
 
-.lift-lid {
-  transform-origin: 128px 248px;
-  animation-name: lift-lid;
+@keyframes egg-knock-ring {
+  0%,
+  30% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  34% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  48% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
 }
 
-.lift-strut {
-  transform-origin: 230px 312px;
-  animation-name: lift-strut;
+@keyframes egg-knock-chip-a {
+  0%,
+  31% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+    transform: translate(-28px, -36px) rotate(-40deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-28px, -36px) rotate(-40deg);
+  }
+}
+
+@keyframes egg-knock-chip-b {
+  0%,
+  31% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+    transform: translate(30px, -32px) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(30px, -32px) rotate(45deg);
+  }
+}
+
+@keyframes egg-knock-chip-c {
+  0%,
+  31% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+    transform: translate(4px, -44px) rotate(12deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(4px, -44px) rotate(12deg);
+  }
+}
+
+@keyframes egg-knock-word {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+  34% {
+    opacity: 1;
+    transform: translateY(0) scale(1.12);
+  }
+  42% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+  55% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.95);
+  }
+}
+
+@keyframes egg-knock-ground {
+  0%,
+  30% {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  33% {
+    transform: scaleX(1.12);
+    opacity: 0.55;
+  }
+  45%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+}
+
+@keyframes egg-wobble {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes egg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes egg-num {
+  from {
+    opacity: 0.35;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes egg-tick-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0.45;
+    transform: scale(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.brand-float {
+  animation: brand-float 5.5s ease-in-out infinite;
+}
+
+.brand-reveal {
+  animation: brand-reveal 0.55s var(--ease) both;
+}
+
+.brand-pop {
+  animation: brand-pop 0.5s var(--ease) both;
+}
+
+@keyframes brand-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes brand-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brand-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lift-lid,
-  .lift-strut {
-    animation: none;
+  html {
+    scroll-behavior: auto;
   }
 
-  .lift-lid {
-    transform: rotate(-42deg);
+  .reveal,
+  .btn-metma,
+  .btn-dark,
+  .btn-outline,
+  .marquee,
+  .hero-media,
+  .hero-media img,
+  .hero-copy,
+  .product-tile,
+  .product-tile::before,
+  .egg-wobble,
+  .brand-float,
+  .brand-reveal,
+  .brand-pop,
+  .egg-float,
+  .egg-float-delay,
+  .egg-num,
+  .egg-tick-pop {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 
-  .lift-strut {
-    transform: rotate(-14deg) scaleY(2.15);
+  .group:hover .product-tile::before {
+    opacity: 0 !important;
+  }
+
+  .egg-knock-left,
+  .egg-knock-right,
+  .egg-knock-spark,
+  .egg-knock-ring,
+  .egg-knock-chip,
+  .egg-knock-word,
+  .egg-knock-ground {
+    animation: none !important;
+  }
+
+  .egg-knock-left {
+    transform: translateX(calc(-100% - 2rem)) rotate(-8deg) !important;
+  }
+
+  .egg-knock-right {
+    transform: translateX(2rem) rotate(8deg) !important;
+  }
+
+  .egg-knock-spark,
+  .egg-knock-ring,
+  .egg-knock-chip,
+  .egg-knock-word {
+    opacity: 0 !important;
+  }
+
+  .reveal {
+    opacity: 1;
   }
 }

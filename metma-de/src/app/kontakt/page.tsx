@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { KontaktClient } from "@/components/KontaktClient";
 
-export const metadata: Metadata = {
-  title: "Kontakt – METMA Ltd. – Eierfarbe",
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Kontakt",
   description:
-    "Kontaktieren Sie METMA — Adresse, Telefon und Nachricht für Sortiment, Displays und Großhandel.",
-};
+    "Kontakt zu METMA: Adresse in Pazardzhik, Telefon und Anfrage für Sortiment, Displays und Großhandel.",
+  path: "/kontakt",
+});
 
 export default function KontaktPage() {
   return (

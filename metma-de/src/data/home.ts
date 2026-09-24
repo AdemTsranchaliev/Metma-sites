@@ -313,11 +313,6 @@ export const team = [
     role: "Vertriebsleiter",
     image: "/images/team/vasilka.png",
   },
-  {
-    name: "Anna Pishinkova",
-    role: "Verkäuferassistent",
-    image: "/images/team/anna.png",
-  },
 ] as const;
 
 export const partners = [

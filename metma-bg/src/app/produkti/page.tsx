@@ -1,32 +1,30 @@
 import type { Metadata } from "next";
-import { Catalog } from "@/components/Catalog";
-import { PageHead } from "@/components/PageHead";
-import { isCategoryId } from "@/data/products";
+import { CatalogShell } from "@/components/CatalogShell";
+import { isBrandId } from "@/data/brands";
+import { getProducts } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+type Props = { searchParams: Promise<{ marka?: string }> };
+
+export const metadata: Metadata = pageMetadata({
   title: "Продукти",
   description:
-    "Каталог на МЕТМА: механизми, рамкови механизми, детайли, дървени дисплеи, автоматни детайли и пружини.",
-};
+    "Бои за яйца, комплекти, украси и рекламни дисплеи от Весаче, Ино, Пет и METMA.",
+  path: "/produkti",
+});
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ kategoria?: string }>;
-}) {
-  const { kategoria } = await searchParams;
-  const initial = kategoria && isCategoryId(kategoria) ? kategoria : "all";
+export default async function ProductsPage({ searchParams }: Props) {
+  const { marka } = await searchParams;
+  const products = await getProducts();
+  const initialBrand = isBrandId(marka) ? marka : "all";
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
-      <PageHead
-        eyebrow="Каталог"
-        title="Продукти"
-        lede="Механизми, рамки, детайли и дисплеи. Размери и наличност — при запитване."
-      />
-      <div className="mt-10">
-        <Catalog key={initial} initial={initial} />
-      </div>
-    </div>
+    <CatalogShell
+      products={products}
+      activeCategory="alle"
+      initialBrand={initialBrand}
+      title="Продукти"
+      subtitle="Изберете марка или разгледайте целия асортимент. Цветът на страницата следва марката."
+    />
   );
 }

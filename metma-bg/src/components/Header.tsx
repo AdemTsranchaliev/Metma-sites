@@ -1,82 +1,295 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Wordmark } from "@/components/Wordmark";
-import { nav, siteConfig } from "@/lib/site";
+import { useEffect, useState } from "react";
+import { menuCategories, menuContact, menuNav } from "@/data/menu";
+
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Header() {
   const pathname = usePathname();
-  const [openPath, setOpenPath] = useState<string | null>(null);
-  const open = openPath === pathname;
+  const [open, setOpen] = useState(false);
+  const [desktopCats, setDesktopCats] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+    setDesktopCats(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/80 bg-paper/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center px-5 sm:px-8">
-        <Wordmark priority />
-        <nav className="ml-12 hidden items-center gap-8 lg:flex" aria-label="Основно">
-          {nav.map((item) => {
-            const active =
-              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+    <header className="sticky top-0 z-50 border-b border-[var(--metma-line)] bg-white/95 backdrop-blur-sm">
+      {/* Top bar */}
+      <div className="container-metma flex h-14 items-center justify-between gap-4 sm:h-16 md:h-[4.25rem]">
+        <Link
+          href="/"
+          aria-label="METMA начало"
+          className="relative block h-9 w-[8.75rem] shrink-0 sm:h-10 sm:w-[10rem] md:h-11 md:w-[11rem]"
+        >
+          <Image
+            src="/images/logo-brand-v3.png"
+            alt="METMA"
+            fill
+            priority
+            sizes="176px"
+            className="object-contain object-left"
+          />
+        </Link>
+
+        {/* Desktop nav */}
+        <nav
+          className="hidden items-center gap-0.5 md:flex"
+          aria-label="Главно меню"
+        >
+          {menuNav.map((item) => {
+            const active = isActivePath(pathname, item.href);
+            const hasChildren = "children" in item && item.children;
+
+            if (hasChildren) {
+              return (
+                <div
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => setDesktopCats(true)}
+                  onMouseLeave={() => setDesktopCats(false)}
+                >
+                  <Link
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className="btn-metma inline-flex !px-4 !py-2 text-sm"
+                  >
+                    {item.label}
+                    <span aria-hidden className="ml-1 text-[0.65rem] opacity-80">
+                      ▾
+                    </span>
+                  </Link>
+
+                  {desktopCats ? (
+                    <div className="absolute left-0 top-full z-30 min-w-[240px] border border-[var(--metma-line)] bg-white py-2 shadow-[0_12px_32px_-16px_rgba(0,0,0,0.25)]">
+                      {menuCategories.map((cat) => {
+                        const catActive = isActivePath(pathname, cat.href);
+                        return (
+                          <Link
+                            key={cat.href}
+                            href={cat.href}
+                            aria-current={catActive ? "page" : undefined}
+                            className={`block px-4 py-2.5 transition hover:bg-[var(--metma-sand)] ${
+                              catActive ? "bg-[var(--metma-sand)]" : ""
+                            }`}
+                          >
+                            <span
+                              className={`block text-sm font-semibold ${
+                                catActive
+                                  ? "text-[var(--metma-rose)]"
+                                  : "text-[var(--metma-ink)]"
+                              }`}
+                            >
+                              {cat.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs text-[var(--metma-mute)]">
+                              {cat.hint}
+                            </span>
+                          </Link>
+                        );
+                      })}
+                      <div className="mt-1 border-t border-[var(--metma-line)] px-4 py-2.5">
+                        <Link
+                          href="/produkti"
+                          className="text-xs font-semibold text-[var(--metma-rose)] hover:underline"
+                        >
+                          Всички продукти →
+                        </Link>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`text-[0.95rem] transition ${
-                  active ? "text-ink" : "text-muted hover:text-ink"
+                className={`relative px-3.5 py-2 text-sm transition ${
+                  active
+                    ? "font-semibold text-[var(--metma-rose)]"
+                    : "font-medium text-[var(--metma-ink)] hover:text-[var(--metma-rose)]"
                 }`}
               >
-                <span className={active ? "border-b-2 border-brand pb-0.5" : ""}>{item.label}</span>
+                {item.label}
+                {active ? (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-3.5 bottom-0 h-0.5 bg-[var(--metma-rose)]"
+                  />
+                ) : null}
               </Link>
             );
           })}
         </nav>
-        <div className="ml-auto hidden items-center gap-6 lg:flex">
-          <a
-            href={siteConfig.mobileHref}
-            className="text-sm tabular-nums text-muted transition hover:text-ink"
-          >
-            {siteConfig.mobile}
-          </a>
-          <Link href="/kontakti" className="btn">
-            Запитване
-          </Link>
-        </div>
+
+        {/* Mobile toggle */}
         <button
           type="button"
-          className="ml-auto inline-flex h-10 w-10 items-center justify-center lg:hidden"
+          className="relative inline-flex h-11 w-11 items-center justify-center md:hidden"
+          aria-label={open ? "Затвори менюто" : "Отвори менюто"}
           aria-expanded={open}
           aria-controls="mobile-nav"
-          onClick={() => setOpenPath(open ? null : pathname)}
+          onClick={() => setOpen((v) => !v)}
         >
-          <span className="sr-only">{open ? "Затвори менюто" : "Отвори менюто"}</span>
-          <span className="flex w-5 flex-col gap-1.5">
-            <span className={`h-px bg-ink transition ${open ? "translate-y-[3.5px] rotate-45" : ""}`} />
-            <span className={`h-px bg-ink transition ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`} />
+          <span className="sr-only">Меню</span>
+          <span aria-hidden className="relative block h-3.5 w-5">
+            <span
+              className={`absolute left-0 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-300 ${
+                open ? "top-1.5 rotate-45" : "top-0"
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-1.5 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-200 ${
+                open ? "scale-x-0 opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`absolute left-0 block h-0.5 w-5 bg-[var(--metma-ink)] transition duration-300 ${
+                open ? "top-1.5 -rotate-45" : "top-3"
+              }`}
+            />
           </span>
         </button>
       </div>
+
+      {/* Mobile panel */}
       {open ? (
-        <nav
+        <div
           id="mobile-nav"
-          className="border-t border-line bg-paper px-5 py-6 lg:hidden"
-          aria-label="Мобилно"
+          className="border-t border-[var(--metma-line)] bg-white md:hidden"
         >
-          <ul className="flex flex-col">
-            {nav.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="display block py-2 text-4xl">
-                  {item.label}
+          <div className="max-h-[min(82vh,640px)] overflow-y-auto overscroll-contain">
+            <nav
+              aria-label="Мобилно меню"
+              className="container-metma flex flex-col py-2"
+            >
+              {menuNav.map((item) => {
+                const active = isActivePath(pathname, item.href);
+                const hasChildren = "children" in item && item.children;
+
+                return (
+                  <div
+                    key={item.href}
+                    className="border-b border-[var(--metma-line)] last:border-b-0"
+                  >
+                    {hasChildren ? (
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className="btn-metma my-3 w-full"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex min-h-[3.25rem] items-center justify-between text-[1.05rem] font-semibold ${
+                          active
+                            ? "text-[var(--metma-rose)]"
+                            : "text-[var(--metma-ink)]"
+                        }`}
+                      >
+                        {item.label}
+                        {active ? (
+                          <span className="h-1.5 w-1.5 rounded-full bg-[var(--metma-rose)]" />
+                        ) : null}
+                      </Link>
+                    )}
+
+                    {hasChildren ? (
+                      <div className="mb-3 grid gap-1 pb-1">
+                        {menuCategories.map((cat) => {
+                          const catActive = isActivePath(pathname, cat.href);
+                          return (
+                            <Link
+                              key={cat.href}
+                              href={cat.href}
+                              onClick={() => setOpen(false)}
+                              aria-current={catActive ? "page" : undefined}
+                              className={`rounded-md px-3 py-2.5 ${
+                                catActive
+                                  ? "bg-[var(--metma-sand)]"
+                                  : "bg-[var(--metma-sand)]/60"
+                              }`}
+                            >
+                              <span
+                                className={`block text-sm font-semibold ${
+                                  catActive
+                                    ? "text-[var(--metma-rose)]"
+                                    : "text-[var(--metma-ink)]"
+                                }`}
+                              >
+                                {cat.label}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-[var(--metma-mute)]">
+                                {cat.hint}
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+
+              <div className="mt-4 mb-5 space-y-3 rounded-md bg-[var(--metma-sand)] px-4 py-4">
+                <div>
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-mute)]">
+                    Телефон
+                  </p>
+                  <a
+                    href={menuContact.phoneHref}
+                    className="mt-1 block text-base font-semibold text-[var(--metma-ink)]"
+                  >
+                    {menuContact.phone}
+                  </a>
+                </div>
+                <div>
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-mute)]">
+                    Имейл
+                  </p>
+                  <a
+                    href={menuContact.emailHref}
+                    className="mt-1 block break-all text-sm text-[var(--metma-ink)]"
+                  >
+                    {menuContact.email}
+                  </a>
+                </div>
+                <Link
+                  href="/kontakti"
+                  onClick={() => setOpen(false)}
+                  className="btn-metma mt-1 w-full"
+                >
+                  Изпратете съобщение
                 </Link>
-              </li>
-            ))}
-          </ul>
-          <a href={siteConfig.mobileHref} className="mt-6 block text-sm tabular-nums text-muted">
-            {siteConfig.mobile}
-          </a>
-        </nav>
+              </div>
+            </nav>
+          </div>
+        </div>
       ) : null}
     </header>
   );

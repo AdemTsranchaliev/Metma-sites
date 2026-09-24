@@ -7,11 +7,15 @@ import { PageIntro } from "@/components/PageIntro";
 import { Reveal } from "@/components/Reveal";
 import { team } from "@/data/home";
 
-export const metadata: Metadata = {
-  title: "Über Uns – METMA Ltd. – Eierfarbe",
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Über uns",
   description:
-    "METMA — das einzige Unternehmen für Eierfärben in Bulgarien mit geschlossenem Produktionsprozess. Qualität seit 1999.",
-};
+    "METMA ist der Hersteller für Eierfarben in Bulgarien mit geschlossenem Produktionsprozess. Qualität seit 1999.",
+  path: "/uber-uns",
+  image: "/images/about/history.png",
+});
 
 const story = [
   {
@@ -129,7 +133,7 @@ export default function UberUnsPage() {
             </div>
           </Reveal>
 
-          <div className="mt-9 grid gap-x-5 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-9 grid gap-x-5 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
               <Reveal key={member.name} delayMs={i * 45}>
                 <article className="group text-center">

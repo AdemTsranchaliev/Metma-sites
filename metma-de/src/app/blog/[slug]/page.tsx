@@ -3,15 +3,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionScatter } from "@/components/easter/EasterScatter";
+import { JsonLd } from "@/components/JsonLd";
 import {
   formatBlogDate,
   getBlogPostBySlug,
   getBlogPosts,
 } from "@/lib/catalog";
+import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+function RichText({ text }: { text: string }) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, index) => {
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (!link) return <span key={index}>{part}</span>;
+    return (
+      <Link
+        key={index}
+        href={link[2]}
+        className="font-semibold text-[var(--metma-ink)] underline decoration-[var(--metma-rose)]/50 underline-offset-4 hover:text-[var(--metma-rose)]"
+      >
+        {link[1]}
+      </Link>
+    );
+  });
+}
 
 export const revalidate = 60;
 
@@ -23,11 +43,20 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
-  if (!post) return { title: "Blog – METMA Ltd. – Eierfarbe" };
-  return {
-    title: `${post.title} – METMA Ltd. – Eierfarbe`,
+  if (!post) {
+    return pageMetadata({
+      title: "Blog",
+      description: "Artikel von METMA.",
+      path: "/blog",
+    });
+  }
+  return pageMetadata({
+    title: post.title,
     description: post.excerpt,
-  };
+    path: `/blog/${post.slug}`,
+    image: post.image,
+    type: "article",
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -44,6 +73,44 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt,
+            articleBody: post.content
+              .map((block) =>
+                block.type === "ul" ? block.items.join(" ") : block.text,
+              )
+              .join("\n\n"),
+            image: absoluteUrl(post.image),
+            datePublished: post.date,
+            dateModified: post.date,
+            inLanguage: "de",
+            mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+            author: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+            },
+            publisher: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              logo: {
+                "@type": "ImageObject",
+                url: absoluteUrl("/images/logo-brand-v3.png"),
+              },
+            },
+          },
+        ]}
+      />
       <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)]">
         <SectionScatter variant="story" />
         <div className="container-metma relative z-[1] max-w-3xl py-10 md:py-12">
@@ -97,18 +164,49 @@ export default async function BlogPostPage({ params }: Props) {
       <section className="bg-white py-10 md:py-14">
         <div className="container-metma max-w-2xl">
           <div className="space-y-6">
-            {post.content.map((paragraph, i) => (
-              <p
-                key={`${post.slug}-${i}`}
-                className={
-                  i === 0
-                    ? "border-l-[3px] border-[var(--metma-rose)] pl-5 text-lg leading-9 text-[var(--metma-ink)] md:pl-6 md:text-[1.2rem] md:leading-[1.75]"
-                    : "text-[1.02rem] leading-8 text-[var(--metma-ink)]/78"
-                }
-              >
-                {paragraph}
-              </p>
-            ))}
+            {post.content.map((block, i) => {
+              if (block.type === "h2") {
+                return (
+                  <h2
+                    key={`${post.slug}-${i}`}
+                    className="pt-4 font-display text-[1.45rem] font-bold leading-snug tracking-[-0.03em] text-[var(--metma-ink)] md:text-[1.65rem]"
+                  >
+                    {block.text}
+                  </h2>
+                );
+              }
+              if (block.type === "ul") {
+                return (
+                  <ul key={`${post.slug}-${i}`} className="space-y-3">
+                    {block.items.map((item) => (
+                      <li
+                        key={item}
+                        className="flex gap-3 text-[1.02rem] leading-8 text-[var(--metma-ink)]/78"
+                      >
+                        <span
+                          aria-hidden
+                          className="mt-3 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--metma-rose)]"
+                        />
+                        <RichText text={item} />
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+              const isLead = i === 0;
+              return (
+                <p
+                  key={`${post.slug}-${i}`}
+                  className={
+                    isLead
+                      ? "border-l-[3px] border-[var(--metma-rose)] pl-5 text-lg leading-9 text-[var(--metma-ink)] md:pl-6 md:text-[1.2rem] md:leading-[1.75]"
+                      : "text-[1.02rem] leading-8 text-[var(--metma-ink)]/78"
+                  }
+                >
+                  <RichText text={block.text} />
+                </p>
+              );
+            })}
           </div>
 
           {(prev || next) && (

@@ -1,102 +1,114 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { FaqList } from "@/components/FaqList";
-import { IconArrow } from "@/components/icons";
-import { PageHead } from "@/components/PageHead";
-import { faqs } from "@/data/faq";
-import { getProduct } from "@/data/products";
-import { siteConfig } from "@/lib/site";
+import { HomeContact } from "@/components/home/HomeContact";
+import { PageIntro } from "@/components/PageIntro";
+import { Reveal } from "@/components/Reveal";
+import { team } from "@/data/home";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "За нас",
-  description: "МЕТМА ООД, Пазарджик — механизми за мека мебел, серийно и по заявка.",
-};
+  description:
+    "METMA е единствената фирма за боя за яйца в България с изцяло затворено производство. Качество от 1999 г.",
+  path: "/za-nas",
+  image: "/images/about/METMA-History-infochart-1.png",
+});
 
-const points = [
-  { n: "01", title: "Серийно", text: "На склад." },
-  { n: "02", title: "Качество", text: "Специализирани машини." },
-  { n: "03", title: "Мека мебел", text: "Основният фокус." },
-  { n: "04", title: "По заявка", text: "Индивидуални поръчки." },
+const story = [
+  {
+    n: "01",
+    title: "От 1999",
+    text: "Бои за яйца, направени от нас — пораснали заедно с Великден, търговията и семейството.",
+    bg: "var(--metma-peach)",
+    num: "var(--metma-rose)",
+  },
+  {
+    n: "02",
+    title: "Собствено производство",
+    text: "От рецептата до опаковката под един покрив — качество и честна цена.",
+    bg: "var(--metma-blue-soft)",
+    num: "var(--metma-blue)",
+  },
+  {
+    n: "03",
+    title: "България и Европа",
+    text: "Работим с големи търговски вериги в България и извън нея.",
+    bg: "var(--metma-butter)",
+    num: "var(--metma-navy)",
+  },
 ];
-
-const photos = [
-  getProduct("darven-displey-kendi"),
-  getProduct("mehanizam-za-povdigane-na-matrak-45-za-amortisor"),
-  getProduct("mehanizam-fotoyl-poli"),
-].filter((item) => item !== undefined);
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
-      <PageHead
-        eyebrow={`${siteConfig.legalName} · Пазарджик`}
+    <>
+      <PageIntro
+        eyebrow="Компания"
         title="За нас"
-        lede="Механизми, модули и детайли за мека мебел. Серийно производство, склад и поръчки по заявка."
+        subtitle="Боя за яйца от собствено производство — от 1999 г. в България."
       />
 
-      <div className="mt-12 grid gap-3 lg:grid-cols-12">
-        {photos[0] ? (
-          <Link
-            href={`/produkti/${photos[0].slug}`}
-            aria-label={photos[0].title}
-            className="group relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-mist lg:col-span-7"
-          >
-            <Image
-              src={photos[0].images[0]}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1024px) 55vw, 100vw"
-              className="object-cover transition duration-700 group-hover:scale-[1.03]"
-            />
-          </Link>
-        ) : null}
-        <div className="grid gap-3 lg:col-span-5">
-          {photos.slice(1).map((product) => (
-            <Link
-              key={product.slug}
-              href={`/produkti/${product.slug}`}
-              aria-label={product.title}
-              className="group relative aspect-[16/10] overflow-hidden rounded-[1.25rem] bg-mist"
-            >
+      <section className="bg-white py-10 md:py-14">
+        <div className="container-metma">
+          <Reveal>
+            <div className="relative aspect-[2058/834] overflow-hidden bg-[var(--metma-sand)]">
               <Image
-                src={product.images[0]}
-                alt=""
+                src="/images/about/METMA-History-infochart-1.png"
+                alt="METMA — история и производство"
                 fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-contain p-6 transition duration-700 group-hover:scale-[1.03]"
+                priority
+                className="object-contain"
+                sizes="(max-width:1120px) 100vw, 1120px"
               />
-            </Link>
-          ))}
-        </div>
-      </div>
+            </div>
+          </Reveal>
 
-      <ol className="mt-10 grid border-t border-line sm:grid-cols-2 lg:grid-cols-4">
-        {points.map((point) => (
-          <li
-            key={point.n}
-            className="border-b border-line py-6 pr-4 lg:border-r lg:border-b-0 lg:pl-6 lg:first:pl-0 lg:last:border-r-0"
-          >
-            <p className="display text-sm text-brand">{point.n}</p>
-            <h2 className="mt-2 font-medium">{point.title}</h2>
-            <p className="mt-1 text-sm text-muted">{point.text}</p>
-          </li>
-        ))}
-      </ol>
+          <Reveal delayMs={60}>
+            <div className="mx-auto mt-10 max-w-2xl text-center md:mt-12">
+              <h2 className="font-display text-[clamp(1.45rem,3vw,2rem)] font-bold leading-snug tracking-[-0.03em] text-[var(--metma-ink)]">
+                Единствената фирма за боя за яйца в България
+              </h2>
+              <p className="mt-4 text-base leading-8 text-[var(--metma-mute)]">
+                С изцяло затворено производство постигаме съотношението
+                цена-качество. Работим с едни от най-големите вериги в България
+                и Европа. Безкомпромисни сме в качеството и обслужването на
+                клиентите ни.
+              </p>
+            </div>
+          </Reveal>
 
-      <section id="vaprosi" className="mt-16 scroll-mt-24">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="display text-4xl">Въпроси</h2>
-          <Link href="/kontakti" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
-            Запитване
-            <IconArrow className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="mt-6 max-w-3xl">
-          <FaqList items={faqs} />
+          <div className="mt-10 grid gap-3 md:mt-12 md:grid-cols-3">
+            {story.map((item, i) => (
+              <Reveal key={item.n} delayMs={i * 55}>
+                <div className="flex h-full flex-col px-6 py-7 sm:px-7" style={{ background: item.bg }}>
+                  <span
+                    className="font-display text-3xl font-bold leading-none tracking-tight"
+                    style={{ color: item.num }}
+                  >
+                    {item.n}
+                  </span>
+                  <h3 className="mt-5 text-lg font-bold text-[var(--metma-ink)]">{item.title}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-7 text-[var(--metma-mute)]">{item.text}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {team.map((person) => (
+              <figure key={person.name} className="text-center">
+                <div className="relative mx-auto aspect-square max-w-[220px] overflow-hidden bg-[var(--metma-sand)]">
+                  <Image src={person.image} alt={person.name} fill className="object-cover object-top" sizes="220px" />
+                </div>
+                <figcaption className="mt-3">
+                  <p className="font-display text-lg font-bold text-[var(--metma-ink)]">{person.name}</p>
+                  <p className="text-sm text-[var(--metma-mute)]">{person.role}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </section>
-    </div>
+      <HomeContact />
+    </>
   );
 }

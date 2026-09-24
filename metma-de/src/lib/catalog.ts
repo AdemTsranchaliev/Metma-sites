@@ -17,8 +17,10 @@ import {
 import {
   blogPosts as staticBlog,
   formatBlogDate,
+  type BlogBlock,
   type BlogPost,
 } from "@/data/blog";
+import { blogStoryBySlug } from "@/data/blog-stories";
 
 export type { StoreProduct as CatalogProduct, StoreCategory, StoreBlogPost };
 export { formatBlogDate };
@@ -76,11 +78,29 @@ export async function getCategories(): Promise<StoreCategory[]> {
   }));
 }
 
+function blockLength(blocks: BlogBlock[]) {
+  return blocks.reduce((sum, block) => {
+    if (block.type === "ul") return sum + block.items.join(" ").length;
+    return sum + block.text.length;
+  }, 0);
+}
+
+function withEditorialStory(post: BlogPost): BlogPost {
+  const story = blogStoryBySlug[post.slug];
+  if (!story) return post;
+  if (blockLength(story.content) <= blockLength(post.content)) return post;
+  return {
+    ...post,
+    title: story.title,
+    excerpt: story.excerpt,
+    category: story.category,
+    content: story.content,
+  };
+}
+
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  if (useFirebase) {
-    return readBlogPosts();
-  }
-  return staticBlog;
+  const posts = useFirebase ? await readBlogPosts() : staticBlog;
+  return posts.map(withEditorialStory);
 }
 
 export async function getBlogPostBySlug(
