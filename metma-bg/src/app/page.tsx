@@ -8,6 +8,7 @@ import { HomeProducts } from "@/components/home/HomeProducts";
 import { EggPainter } from "@/components/easter/EggPainter";
 import { HomeCountdownStrip } from "@/components/home/HomeCountdownStrip";
 import { HomeJournal } from "@/components/home/HomeJournal";
+import { HomeInstagram } from "@/components/home/HomeInstagram";
 import { HomeContact } from "@/components/home/HomeContact";
 
 export const metadata: Metadata = pageMetadata({
@@ -25,6 +26,7 @@ export default function HomePage() {
       <HomeProducts />
       <EggPainter />
       <HomeJournal />
+      <HomeInstagram />
       <HomeContact />
     </>
   );

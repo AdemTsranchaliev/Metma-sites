@@ -44,7 +44,6 @@ export const team = [
   { name: "Любомир Илиев", role: "Собственик", image: "/images/about/Lubo-Pic.png" },
   { name: "Зафер Мюмюнов", role: "Изпълнителен директор", image: "/images/about/Zafer-Pic.png" },
   { name: "Василка Нонова", role: "Ръководител продажби", image: "/images/about/Vaseto-Pic.png" },
-  { name: "Анна Пишинкова", role: "Асистент продажби", image: "/images/about/Anito-Pic.png" },
 ] as const;
 
 export const brands = [

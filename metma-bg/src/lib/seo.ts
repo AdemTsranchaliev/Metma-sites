@@ -72,6 +72,7 @@ export function organizationJsonLd() {
       postalCode: siteConfig.address.postalCode,
       addressCountry: siteConfig.address.country,
     },
+    sameAs: Object.values(siteConfig.social),
   };
 }
 

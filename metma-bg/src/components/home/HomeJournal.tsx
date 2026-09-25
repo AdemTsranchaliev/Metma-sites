@@ -1,46 +1,125 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
-import { getBlogPosts } from "@/lib/catalog";
+import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+
+function ArrowIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" aria-hidden>
+      <path
+        d="M3 8h10M9 4l4 4-4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export async function HomeJournal() {
   const posts = await getBlogPosts();
-  const post = posts[0];
-  if (!post) return null;
+  const [featured, ...rest] = posts;
+  const more = rest.slice(0, 3);
+  if (!featured) return null;
 
   return (
-    <section className="bg-white py-14 sm:py-20 md:py-24">
-      <div className="container-metma overflow-hidden lg:grid lg:grid-cols-2">
-        <Reveal>
-          <div className="relative aspect-[16/11] bg-[var(--metma-sand)] sm:aspect-[5/4] lg:aspect-auto lg:min-h-[400px]">
-            <Image
-              src={post.image}
-              alt={post.title}
-              fill
-              quality={72}
-              className="object-cover"
-              sizes="(max-width:1024px) 100vw, 560px"
-            />
+    <section className="bg-white py-14 sm:py-16 md:py-20">
+      <div className="container-metma">
+        <Reveal className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow text-[var(--metma-rose)]">Блог</p>
+            <h2 className="mt-2 font-display text-[clamp(1.7rem,4vw,2.4rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
+              От журнала
+            </h2>
           </div>
+          <Link href="/blog" className="btn-outline shrink-0 self-start sm:self-auto">
+            Всички статии
+          </Link>
         </Reveal>
-        <Reveal
-          delayMs={80}
-          className="flex flex-col justify-center bg-[var(--metma-sand)] px-5 py-8 sm:px-10 sm:py-10 md:py-14 lg:px-12"
-        >
-          <p className="eyebrow text-[var(--metma-rose)]">Блог</p>
-          <h2 className="mt-3 font-display text-[clamp(1.55rem,5.5vw,2.6rem)] font-bold leading-[1.1] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-4">
-            {post.title}
-          </h2>
-          <p className="mt-3 max-w-md text-[0.95rem] leading-7 text-[var(--metma-mute)] sm:mt-5 sm:text-base sm:leading-8">
-            {post.excerpt}
-          </p>
-          <MagneticCta className="mt-6 w-full self-start sm:mt-8 sm:w-auto">
-            <Link href={`/blog/${post.slug}`} className="btn-metma">
-              Прочети
-            </Link>
-          </MagneticCta>
-        </Reveal>
+
+        <div className="grid items-stretch gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+          <Reveal>
+            <article className="flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-[#fff8f4] sm:flex-row">
+              <Link
+                href={`/blog/${featured.slug}`}
+                className="group relative block aspect-[4/3] shrink-0 sm:aspect-auto sm:w-[48%]"
+              >
+                <Image
+                  src={featured.image}
+                  alt={featured.title}
+                  fill
+                  quality={72}
+                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  style={{ objectPosition: featured.imagePosition ?? "center" }}
+                  sizes="(max-width:640px) 100vw, 520px"
+                />
+              </Link>
+              <div className="flex flex-1 flex-col justify-center px-5 py-6 sm:px-6 sm:py-7">
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#5c6b7a]">
+                  <span className="text-[var(--metma-rose)]">{featured.category}</span>
+                  <span aria-hidden> · </span>
+                  <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
+                </p>
+                <h3 className="mt-3 font-display text-[clamp(1.25rem,2vw,1.65rem)] font-bold leading-snug tracking-[-0.03em] text-[#2f3b4c]">
+                  <Link href={`/blog/${featured.slug}`} className="transition hover:text-[var(--metma-rose)]">
+                    {featured.title}
+                  </Link>
+                </h3>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#5c6b7a]">{featured.excerpt}</p>
+                <Link
+                  href={`/blog/${featured.slug}`}
+                  className="mt-5 inline-flex items-center gap-2 self-start text-sm font-bold text-[var(--metma-rose)]! transition hover:gap-3"
+                >
+                  Прочети
+                  <ArrowIcon />
+                </Link>
+              </div>
+            </article>
+          </Reveal>
+
+          <ul className="grid gap-3">
+            {more.map((post, index) => (
+              <li key={post.slug}>
+                <Reveal delayMs={index * 60} className="h-full">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group flex h-full items-center gap-3 overflow-hidden rounded-[1.25rem] bg-[#fff8f4] p-2.5 transition hover:bg-[#fff1ea] sm:gap-4 sm:p-3"
+                  >
+                    <span className="relative block aspect-[4/3] w-[5.5rem] shrink-0 overflow-hidden rounded-xl sm:w-28">
+                      <Image
+                        src={post.image}
+                        alt=""
+                        fill
+                        quality={70}
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        style={{ objectPosition: post.imagePosition ?? "center" }}
+                        sizes="112px"
+                      />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col justify-center py-1 pr-1">
+                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-rose)]">
+                        {post.category}
+                      </span>
+                      <span className="mt-1 line-clamp-2 font-display text-[0.95rem] font-bold leading-snug text-[#2f3b4c] transition group-hover:text-[var(--metma-rose)] sm:text-base">
+                        {post.title}
+                      </span>
+                      <time
+                        dateTime={post.date}
+                        className="mt-1 text-xs font-semibold text-[#5c6b7a]"
+                      >
+                        {formatBlogDate(post.date)}
+                      </time>
+                    </span>
+                    <span className="mr-1 hidden text-[var(--metma-rose)] opacity-0 transition group-hover:opacity-100 sm:grid">
+                      <ArrowIcon />
+                    </span>
+                  </Link>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

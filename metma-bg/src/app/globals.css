@@ -143,10 +143,12 @@ img {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  font-weight: 600;
+  min-height: 3rem;
+  border-radius: 999px;
+  font-weight: 700;
   font-size: 0.875rem;
-  padding: 0.85rem 1.35rem;
-  border: none;
+  padding: 0.7rem 1.35rem;
+  border: 1px solid transparent;
   transition:
     background 0.22s ease,
     color 0.22s ease,
@@ -196,9 +198,9 @@ img {
 }
 
 .btn-outline {
-  background: transparent;
+  background: #fff;
   color: var(--metma-ink);
-  border: 1px solid #cfcfcf;
+  border-color: rgba(23, 23, 23, 0.14);
 }
 
 .btn-outline:hover {

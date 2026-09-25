@@ -28,7 +28,7 @@ export async function HomeProducts() {
               <Link
                 key={cat.href}
                 href={cat.href}
-                className="shrink-0 bg-[var(--metma-sand)] px-3.5 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--metma-ink)] transition hover:bg-[var(--metma-ink)] hover:text-white"
+                className="shrink-0 bg-[var(--metma-sand)] px-3.5 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--metma-ink)] transition hover:bg-[var(--metma-rose)] hover:text-white!"
               >
                 {cat.label}
               </Link>
@@ -40,7 +40,7 @@ export async function HomeProducts() {
           {items.map((product, index) => (
             <Reveal key={product.slug} delayMs={(index % 4) * 45}>
               <Link href={`/produkti/${product.slug}`} className="group block">
-                <div className="relative mb-3 aspect-square overflow-hidden bg-white">
+                <div className="relative mb-3 aspect-square overflow-hidden rounded-2xl bg-[var(--metma-sand)] ring-1 ring-black/[0.06]">
                   <Image
                     src={product.image}
                     alt={product.name}

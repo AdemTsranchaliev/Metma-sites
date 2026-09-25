@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SocialIcon } from "@/components/SocialIcon";
 import { navItems, productCategories } from "@/data/home";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, socialProfiles } from "@/lib/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -102,6 +103,29 @@ export function Footer() {
           >
             Изпратете съобщение →
           </Link>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 bg-[var(--metma-ink)] text-white">
+        <div className="container-metma flex flex-col items-start gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white/70">
+            Последвайте ни
+          </p>
+          <ul className="flex items-center gap-2">
+            {socialProfiles.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={item.label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-[var(--metma-rose)]"
+                >
+                  <SocialIcon id={item.id} />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>
