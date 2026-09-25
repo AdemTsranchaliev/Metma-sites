@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { defaultLocale, localeMeta, localePath, locales, type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 export function absoluteUrl(path = "/"): string {
@@ -8,10 +9,20 @@ export function absoluteUrl(path = "/"): string {
   return `${base}${normalized}`;
 }
 
+export function languageAlternates(path: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeMeta[locale].hreflang] = absoluteUrl(localePath(locale, path));
+  }
+  languages["x-default"] = absoluteUrl(localePath(defaultLocale, path));
+  return languages;
+}
+
 type PageMeta = {
   title?: string;
   description: string;
   path: string;
+  locale?: Locale;
   image?: string;
   type?: "website" | "article";
   noIndex?: boolean;
@@ -21,32 +32,39 @@ export function pageMetadata({
   title,
   description,
   path,
+  locale = defaultLocale,
   image,
   type = "website",
   noIndex = false,
 }: PageMeta): Metadata {
-  const url = absoluteUrl(path);
+  const publicPath = localePath(locale, path);
+  const url = absoluteUrl(publicPath);
   const imageUrl = absoluteUrl(image ?? siteConfig.ogImage);
+  const pageTitle = title ?? siteConfig.defaultTitle;
 
   return {
     ...(title ? { title } : {}),
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages: languageAlternates(path),
+    },
     robots: noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },
     openGraph: {
       type,
-      locale: siteConfig.ogLocale,
+      locale: localeMeta[locale].og,
+      alternateLocale: locales.filter((item) => item !== locale).map((item) => localeMeta[item].og),
       url,
       siteName: siteConfig.name,
-      title: title ?? siteConfig.defaultTitle,
+      title: pageTitle,
       description,
-      images: [{ url: imageUrl, alt: title ?? siteConfig.defaultTitle }],
+      images: [{ url: imageUrl, alt: pageTitle }],
     },
     twitter: {
       card: "summary_large_image",
-      title: title ?? siteConfig.defaultTitle,
+      title: pageTitle,
       description,
       images: [imageUrl],
     },
@@ -76,13 +94,13 @@ export function organizationJsonLd() {
   };
 }
 
-export function websiteJsonLd() {
+export function websiteJsonLd(locale: Locale = defaultLocale) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
-    url: siteConfig.url,
-    inLanguage: "bg",
+    url: absoluteUrl(localePath(locale, "/")),
+    inLanguage: localeMeta[locale].htmlLang,
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,

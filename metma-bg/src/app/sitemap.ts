@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { brands } from "@/data/brands";
 import { getBlogPosts, getCategories, getProducts } from "@/lib/catalog";
-import { absoluteUrl } from "@/lib/seo";
+import { locales, localePath } from "@/lib/i18n";
+import { absoluteUrl, languageAlternates } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -12,33 +13,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getBlogPosts(),
   ]);
 
-  return [
-    { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
-    { url: absoluteUrl("/produkti"), changeFrequency: "weekly", priority: 0.9 },
+  const paths: {
+    path: string;
+    changeFrequency: "weekly" | "monthly" | "yearly";
+    priority: number;
+    lastModified?: Date;
+  }[] = [
+    { path: "/", changeFrequency: "weekly" as const, priority: 1 },
+    { path: "/produkti", changeFrequency: "weekly" as const, priority: 0.9 },
     ...brands.map((brand) => ({
-      url: absoluteUrl(`/marki/${brand.id}`),
+      path: `/marki/${brand.id}`,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
-    { url: absoluteUrl("/blog"), changeFrequency: "weekly", priority: 0.7 },
-    { url: absoluteUrl("/za-nas"), changeFrequency: "monthly", priority: 0.6 },
-    { url: absoluteUrl("/deklaratsii"), changeFrequency: "yearly", priority: 0.4 },
-    { url: absoluteUrl("/kontakti"), changeFrequency: "monthly", priority: 0.6 },
+    { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
+    { path: "/za-nas", changeFrequency: "monthly" as const, priority: 0.6 },
+    { path: "/deklaratsii", changeFrequency: "yearly" as const, priority: 0.4 },
+    { path: "/kontakti", changeFrequency: "monthly" as const, priority: 0.6 },
     ...categories.map((category) => ({
-      url: absoluteUrl(`/produkti/${category.slug}`),
+      path: `/produkti/${category.slug}`,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
     ...products.map((product) => ({
-      url: absoluteUrl(`/produkti/${product.slug}`),
+      path: `/produkti/${product.slug}`,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
     ...posts.map((post) => ({
-      url: absoluteUrl(`/blog/${post.slug}`),
+      path: `/blog/${post.slug}`,
       lastModified: new Date(post.date),
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
   ];
+
+  return locales.flatMap((locale) =>
+    paths.map((entry) => ({
+      url: absoluteUrl(localePath(locale, entry.path)),
+      lastModified: entry.lastModified,
+      changeFrequency: entry.changeFrequency,
+      priority: entry.priority,
+      alternates: { languages: languageAlternates(entry.path) },
+    })),
+  );
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import { EggIcon } from "@/components/easter/EasterMotifs";
+import { getStatic } from "@/i18n/static";
 
 const palette = [
   { id: "red", name: "червено", color: "#e10600", pattern: "dots" },
@@ -34,6 +36,7 @@ function ShellCap() {
 }
 
 export function EggKnock({ painted, onNewEgg }: { painted: string; onNewEgg: () => void }) {
+  const egg = getStatic(useLocale()).egg;
   const [foe, setFoe] = useState(() => otherEgg());
   const [phase, setPhase] = useState<"ready" | "knock" | "result">("ready");
   const [youWin, setYouWin] = useState(false);
@@ -93,29 +96,29 @@ export function EggKnock({ painted, onNewEgg }: { painted: string; onNewEgg: () 
             </div>
           </div>
           <p className={`mt-4 text-center font-semibold text-[var(--metma-ink)] ${phase === "result" && youWin ? "egg-win-title" : "text-sm"}`}>
-            {phase === "result" ? (youWin ? "Ти победи!" : "Ти беше победен.") : `Твоето яйце срещу ${foe.name}`}
+            {phase === "result" ? (youWin ? egg.youWin : egg.youLose) : `${egg.versus} ${egg.colors[foe.id]}`}
           </p>
-          {phase === "result" ? <p className="text-center text-sm text-[var(--metma-mute)]">Опитай отново.</p> : null}
+          {phase === "result" ? <p className="text-center text-sm text-[var(--metma-mute)]">{egg.again}</p> : null}
           {phase === "result" ? (
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <button type="button" onClick={again} className="btn-metma">
-                Опитай отново
+                {egg.again}
               </button>
               <button type="button" onClick={onNewEgg} className="min-h-11 bg-[var(--metma-sand)] px-4 text-sm font-semibold text-[var(--metma-ink)]">
-                Ново яйце
+                {egg.fresh}
               </button>
             </div>
           ) : (
             <button type="button" onClick={knock} disabled={knocking} className="btn-metma mt-4 disabled:opacity-50">
-              Чукни
+              {egg.tap}
             </button>
           )}
         </div>
         <div>
-          <p className="eyebrow text-[var(--metma-rose)]">Чукане</p>
-          <h3 className="mt-2 font-display text-2xl font-bold text-[var(--metma-ink)]">Чукна се</h3>
+          <p className="eyebrow text-[var(--metma-rose)]">{egg.knockEyebrow}</p>
+          <h3 className="mt-2 font-display text-2xl font-bold text-[var(--metma-ink)]">{egg.knockTitle}</h3>
           <p className="mt-2 hidden max-w-md text-sm leading-6 text-[var(--metma-mute)] sm:mt-3 sm:block">
-            Твоето боядисано яйце срещу друго. Ако се счупи, опитай с нов противник или си направи ново яйце.
+            {egg.knockText}
           </p>
         </div>
       </div>

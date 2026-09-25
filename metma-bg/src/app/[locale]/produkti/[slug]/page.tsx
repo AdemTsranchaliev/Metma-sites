@@ -13,11 +13,14 @@ import {
   getProductBySlug,
   getProducts,
 } from "@/lib/catalog";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 };
 
 export async function generateStaticParams() {
@@ -29,14 +32,18 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = parseLocale(raw);
+  const copy = getMessages(locale);
   const cats = await getCategories();
   const cat = cats.find((c) => c.slug === slug);
-  if (cat) {
+  if (cat && cat.slug in copy.categories) {
+    const label = copy.categories[cat.slug as keyof typeof copy.categories].label;
     return pageMetadata({
-      title: cat.label,
-      description: `${cat.label} от METMA — боя за яйца и великденски продукти от собствено производство.`,
+      title: label,
+      description: `${label} — ${copy.meta.productsDescription}`,
       path: `/produkti/${cat.slug}`,
+      locale,
     });
   }
   const product = await getProductBySlug(slug);
@@ -46,17 +53,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: product.shortDescription || product.description,
       path: `/produkti/${product.slug}`,
       image: product.image,
+      locale,
     });
   }
   return pageMetadata({
-    title: "Продукти",
-    description: "Асортимент на METMA.",
+    title: copy.meta.productsTitle,
+    description: copy.meta.range,
     path: "/produkti",
+    locale,
   });
 }
 
 export default async function ProductSlugPage({ params }: Props) {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = parseLocale(raw);
+  const copy = getMessages(locale);
+  const ui = getStatic(locale).products;
   const [cats, products] = await Promise.all([getCategories(), getProducts()]);
   const cat = cats.find((c) => c.slug === slug);
 
@@ -66,15 +78,15 @@ export default async function ProductSlugPage({ params }: Props) {
       <>
         <JsonLd
           data={breadcrumbJsonLd([
-            { name: "Продукти", path: "/produkti" },
-            { name: cat.label, path: `/produkti/${cat.slug}` },
+            { name: copy.nav.products, path: localePath(locale, "/produkti") },
+            { name: copy.categories[cat.slug as keyof typeof copy.categories]?.label ?? cat.label, path: localePath(locale, `/produkti/${cat.slug}`) },
           ])}
         />
         <CatalogShell
           products={filtered}
           activeCategory={cat.slug}
-          title={cat.label}
-          subtitle={`${filtered.length} продукта в тази категория`}
+          title={copy.categories[cat.slug as keyof typeof copy.categories]?.label ?? cat.label}
+          subtitle={`${filtered.length} ${ui.inCategory}`}
         />
       </>
     );
@@ -98,11 +110,11 @@ export default async function ProductSlugPage({ params }: Props) {
       <JsonLd
         data={[
           breadcrumbJsonLd([
-            { name: "Продукти", path: "/produkti" },
+            { name: copy.nav.products, path: localePath(locale, "/produkti") },
             ...(category
-              ? [{ name: category.label, path: `/produkti/${category.slug}` }]
+              ? [{ name: copy.categories[category.slug as keyof typeof copy.categories]?.label ?? category.label, path: localePath(locale, `/produkti/${category.slug}`) }]
               : []),
-            { name: product.name, path: `/produkti/${product.slug}` },
+            { name: product.name, path: localePath(locale, `/produkti/${product.slug}`) },
           ]),
           {
             "@context": "https://schema.org",
@@ -122,7 +134,7 @@ export default async function ProductSlugPage({ params }: Props) {
             {product.name}
           </h1>
           {brand ? (
-            <Link href={`/marki/${brand.id}`} className="relative hidden h-16 w-16 shrink-0 overflow-hidden rounded-full bg-white sm:block" aria-label={brand.name}>
+            <Link href={localePath(locale, `/marki/${brand.id}`)} className="relative hidden h-16 w-16 shrink-0 overflow-hidden rounded-full bg-white sm:block" aria-label={brand.name}>
               <Image src={brand.logo} alt="" fill className="object-contain p-1.5" sizes="64px" />
             </Link>
           ) : null}
@@ -146,25 +158,25 @@ export default async function ProductSlugPage({ params }: Props) {
             <div className="lg:pt-4">
               <p className="text-sm text-[var(--metma-mute)]">
                 {brand ? (
-                  <Link href={`/marki/${brand.id}`} style={{ color: brand.ink }}>
+                  <Link href={localePath(locale, `/marki/${brand.id}`)} style={{ color: brand.ink }}>
                     {brand.name}
                   </Link>
                 ) : null}
                 {brand && category ? " · " : ""}
-                {category ? category.label : ""}
+                {category ? copy.categories[category.slug as keyof typeof copy.categories]?.label ?? category.label : ""}
                 {` · ${product.id}`}
               </p>
               <div className="mt-6 text-sm leading-7 text-[var(--metma-ink)]/80 md:text-base md:leading-8">
                 <ExpandableText paragraphs={paragraphs} />
               </div>
-              <Link href="/kontakti" className="btn-metma mt-8 inline-flex" style={{ background: brand?.ink }}>
-                Запитване
+              <Link href={localePath(locale, "/kontakti")} className="btn-metma mt-8 inline-flex" style={{ background: brand?.ink }}>
+                {ui.enquiry}
               </Link>
             </div>
           </div>
           {related.length > 0 ? (
             <div className="container-metma border-t border-[var(--metma-line)] pt-10">
-              <h2 className="text-sm font-medium text-[var(--metma-mute)]">Още от {brand?.name ?? "категорията"}</h2>
+              <h2 className="text-sm font-medium text-[var(--metma-mute)]">{ui.moreFrom} {brand?.name ?? ui.category}</h2>
               <div className="mt-6">
                 <ProductGrid products={related} animated={false} />
               </div>

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { EggIcon } from "@/components/easter/EasterMotifs";
 import { Reveal } from "@/components/Reveal";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath, type Locale } from "@/lib/i18n";
 
 function GlobeIcon() {
   return (
@@ -67,7 +70,9 @@ const points = [
   },
 ];
 
-export function HomeStory() {
+export function HomeStory({ locale }: { locale: Locale }) {
+  const copy = getMessages(locale).home;
+  const story = getStatic(locale).story;
   return (
     <section className="relative overflow-hidden bg-[#fff8f4] py-14 text-[#2f3b4c] sm:py-16 md:py-20">
       <div
@@ -81,10 +86,10 @@ export function HomeStory() {
 
       <div className="container-metma relative">
         <Reveal>
-          <p className="eyebrow text-[var(--metma-rose)]">За METMA</p>
+          <p className="eyebrow text-[var(--metma-rose)]">{copy.storyEyebrow}</p>
           <h2 className="mt-4 max-w-3xl font-display text-[clamp(2rem,4.6vw,3.35rem)] font-bold leading-[1.05] tracking-[-0.04em]">
-            Единствената фирма
-            <span className="mt-1 block">за боя за яйца в България</span>
+            {copy.storyTitle1}
+            <span className="mt-1 block">{copy.storyTitle2}</span>
           </h2>
         </Reveal>
 
@@ -93,11 +98,10 @@ export function HomeStory() {
           className="mt-6 flex flex-col items-start gap-5 sm:mt-7 sm:flex-row sm:items-center sm:justify-between"
         >
           <p className="max-w-xl text-[0.98rem] leading-7 text-[#5c6b7a]">
-            С изцяло затворено производство постигаме съотношението цена-качество.
-            Работим с големи вериги в България и Европа.
+            {copy.storyText}
           </p>
-          <Link href="/za-nas" className="btn-metma shrink-0">
-            Повече за нас
+          <Link href={localePath(locale, "/za-nas")} className="btn-metma shrink-0">
+            {copy.storyCta}
           </Link>
         </Reveal>
 
@@ -107,7 +111,7 @@ export function HomeStory() {
             return (
             <Reveal key={point.n} delayMs={index * 80} className="h-full">
               <Link
-                href={point.href}
+                href={localePath(locale, point.href)}
                 className="group flex h-full flex-col rounded-[1.4rem] px-5 py-5 transition duration-300 hover:-translate-y-1 sm:px-6 sm:py-6"
                 style={{ background: point.bg, color: point.fg }}
               >
@@ -124,10 +128,10 @@ export function HomeStory() {
                 </span>
                 <span className="mt-5 block text-xs font-bold tracking-[0.18em]">{point.n}</span>
                 <span className="mt-2 block font-display text-xl font-bold leading-snug tracking-[-0.03em] sm:text-[1.35rem]">
-                  {point.title}
+                  {story[index].title}
                 </span>
                 <span className="mt-2 block text-sm leading-6" style={{ color: point.mute }}>
-                  {point.text}
+                  {story[index].text}
                 </span>
               </Link>
             </Reveal>

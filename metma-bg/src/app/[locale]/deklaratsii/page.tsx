@@ -1,25 +1,43 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { PageIntro } from "@/components/PageIntro";
+import { getMessages } from "@/i18n/messages";
 import { getDeclarations } from "@/lib/catalog";
+import { getStatic } from "@/i18n/static";
+import { parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Декларации",
-  description:
-    "Политики и декларации на Метма: социална отговорност, качество, околна среда и проекти.",
-  path: "/deklaratsii",
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale).meta;
+  return pageMetadata({
+    title: copy.declarationsTitle,
+    description: copy.declarationsDescription,
+    path: "/deklaratsii",
+    locale,
+  });
+}
 
-export default async function DeclarationsPage() {
+export default async function DeclarationsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale);
+  const ui = getStatic(locale);
   const declarations = await getDeclarations();
 
   return (
     <>
       <PageIntro
-        eyebrow="Документи"
-        title="Декларации"
-        subtitle="Политики на Метма ЕООД — социална отговорност, качество и околна среда."
+        eyebrow={ui.declarations.eyebrow}
+        title={copy.meta.declarationsTitle}
+        subtitle={ui.declarations.subtitle}
       />
       <section className="bg-white py-12 md:py-16">
         <div className="container-metma space-y-16">

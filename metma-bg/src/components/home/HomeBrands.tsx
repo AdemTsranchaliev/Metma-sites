@@ -3,7 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import { EggIcon } from "@/components/easter/EasterMotifs";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath } from "@/lib/i18n";
 
 type BrandProduct = {
   name: string;
@@ -184,6 +188,9 @@ const orderedBrands = [
 ];
 
 export function HomeBrands() {
+  const locale = useLocale();
+  const copy = getMessages(locale);
+  const brandsCopy = getStatic(locale).brands;
   const [activeId, setActiveId] = useState("metma");
   const active = orderedBrands.find((brand) => brand.id === activeId) ?? orderedBrands[0];
 
@@ -207,10 +214,10 @@ export function HomeBrands() {
         <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow" style={{ color: active.ink }}>
-              METMA е основната
+              {copy.home.brandsEyebrow}
             </p>
             <h2 className="mt-2 font-display text-[clamp(1.7rem,4vw,2.6rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-              Нашите марки
+              {copy.home.brandsTitle}
             </h2>
           </div>
           <div className="flex w-full items-end justify-between gap-1 sm:w-auto sm:justify-end sm:gap-3">
@@ -222,7 +229,7 @@ export function HomeBrands() {
                   <button
                     type="button"
                     aria-pressed={selected}
-                    aria-label={main ? "METMA, основната марка" : brand.name}
+                    aria-label={main ? brandsCopy.mainAria : brand.name}
                     onClick={() => setActiveId(brand.id)}
                     className={`relative overflow-hidden rounded-full bg-white shadow-sm transition duration-300 ${
                       main ? "h-14 w-14 sm:h-[4.5rem] sm:w-[4.5rem]" : "h-12 w-12 sm:h-16 sm:w-16"
@@ -245,7 +252,7 @@ export function HomeBrands() {
                     className="max-w-[4.5rem] text-center text-[0.58rem] font-bold uppercase leading-tight tracking-[0.06em] sm:max-w-none sm:text-[0.62rem] sm:tracking-[0.12em]"
                     style={{ color: main || selected ? brand.ink : "rgba(23,23,23,0.45)" }}
                   >
-                    {main ? "Основна" : brand.name}
+                    {main ? brandsCopy.main : brand.name}
                   </span>
                 </div>
               );
@@ -271,13 +278,13 @@ export function HomeBrands() {
               className="mt-4 text-xs font-bold uppercase tracking-[0.2em]"
               style={{ color: active.ink }}
             >
-              {active.since} · {active.tag}
+              {active.since} · {brandsCopy[active.id as "vesache" | "ino" | "pet" | "metma"].tag}
             </p>
             <p className="mt-4 max-w-md text-sm leading-7 text-[var(--metma-ink)]/80 sm:text-base sm:leading-8">
-              {active.text}
+              {brandsCopy[active.id as "vesache" | "ino" | "pet" | "metma"].text}
             </p>
-            <Link href={`/marki/${active.id}`} className="btn-metma mt-6 inline-flex" style={{ background: active.ink }}>
-              Страница на марката
+            <Link href={localePath(locale, `/marki/${active.id}`)} className="btn-metma mt-6 inline-flex" style={{ background: active.ink }}>
+              {copy.home.brandsCta}
             </Link>
           </div>
 

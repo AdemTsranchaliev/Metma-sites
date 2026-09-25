@@ -1,26 +1,44 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/PageIntro";
+import { getMessages } from "@/i18n/messages";
 import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+import { getStatic } from "@/i18n/static";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Блог",
-  description: "Истории за Великден и боите за яйца на METMA.",
-  path: "/blog",
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale).meta;
+  return pageMetadata({
+    title: copy.blogTitle,
+    description: copy.blogDescription,
+    path: "/blog",
+    locale,
+  });
+}
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale);
+  const ui = getStatic(locale);
   const blogPosts = await getBlogPosts();
   const [featured, ...rest] = blogPosts;
 
   return (
     <>
       <PageIntro
-        eyebrow="Журнал"
-        title="Блог"
-        subtitle="Великден, цвят и традиции — от METMA."
+        eyebrow={ui.blog.eyebrow}
+        title={copy.meta.blogTitle}
+        subtitle={ui.blog.subtitle}
         scatter={false}
       />
       <section className="bg-[#fff8f4] py-10 md:py-14">
@@ -28,7 +46,7 @@ export default async function BlogPage() {
           {featured ? (
             <article className="overflow-hidden rounded-[1.6rem] bg-white md:grid md:grid-cols-2">
               <Link
-                href={`/blog/${featured.slug}`}
+                href={localePath(locale, `/blog/${featured.slug}`)}
                 className="group relative block aspect-[4/3] bg-[var(--metma-sand)] md:aspect-auto md:min-h-[22rem]"
               >
                 <Image
@@ -47,15 +65,15 @@ export default async function BlogPage() {
                   <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
                 </div>
                 <h2 className="mt-3 font-display text-[clamp(1.55rem,2.6vw,2.15rem)] font-bold leading-[1.15] tracking-[-0.03em] text-[#2f3b4c]">
-                  <Link href={`/blog/${featured.slug}`} className="transition hover:text-[var(--metma-rose)]">
+                  <Link href={localePath(locale, `/blog/${featured.slug}`)} className="transition hover:text-[var(--metma-rose)]">
                     {featured.title}
                   </Link>
                 </h2>
                 <p className="mt-3 max-w-md text-[0.95rem] leading-7 text-[#5c6b7a]">
                   {featured.excerpt}
                 </p>
-                <Link href={`/blog/${featured.slug}`} className="btn-metma mt-7 self-start">
-                  Прочети
+                <Link href={localePath(locale, `/blog/${featured.slug}`)} className="btn-metma mt-7 self-start">
+                  {copy.home.read}
                 </Link>
               </div>
             </article>
@@ -66,7 +84,7 @@ export default async function BlogPage() {
               {rest.map((post) => (
                 <li key={post.slug}>
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={localePath(locale, `/blog/${post.slug}`)}
                     className="group block h-full overflow-hidden rounded-[1.4rem] bg-white"
                   >
                     <span className="relative block aspect-square">

@@ -5,33 +5,47 @@ import { brands, getBrand } from "@/data/brands";
 import { BrandSwitch } from "@/components/BrandSwitch";
 import { BrandWash } from "@/components/BrandWash";
 import { ProductGrid } from "@/components/ProductGrid";
+import { getMessages } from "@/i18n/messages";
 import { getProducts } from "@/lib/catalog";
+import { getStatic } from "@/i18n/static";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export function generateStaticParams() {
   return brands.map((brand) => ({ slug: brand.id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = parseLocale(raw);
+  const copy = getMessages(locale);
   const brand = getBrand(slug);
   if (!brand) {
-    return pageMetadata({ title: "Марки", description: "Марките на METMA.", path: "/marki" });
+    return pageMetadata({
+      title: copy.home.brandsTitle,
+      description: copy.meta.description,
+      path: "/marki",
+      locale,
+    });
   }
   return pageMetadata({
     title: brand.name,
     description: brand.text,
     path: `/marki/${brand.id}`,
     image: brand.logo,
+    locale,
   });
 }
 
 export default async function BrandPage({ params }: Props) {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = parseLocale(raw);
   const brand = getBrand(slug);
   if (!brand) notFound();
+  const copy = getStatic(locale).brands[brand.id as "vesache" | "ino" | "pet" | "metma"];
+  const toProducts = getStatic(locale).products.toProducts;
 
   const products = await getProducts({ brand: brand.id });
 
@@ -44,11 +58,11 @@ export default async function BrandPage({ params }: Props) {
             {brand.name}
           </h1>
           <p className="mt-3 text-sm text-[var(--metma-ink)]/65">
-            {brand.since} · {brand.tag}
+            {brand.since} · {copy.tag}
           </p>
-          <p className="mt-2 max-w-md text-sm leading-6 text-[var(--metma-ink)]/75">{brand.text}</p>
-          <Link href={`/produkti?marka=${brand.id}`} className="mt-5 inline-flex text-sm font-semibold" style={{ color: brand.ink }}>
-            Към продуктите
+          <p className="mt-2 max-w-md text-sm leading-6 text-[var(--metma-ink)]/75">{copy.text}</p>
+          <Link href={`${localePath(locale, "/produkti")}?marka=${brand.id}`} className="mt-5 inline-flex text-sm font-semibold" style={{ color: brand.ink }}>
+            {toProducts}
           </Link>
         </div>
         <BrandSwitch active={brand.id} links />

@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/PageIntro";
+import { getMessages } from "@/i18n/messages";
 import { formatBlogDate, getBlogPostBySlug, getBlogPosts } from "@/lib/catalog";
+import { parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -13,10 +15,12 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: raw, slug } = await params;
+  const locale = parseLocale(raw);
+  const copy = getMessages(locale).meta;
   const post = await getBlogPostBySlug(slug);
   if (!post) {
-    return pageMetadata({ title: "Блог", description: "Блог на METMA.", path: "/blog" });
+    return pageMetadata({ title: copy.blogTitle, description: copy.blogDescription, path: "/blog", locale });
   }
   return pageMetadata({
     title: post.title,
@@ -24,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/blog/${post.slug}`,
     image: post.image,
     type: "article",
+    locale,
   });
 }
 

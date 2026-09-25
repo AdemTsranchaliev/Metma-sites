@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { getMessages } from "@/i18n/messages";
 
 export function CookieBar() {
+  const copy = getMessages(useLocale()).cookie;
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -15,7 +18,7 @@ export function CookieBar() {
   return (
     <div className="fixed bottom-4 right-4 z-[60] max-w-sm border border-[var(--metma-line)] bg-white p-4 shadow-sm">
       <p className="text-sm leading-6 text-[var(--metma-mute)]">
-        Този сайт използва бисквитки, за да подобри преживяването ви.
+        {copy.text}
       </p>
       <div className="mt-3 flex items-center justify-end gap-3">
         <button
@@ -26,7 +29,7 @@ export function CookieBar() {
             setVisible(false);
           }}
         >
-          Приемам
+          {copy.accept}
         </button>
       </div>
     </div>

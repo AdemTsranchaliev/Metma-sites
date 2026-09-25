@@ -5,19 +5,30 @@ import { PageIntro } from "@/components/PageIntro";
 import { Reveal } from "@/components/Reveal";
 import { SocialIcon } from "@/components/SocialIcon";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { siteConfig, socialProfiles } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Контакти",
-  description:
-    "Свържете се с METMA в Пазарджик — телефон, имейл, адрес и социални мрежи. Запитвания за бои, комплекти, дисплеи и едра поръчка.",
-  path: "/kontakti",
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale).meta;
+  return pageMetadata({
+    title: copy.contactTitle,
+    description: copy.contactDescription,
+    path: "/kontakti",
+    locale,
+  });
+}
 
-const phones = [
-  { label: "Офис", display: siteConfig.phoneOffice, href: "tel:+35934443888" },
-  { label: "Мобилен", display: siteConfig.phone, href: `tel:${siteConfig.phoneE164}` },
-  { label: "Мобилен", display: siteConfig.phoneAlt, href: `tel:${siteConfig.phoneAltE164}` },
+const phoneRows = [
+  { key: "office" as const, display: siteConfig.phoneOffice, href: "tel:+35934443888" },
+  { key: "mobile" as const, display: siteConfig.phone, href: `tel:${siteConfig.phoneE164}` },
+  { key: "mobile" as const, display: siteConfig.phoneAlt, href: `tel:${siteConfig.phoneAltE164}` },
 ];
 
 const mapQuery = encodeURIComponent(
@@ -25,15 +36,26 @@ const mapQuery = encodeURIComponent(
 );
 const mapHref = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
-export default function ContactPage() {
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale);
+  const ui = getStatic(locale).contact;
+  const phones = phoneRows.map((row) => ({
+    ...row,
+    label: row.key === "office" ? ui.office : ui.mobile,
+  }));
   return (
     <>
       <JsonLd
         data={{
           "@context": "https://schema.org",
           "@type": "ContactPage",
-          name: "Контакти",
-          url: absoluteUrl("/kontakti"),
+          name: copy.meta.contactTitle,
+          url: absoluteUrl(localePath(locale, "/kontakti")),
           mainEntity: {
             "@type": "Organization",
             name: siteConfig.name,
@@ -51,9 +73,9 @@ export default function ContactPage() {
         }}
       />
       <PageIntro
-        eyebrow="Контакт"
-        title="Контакти"
-        subtitle="Телефон, имейл или съобщение — за асортимент, дисплеи и едра поръчка."
+        eyebrow={ui.eyebrow}
+        title={ui.title}
+        subtitle={ui.subtitle}
       />
 
       <section className="relative overflow-hidden bg-[#fff8f4] py-12 sm:py-16 md:py-20">
@@ -70,18 +92,18 @@ export default function ContactPage() {
           <Reveal>
             <p className="eyebrow text-[var(--metma-rose)]">METMA ЕАД</p>
             <h2 className="mt-3 font-display text-[clamp(1.7rem,4vw,2.5rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[#2f3b4c]">
-              Как да ни намерите
+              {ui.find}
             </h2>
 
             <dl className="mt-7 space-y-3">
               <div className="rounded-[1.25rem] bg-white px-5 py-4">
                 <dt className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                  Адрес
+                  {ui.address}
                 </dt>
                 <dd className="mt-1.5 text-base leading-7 text-[var(--metma-ink)]">
                   {siteConfig.address.street}
                   <br />
-                  {siteConfig.address.postalCode} {siteConfig.address.city}, България
+                  {siteConfig.address.postalCode} {siteConfig.address.city}, {ui.country}
                 </dd>
                 <a
                   href={mapHref}
@@ -89,13 +111,13 @@ export default function ContactPage() {
                   rel="noreferrer"
                   className="mt-2 inline-block text-sm font-semibold text-[var(--metma-rose)] underline-offset-4 hover:underline"
                 >
-                  Отворете в Google Карти
+                  {ui.maps}
                 </a>
               </div>
 
               <div className="rounded-[1.25rem] bg-white px-5 py-4">
                 <dt className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                  Телефон
+                  {ui.phone}
                 </dt>
                 <dd className="mt-2 space-y-2">
                   {phones.map((phone) => (
@@ -113,7 +135,7 @@ export default function ContactPage() {
 
               <div className="rounded-[1.25rem] bg-white px-5 py-4">
                 <dt className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                  Имейл
+                  {ui.email}
                 </dt>
                 <dd className="mt-1.5">
                   <a
@@ -128,7 +150,7 @@ export default function ContactPage() {
 
             <div className="mt-8">
               <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                Социални мрежи
+                {ui.social}
               </p>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {socialProfiles.map((item) => (
@@ -155,12 +177,12 @@ export default function ContactPage() {
 
           <Reveal delayMs={70}>
             <div className="rounded-[1.5rem] bg-white px-5 py-7 sm:px-8 sm:py-8">
-              <p className="eyebrow text-[var(--metma-rose)]">Съобщение</p>
+              <p className="eyebrow text-[var(--metma-rose)]">{ui.message}</p>
               <h2 className="mt-2 font-display text-2xl font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-                Пишете ни
+                {ui.write}
               </h2>
               <p className="mt-2 text-sm leading-6 text-[var(--metma-mute)]">
-                Ще отговорим на запитването ви за бои, комплекти, украси или дисплеи.
+                {ui.writeText}
               </p>
               <div className="mt-6">
                 <ContactForm />
@@ -172,7 +194,7 @@ export default function ContactPage() {
         <div className="container-metma relative mt-10">
           <div className="overflow-hidden rounded-[1.5rem] bg-white">
             <iframe
-              title="METMA на картата — Генерал Гурко 6, Пазарджик"
+              title={`${ui.mapTitle} — ${siteConfig.address.street}, ${siteConfig.address.city}`}
               src={`https://maps.google.com/maps?q=${mapQuery}&z=16&output=embed`}
               className="h-72 w-full border-0 sm:h-80"
               loading="lazy"

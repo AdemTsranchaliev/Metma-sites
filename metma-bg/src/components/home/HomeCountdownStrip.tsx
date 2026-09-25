@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import { BunnyIcon, EggIcon } from "@/components/easter/EasterMotifs";
 import { SectionScatter } from "@/components/easter/EasterScatter";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localeMeta } from "@/lib/i18n";
 
 function getEasterSunday(year: number) {
   const a = year % 19;
@@ -45,8 +49,8 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-function formatDate(d: Date) {
-  return d.toLocaleDateString("bg-BG", {
+function formatDate(d: Date, lang: string) {
+  return d.toLocaleDateString(lang, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -89,12 +93,14 @@ function CountdownCard({
   eggPattern: "dots" | "stripes" | "zigzag";
   tileColors: [string, string, string, string];
 }) {
+  const locale = useLocale();
+  const ui = getStatic(locale);
   const t = useCountdown(target);
   const units = [
-    { value: t.days, label: "Дни", bg: tileColors[0] },
-    { value: t.hours, label: "Часа", bg: tileColors[1] },
-    { value: t.minutes, label: "Мин", bg: tileColors[2] },
-    { value: t.seconds, label: "Сек", bg: tileColors[3] },
+    { value: t.days, label: ui.units.days, bg: tileColors[0] },
+    { value: t.hours, label: ui.units.hours, bg: tileColors[1] },
+    { value: t.minutes, label: ui.units.minutes, bg: tileColors[2] },
+    { value: t.seconds, label: ui.units.seconds, bg: tileColors[3] },
   ];
 
   return (
@@ -110,7 +116,7 @@ function CountdownCard({
             {title}
           </h3>
           <p className="mt-0.5 text-xs font-semibold text-[var(--metma-rose)] sm:text-sm">
-            {formatDate(target)}
+            {formatDate(target, localeMeta[locale].htmlLang)}
           </p>
         </div>
       </div>
@@ -138,21 +144,18 @@ function CountdownCard({
 }
 
 export function HomeCountdownStrip() {
+  const locale = useLocale();
+  const copy = getMessages(locale).home;
+  const ui = getStatic(locale);
   const catholic = useMemo(() => nextOccurrence(getEasterSunday), []);
   const orthodox = useMemo(() => nextOccurrence(getOrthodoxEaster), []);
 
-  const loop = [
-    "Остава до Великден",
-    "Цветни яйца!",
-    "Перла · Брилянт · Кристал",
-    "С нашата боя стават чудеса",
-    "От 1999",
-  ];
+  const loop = ui.marquee;
   const items = [...loop, ...loop];
 
   return (
     <section
-      aria-label="Обратно броене до Великден"
+      aria-label={ui.countdownLabel}
       className="relative overflow-hidden"
     >
       <SectionScatter variant="countdown" />
@@ -218,22 +221,22 @@ export function HomeCountdownStrip() {
                 className="h-6 w-4 sm:h-7 sm:w-5"
               />
             </div>
-            <p className="eyebrow text-[var(--metma-rose)]">Честит Великден</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{copy.easter}</p>
             <h2 className="mt-2 font-display text-[clamp(1.55rem,6vw,2.5rem)] font-bold tracking-tight text-[var(--metma-ink)]">
-              Колко дни остават до яйцата?
+              {copy.countdown}
             </h2>
           </div>
 
           <div className="grid gap-3 sm:gap-4 md:grid-cols-2 md:gap-5">
             <CountdownCard
-              title="Католически"
+              title={copy.catholic}
               target={catholic}
               eggFill="var(--metma-rose)"
               eggPattern="dots"
               tileColors={["#ffd6cf", "#ffe6a8", "#d9f0e0", "#d6e8f8"]}
             />
             <CountdownCard
-              title="Православен"
+              title={copy.orthodox}
               target={orthodox}
               eggFill="var(--metma-blue)"
               eggPattern="stripes"

@@ -49,5 +49,25 @@ if (!fs.existsSync(outDir)) {
   process.exit(1);
 }
 
+function copyDir(src, dest) {
+  for (const name of fs.readdirSync(src)) {
+    const from = path.join(src, name);
+    const to = path.join(dest, name);
+    if (fs.statSync(from).isDirectory()) {
+      fs.mkdirSync(to, { recursive: true });
+      copyDir(from, to);
+    } else {
+      fs.copyFileSync(from, to);
+    }
+  }
+}
+
 walk(outDir);
+
+const bgDir = path.join(outDir, "bg");
+if (fs.existsSync(bgDir)) {
+  copyDir(bgDir, outDir);
+  console.log("Copied Bulgarian pages to the site root");
+}
+
 console.log(`Prefixed /images, /videos and /favicon with ${BASE}`);

@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { MagneticCta } from "@/components/MagneticCta";
+import { useLocale } from "@/components/LocaleProvider";
 import { EggKnock } from "@/components/easter/EggKnock";
+import { getStatic } from "@/i18n/static";
+import { localePath } from "@/lib/i18n";
 
 const CW = 420;
 const CH = 560;
@@ -379,6 +382,8 @@ function StickerIcon({ id }: { id: StickerId }) {
 }
 
 export function EggPainter() {
+  const locale = useLocale();
+  const egg = getStatic(locale).egg;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const glossRef = useRef<HTMLCanvasElement>(null);
   const history = useRef<ImageData[]>([]);
@@ -555,11 +560,11 @@ export function EggPainter() {
     if (gloss) ctx.drawImage(gloss, 70, 24, 500, 666);
     ctx.fillStyle = "#e4572e";
     ctx.font = "700 28px Fredoka, sans-serif";
-    ctx.fillText("Боя METMA", 48, 750);
+    ctx.fillText(egg.eyebrow, 48, 750);
     const blob = await new Promise<Blob | null>((resolve) => card.toBlob(resolve, "image/png"));
     if (!blob) return;
     const file = new File([blob], "metma-yaitse.png", { type: "image/png" });
-    const shareData = { files: [file], title: "Моето яйце METMA", text: "Боядисах яйце с боя METMA." };
+    const shareData = { files: [file], title: egg.shareTitle, text: egg.shareText };
     if (navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
@@ -604,8 +609,8 @@ export function EggPainter() {
 
   const status =
     mode === "sticker"
-      ? `Стикер · ${stickers.find((item) => item.id === stickerId)?.name}`
-      : `Боя METMA · ${kinds.find((item) => item.id === kind)?.name}${needsColor ? ` · ${color.name}` : ""} · ${brush.name}`;
+      ? `${egg.sticker} · ${egg.stickerNames[stickerId]}`
+      : `${egg.eyebrow} · ${egg.kinds[kind]}${needsColor ? ` · ${egg.colors[color.id]}` : ""} · ${egg.brushes[brush.id]}`;
 
   return (
     <section
@@ -621,7 +626,7 @@ export function EggPainter() {
               width={CW}
               height={CH}
               className={`relative z-[1] w-full touch-none ${mode === "sticker" ? "cursor-pointer" : "cursor-crosshair"}`}
-              aria-label="Яйце за боядисване. Рисувай с боя METMA или сложи стикер."
+              aria-label={egg.canvas}
               onPointerDown={onDown}
               onPointerMove={onMove}
               onPointerUp={onUp}
@@ -639,30 +644,30 @@ export function EggPainter() {
         </div>
 
         <div>
-          <p className="eyebrow text-[var(--metma-rose)]">Боя METMA</p>
+          <p className="eyebrow text-[var(--metma-rose)]">{egg.eyebrow}</p>
           <h2
             id="egg-paint-title"
             className="mt-2 font-display text-[clamp(1.7rem,4vw,2.6rem)] font-bold tracking-tight text-[var(--metma-ink)]"
           >
-            Боядисай яйцето
+            {egg.title}
           </h2>
           <p className="mt-3 hidden max-w-md text-sm leading-6 text-[var(--metma-mute)] sm:block sm:text-base">
-            Избери вид боя и четка, или сложи стикер с едно докосване.
+            {egg.text}
           </p>
 
           <div className="mt-3 bg-white/80 p-2.5 ring-1 ring-black/10 sm:mt-6 sm:p-4">
-            <div className="grid grid-cols-2 gap-1 bg-[var(--metma-sand)] p-1" role="tablist" aria-label="Инструмент">
+            <div className="grid grid-cols-2 gap-1 bg-[var(--metma-sand)] p-1" role="tablist" aria-label={egg.tool}>
               <button
                 type="button"
                 role="tab"
                 aria-selected={mode === "brush"}
                 onClick={() => setMode("brush")}
                 className={`inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold ${
-                  mode === "brush" ? "bg-[var(--metma-ink)] text-white" : "text-[var(--metma-ink)]"
+                  mode === "brush" ? "bg-[var(--metma-rose)] text-white" : "text-[var(--metma-ink)]"
                 }`}
               >
                 <BrushIcon bristles={3.2} />
-                Четка
+                {egg.brush}
               </button>
               <button
                 type="button"
@@ -670,11 +675,11 @@ export function EggPainter() {
                 aria-selected={mode === "sticker"}
                 onClick={() => setMode("sticker")}
                 className={`inline-flex min-h-11 items-center justify-center gap-2 text-sm font-semibold ${
-                  mode === "sticker" ? "bg-[var(--metma-ink)] text-white" : "text-[var(--metma-ink)]"
+                  mode === "sticker" ? "bg-[var(--metma-rose)] text-white" : "text-[var(--metma-ink)]"
                 }`}
               >
                 <StickerIcon id="star" />
-                Стикери
+                {egg.stickers}
               </button>
             </div>
 
@@ -682,9 +687,9 @@ export function EggPainter() {
               <>
                 <fieldset className="mt-4 border-0 p-0">
                   <legend className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--metma-mute)]">
-                    Вид
+                    {egg.kind}
                   </legend>
-                  <div className="mt-2 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Вид боя">
+                  <div className="mt-2 flex flex-wrap gap-1.5" role="radiogroup" aria-label={egg.kind}>
                     {kinds.map((item) => {
                       const selected = kind === item.id;
                       return (
@@ -695,11 +700,11 @@ export function EggPainter() {
                           aria-checked={selected}
                           onClick={() => setKind(item.id)}
                           className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 px-2.5 text-sm font-semibold ${
-                            selected ? "bg-[var(--metma-ink)] text-white" : "bg-[var(--metma-sand)] text-[var(--metma-ink)]"
+                            selected ? "bg-[var(--metma-rose)] text-white" : "bg-[var(--metma-sand)] text-[var(--metma-ink)]"
                           }`}
                         >
                           <KindIcon id={item.id} />
-                          {item.name}
+                          {egg.kinds[item.id]}
                         </button>
                       );
                     })}
@@ -709,12 +714,12 @@ export function EggPainter() {
                 {needsColor ? (
                   <fieldset className="mt-4 border-0 p-0">
                     <legend className="flex items-baseline gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--metma-mute)]">
-                      Цвят
+                      {egg.color}
                       <span className="text-[0.75rem] font-semibold normal-case tracking-normal text-[var(--metma-ink)]">
-                        {color.name}
+                        {egg.colors[color.id]}
                       </span>
                     </legend>
-                    <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Боя METMA">
+                    <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label={egg.eyebrow}>
                       {colors.map((item) => {
                         const selected = colorId === item.id;
                         return (
@@ -723,9 +728,9 @@ export function EggPainter() {
                             type="button"
                             role="radio"
                             aria-checked={selected}
-                            aria-label={item.name}
+                            aria-label={egg.colors[item.id]}
                             onClick={() => setColorId(item.id)}
-                            className={`h-9 w-9 rounded-full ${selected ? "ring-2 ring-[var(--metma-ink)] ring-offset-2" : "ring-1 ring-black/10"}`}
+                            className={`h-9 w-9 rounded-full ${selected ? "ring-2 ring-[var(--metma-rose)] ring-offset-2" : "ring-1 ring-black/10"}`}
                             style={{ background: item.color }}
                           />
                         );
@@ -736,9 +741,9 @@ export function EggPainter() {
 
                 <fieldset className="mt-4 border-0 p-0">
                   <legend className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--metma-mute)]">
-                    Четка
+                    {egg.brush}
                   </legend>
-                  <div className="mt-2 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Четка">
+                  <div className="mt-2 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label={egg.brush}>
                     {brushes.map((item) => {
                       const selected = brush.id === item.id;
                       const bristles = item.id === "fine" ? 2 : item.id === "mid" ? 3.4 : 5.2;
@@ -750,11 +755,11 @@ export function EggPainter() {
                           aria-checked={selected}
                           onClick={() => setBrushId(item.id)}
                           className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.7rem] font-semibold ${
-                            selected ? "bg-[var(--metma-ink)] text-white" : "bg-[var(--metma-sand)] text-[var(--metma-ink)]"
+                            selected ? "bg-[var(--metma-rose)] text-white" : "bg-[var(--metma-sand)] text-[var(--metma-ink)]"
                           }`}
                         >
                           <BrushIcon bristles={bristles} />
-                          {item.name}
+                          {egg.brushes[item.id]}
                         </button>
                       );
                     })}
@@ -764,9 +769,9 @@ export function EggPainter() {
             ) : (
               <fieldset className="mt-4 border-0 p-0">
                 <legend className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--metma-mute)]">
-                  Стикер
+                  {egg.sticker}
                 </legend>
-                <div className="mt-2 grid grid-cols-5 gap-1.5" role="radiogroup" aria-label="Стикер">
+                <div className="mt-2 grid grid-cols-5 gap-1.5" role="radiogroup" aria-label={egg.sticker}>
                   {stickers.map((item) => {
                     const selected = stickerId === item.id;
                     return (
@@ -775,14 +780,14 @@ export function EggPainter() {
                         type="button"
                         role="radio"
                         aria-checked={selected}
-                        aria-label={item.name}
+                        aria-label={egg.stickerNames[item.id]}
                         onClick={() => setStickerId(item.id)}
                         className={`flex min-h-16 flex-col items-center justify-center gap-1 bg-white text-[0.65rem] font-semibold text-[var(--metma-ink)] ${
-                          selected ? "ring-2 ring-[var(--metma-ink)]" : "ring-1 ring-black/10"
+                          selected ? "ring-2 ring-[var(--metma-rose)]" : "ring-1 ring-black/10"
                         }`}
                       >
                         <StickerIcon id={item.id} />
-                        {item.name}
+                        {egg.stickerNames[item.id]}
                       </button>
                     );
                   })}
@@ -797,7 +802,7 @@ export function EggPainter() {
                 className="inline-flex min-h-11 items-center justify-center gap-1 bg-[var(--metma-sand)] px-1 text-[0.68rem] font-semibold text-[var(--metma-ink)] sm:gap-1.5 sm:text-sm"
               >
                 <ActionIcon id="share" />
-                Сподели
+                {egg.share}
               </button>
               <button
                 type="button"
@@ -806,7 +811,7 @@ export function EggPainter() {
                 className="inline-flex min-h-11 items-center justify-center gap-1 bg-[var(--metma-sand)] px-1 text-[0.68rem] font-semibold text-[var(--metma-ink)] disabled:opacity-40 sm:gap-1.5 sm:text-sm"
               >
                 <ActionIcon id="undo" />
-                Назад
+                {egg.undo}
               </button>
               <button
                 type="button"
@@ -814,7 +819,7 @@ export function EggPainter() {
                 className="inline-flex min-h-11 items-center justify-center gap-1 bg-[var(--metma-sand)] px-1 text-[0.68rem] font-semibold text-[var(--metma-ink)] sm:gap-1.5 sm:text-sm"
               >
                 <ActionIcon id="fresh" />
-                Ново яйце
+                {egg.fresh}
               </button>
             </div>
             <button
@@ -822,14 +827,14 @@ export function EggPainter() {
               onClick={sendToKnock}
               className="egg-duel-cta mt-3 w-full"
             >
-              Чукна се с него
+              {egg.knock}
             </button>
           </div>
 
           <div className="mt-4">
             <MagneticCta>
-              <Link href={mode === "sticker" ? "/produkti/ukrasi" : "/produkti/boi"} className="btn-metma">
-                {mode === "sticker" ? "Виж стикерите" : "Виж боята METMA"}
+              <Link href={localePath(locale, mode === "sticker" ? "/produkti/ukrasi" : "/produkti/boi")} className="btn-metma">
+                {mode === "sticker" ? egg.seeStickers : egg.seeDye}
               </Link>
             </MagneticCta>
           </div>

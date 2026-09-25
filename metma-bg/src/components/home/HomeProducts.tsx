@@ -3,9 +3,12 @@ import Link from "next/link";
 import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { SectionScatter } from "@/components/easter/EasterScatter";
+import { getMessages } from "@/i18n/messages";
+import { localePath, type Locale } from "@/lib/i18n";
 import { getCategories, getProducts } from "@/lib/catalog";
 
-export async function HomeProducts() {
+export async function HomeProducts({ locale }: { locale: Locale }) {
+  const copy = getMessages(locale);
   const [featured, productCategories] = await Promise.all([
     getProducts({ featuredOnly: true }),
     getCategories(),
@@ -18,19 +21,19 @@ export async function HomeProducts() {
       <div className="container-metma relative z-[1]">
         <Reveal className="mb-7 flex flex-col gap-4 sm:mb-10 sm:gap-6 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="eyebrow text-[var(--metma-rose)]">Магазин</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{copy.home.shop}</p>
             <h2 className="mt-2 font-display text-[clamp(1.75rem,6vw,3rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
-              Нови продукти
+              {copy.home.newProducts}
             </h2>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:pb-0">
             {productCategories.map((cat) => (
               <Link
                 key={cat.href}
-                href={cat.href}
+                href={localePath(locale, cat.href)}
                 className="shrink-0 bg-[var(--metma-sand)] px-3.5 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--metma-ink)] transition hover:bg-[var(--metma-rose)] hover:text-white!"
               >
-                {cat.label}
+                {copy.categories[cat.slug as keyof typeof copy.categories].label}
               </Link>
             ))}
           </div>
@@ -39,7 +42,7 @@ export async function HomeProducts() {
         <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4 md:gap-6">
           {items.map((product, index) => (
             <Reveal key={product.slug} delayMs={(index % 4) * 45}>
-              <Link href={`/produkti/${product.slug}`} className="group block">
+              <Link href={localePath(locale, `/produkti/${product.slug}`)} className="group block">
                 <div className="relative mb-3 aspect-square overflow-hidden rounded-2xl bg-[var(--metma-sand)] ring-1 ring-black/[0.06]">
                   <Image
                     src={product.image}
@@ -63,8 +66,8 @@ export async function HomeProducts() {
 
         <Reveal className="mt-10 flex justify-center sm:mt-12">
           <MagneticCta>
-            <Link href="/produkti" className="btn-metma">
-              Още продукти
+            <Link href={localePath(locale, "/produkti")} className="btn-metma">
+              {copy.home.moreProducts}
             </Link>
           </MagneticCta>
         </Reveal>

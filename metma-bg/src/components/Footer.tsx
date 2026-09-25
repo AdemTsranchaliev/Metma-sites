@@ -1,11 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon } from "@/components/SocialIcon";
-import { navItems, productCategories } from "@/data/home";
+import { getMessages } from "@/i18n/messages";
+import { localeMeta, localePath, locales, type Locale } from "@/lib/i18n";
 import { siteConfig, socialProfiles } from "@/lib/site";
 
-export function Footer() {
+export function Footer({ locale }: { locale: Locale }) {
   const year = new Date().getFullYear();
+  const copy = getMessages(locale);
+  const nav = [
+    { label: copy.nav.home, href: localePath(locale, "/") },
+    { label: copy.nav.products, href: localePath(locale, "/produkti") },
+    { label: copy.nav.blog, href: localePath(locale, "/blog") },
+    { label: copy.nav.about, href: localePath(locale, "/za-nas") },
+    { label: copy.footer.declarations, href: localePath(locale, "/deklaratsii") },
+    { label: copy.nav.contact, href: localePath(locale, "/kontakti") },
+  ];
+  const categories = [
+    { label: copy.categories.boi.label, href: localePath(locale, "/produkti/boi") },
+    { label: copy.categories.komplekti.label, href: localePath(locale, "/produkti/komplekti") },
+    { label: copy.categories.ukrasi.label, href: localePath(locale, "/produkti/ukrasi") },
+    { label: copy.categories.displei.label, href: localePath(locale, "/produkti/displei") },
+  ];
 
   return (
     <footer className="border-t border-[var(--metma-line)] bg-white">
@@ -15,8 +31,8 @@ export function Footer() {
         <div className="grid gap-9 md:grid-cols-[1.1fr_0.9fr_0.9fr] md:gap-10">
           <div>
             <Link
-              href="/"
-              aria-label="METMA начало"
+              href={localePath(locale, "/")}
+              aria-label="METMA"
               className="relative inline-block h-9 w-[8.75rem] sm:h-10 sm:w-[10rem]"
             >
               <Image
@@ -28,16 +44,16 @@ export function Footer() {
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--metma-mute)]">
-              Боя за яйца от собствено производство — от 1999 г.
+              {copy.footer.blurb}
             </p>
           </div>
 
           <div>
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-              Навигация
+              {copy.footer.navigation}
             </p>
             <ul className="mt-3 space-y-2">
-              {navItems.map((item) => (
+              {nav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -52,10 +68,10 @@ export function Footer() {
 
           <div>
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-              Асортимент
+              {copy.footer.range}
             </p>
             <ul className="mt-3 space-y-2">
-              {productCategories.map((cat) => (
+              {categories.map((cat) => (
                 <li key={cat.href}>
                   <Link
                     href={cat.href}
@@ -69,7 +85,7 @@ export function Footer() {
 
             <div className="mt-6 space-y-2">
               <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                Контакт
+                {copy.footer.contact}
               </p>
               <a
                 href={`tel:${siteConfig.phoneE164}`}
@@ -97,11 +113,26 @@ export function Footer() {
           <p className="text-xs text-[var(--metma-mute)]">
             © {year} {siteConfig.legalName}
           </p>
+          <nav aria-label={copy.nav.language} className="grid grid-cols-2 gap-x-4 gap-y-2 sm:flex sm:flex-wrap sm:gap-3">
+            {locales.map((item) => (
+              <Link
+                key={item}
+                href={localePath(item, "/")}
+                hrefLang={localeMeta[item].hreflang}
+                lang={localeMeta[item].htmlLang}
+                className={`text-xs font-semibold ${
+                  item === locale ? "text-[var(--metma-rose)]" : "text-[var(--metma-ink)]"
+                }`}
+              >
+                {localeMeta[item].label}
+              </Link>
+            ))}
+          </nav>
           <Link
-            href="/kontakti"
+            href={localePath(locale, "/kontakti")}
             className="text-xs font-semibold text-[var(--metma-ink)] underline-offset-4 transition hover:text-[var(--metma-rose)] hover:underline"
           >
-            Изпратете съобщение →
+            {copy.footer.send}
           </Link>
         </div>
       </div>
@@ -109,7 +140,7 @@ export function Footer() {
       <div className="border-t border-white/10 bg-[var(--metma-ink)] text-white">
         <div className="container-metma flex flex-col items-start gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white/70">
-            Последвайте ни
+            {copy.footer.follow}
           </p>
           <ul className="flex items-center gap-2">
             {socialProfiles.map((item) => (

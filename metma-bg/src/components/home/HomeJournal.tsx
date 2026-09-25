@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
+import { getMessages } from "@/i18n/messages";
 import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+import { localePath, type Locale } from "@/lib/i18n";
 
 function ArrowIcon() {
   return (
@@ -17,7 +19,9 @@ function ArrowIcon() {
   );
 }
 
-export async function HomeJournal() {
+export async function HomeJournal({ locale }: { locale: Locale }) {
+  const t = getMessages(locale);
+  const copy = t.home;
   const posts = await getBlogPosts();
   const [featured, ...rest] = posts;
   const more = rest.slice(0, 3);
@@ -28,13 +32,13 @@ export async function HomeJournal() {
       <div className="container-metma">
         <Reveal className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="eyebrow text-[var(--metma-rose)]">Блог</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{t.nav.blog}</p>
             <h2 className="mt-2 font-display text-[clamp(1.7rem,4vw,2.4rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
-              От журнала
+              {copy.journal}
             </h2>
           </div>
-          <Link href="/blog" className="btn-outline shrink-0 self-start sm:self-auto">
-            Всички статии
+          <Link href={localePath(locale, "/blog")} className="btn-outline shrink-0 self-start sm:self-auto">
+            {copy.allPosts}
           </Link>
         </Reveal>
 
@@ -42,7 +46,7 @@ export async function HomeJournal() {
           <Reveal>
             <article className="flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-[#fff8f4] sm:flex-row">
               <Link
-                href={`/blog/${featured.slug}`}
+                href={localePath(locale, `/blog/${featured.slug}`)}
                 className="group relative block aspect-[4/3] shrink-0 sm:aspect-auto sm:w-[48%]"
               >
                 <Image
@@ -62,16 +66,16 @@ export async function HomeJournal() {
                   <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
                 </p>
                 <h3 className="mt-3 font-display text-[clamp(1.25rem,2vw,1.65rem)] font-bold leading-snug tracking-[-0.03em] text-[#2f3b4c]">
-                  <Link href={`/blog/${featured.slug}`} className="transition hover:text-[var(--metma-rose)]">
+                  <Link href={localePath(locale, `/blog/${featured.slug}`)} className="transition hover:text-[var(--metma-rose)]">
                     {featured.title}
                   </Link>
                 </h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#5c6b7a]">{featured.excerpt}</p>
                 <Link
-                  href={`/blog/${featured.slug}`}
+                  href={localePath(locale, `/blog/${featured.slug}`)}
                   className="mt-5 inline-flex items-center gap-2 self-start text-sm font-bold text-[var(--metma-rose)]! transition hover:gap-3"
                 >
-                  Прочети
+                  {copy.read}
                   <ArrowIcon />
                 </Link>
               </div>
@@ -83,7 +87,7 @@ export async function HomeJournal() {
               <li key={post.slug}>
                 <Reveal delayMs={index * 60} className="h-full">
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={localePath(locale, `/blog/${post.slug}`)}
                     className="group flex h-full items-center gap-3 overflow-hidden rounded-[1.25rem] bg-[#fff8f4] p-2.5 transition hover:bg-[#fff1ea] sm:gap-4 sm:p-3"
                   >
                     <span className="relative block aspect-[4/3] w-[5.5rem] shrink-0 overflow-hidden rounded-xl sm:w-28">

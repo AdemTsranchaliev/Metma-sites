@@ -8,15 +8,26 @@ import { Reveal } from "@/components/Reveal";
 import { brands } from "@/data/brands";
 import { productCategories, products, team } from "@/data/home";
 import { pageMetadata } from "@/lib/seo";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata({
-  title: "За нас",
-  description:
-    "METMA е единствената фирма за боя за яйца в България с изцяло затворено производство. От 1989 г. — днес в над 30 европейски страни.",
-  path: "/za-nas",
-  image: "/images/about/METMA-History-infochart-1.png",
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const copy = getMessages(locale).meta;
+  return pageMetadata({
+    title: copy.aboutTitle,
+    description: copy.aboutDescription,
+    path: "/za-nas",
+    locale,
+    image: "/images/about/METMA-History-infochart-1.png",
+  });
+}
 
 function LineIcon({ children }: { children: ReactNode }) {
   return (
@@ -187,7 +198,15 @@ const policies = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  const ui = getStatic(locale).about;
+  const brandsCopy = getStatic(locale).brands;
+  const categories = getMessages(locale).categories;
   return (
     <>
       <section className="relative overflow-hidden bg-[#fff8f4] pb-12 pt-10 sm:pb-16 sm:pt-14 md:pb-20">
@@ -207,18 +226,16 @@ export default function AboutPage() {
 
         <div className="container-metma relative">
           <Reveal>
-            <p className="eyebrow text-[var(--metma-rose)]">Компания · от 1989</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{ui.eyebrow}</p>
             <h1 className="mt-3 max-w-3xl font-display text-[clamp(2.4rem,6vw,4.2rem)] font-bold leading-[0.95] tracking-[-0.045em] text-[#2f3b4c]">
-              Единствената фирма
-              <span className="mt-1 block text-[var(--metma-rose)]">за боя за яйца</span>
-              в България
+              {ui.title1}
+              <span className="mt-1 block text-[var(--metma-rose)]">{ui.title2}</span>
+              {ui.title3}
             </h1>
           </Reveal>
           <Reveal delayMs={40}>
             <p className="mt-5 max-w-xl text-base leading-7 text-[#5c6b7a] sm:text-lg">
-              Правим боята сами — от рецептата до опаковката. Започваме с
-              търговия на храни, стигаме до над 30 европейски страни и до
-              компания в САЩ.
+              {ui.lead}
             </p>
           </Reveal>
 
@@ -233,7 +250,7 @@ export default function AboutPage() {
                   <p className="mt-4 font-display text-[clamp(1.6rem,3vw,2.15rem)] font-bold leading-none tracking-[-0.04em] text-[var(--metma-ink)]">
                     {fact.value}
                   </p>
-                  <p className="mt-2 text-sm font-medium text-[#3d4a5c]">{fact.label}</p>
+                  <p className="mt-2 text-sm font-medium text-[#3d4a5c]">{ui.facts[index]}</p>
                 </div>
               </Reveal>
             ))}
@@ -244,9 +261,9 @@ export default function AboutPage() {
       <section className="bg-white py-12 sm:py-16 md:py-20">
         <div className="container-metma">
           <Reveal className="max-w-xl">
-            <p className="eyebrow text-[var(--metma-rose)]">История</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{ui.history}</p>
             <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
-              Шест стъпки, една линия
+              {ui.historyTitle}
             </h2>
           </Reveal>
 
@@ -281,10 +298,10 @@ export default function AboutPage() {
                             <EggIcon fill="currentColor" pattern="dots" className="h-5 w-4" />
                           )}
                         </span>
-                        {item.title}
+                        {ui.steps[index].title}
                       </h3>
                       <p className="mt-1.5 max-w-lg text-sm leading-6 text-[var(--metma-mute)] sm:text-base">
-                        {item.text}
+                        {ui.steps[index].text}
                       </p>
                     </div>
                   </article>
@@ -299,14 +316,14 @@ export default function AboutPage() {
         <div className="container-metma">
           <Reveal className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="eyebrow text-[#ffb199]">Марки</p>
+              <p className="eyebrow text-[#ffb199]">{ui.brands}</p>
               <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-[-0.03em]">
-                Четири имена.
-                <span className="mt-1 block text-white/70">Едно производство.</span>
+                {ui.brandsTitle}
+                <span className="mt-1 block text-white/70">{ui.brandsTitle2}</span>
               </h2>
             </div>
-            <Link href="/produkti" className="btn-metma shrink-0 self-start sm:self-auto">
-              Към продуктите
+            <Link href={localePath(locale, "/produkti")} className="btn-metma shrink-0 self-start sm:self-auto">
+              {ui.toProducts}
             </Link>
           </Reveal>
 
@@ -314,7 +331,7 @@ export default function AboutPage() {
             {brands.map((brand, index) => (
               <Reveal key={brand.id} delayMs={index * 40}>
                 <Link
-                  href={`/marki/${brand.id}`}
+                  href={localePath(locale, `/marki/${brand.id}`)}
                   className="group flex h-full min-h-40 flex-col justify-between rounded-[1.4rem] p-5 transition duration-300 hover:-translate-y-1 sm:p-6"
                   style={{ background: brand.wash, color: "#171717" }}
                 >
@@ -330,7 +347,7 @@ export default function AboutPage() {
                       className="text-xs font-bold uppercase tracking-[0.14em]"
                       style={{ color: brand.ink }}
                     >
-                      {brand.tag}
+                      {brandsCopy[brand.id as "vesache" | "ino" | "pet" | "metma"].tag}
                     </span>
                   </span>
                   <span className="mt-6 block">
@@ -338,7 +355,7 @@ export default function AboutPage() {
                       {brand.name}
                     </span>
                     <span className="mt-2 block max-w-md text-sm leading-6 text-[#3d4a5c]">
-                      {brand.text}
+                      {brandsCopy[brand.id as "vesache" | "ino" | "pet" | "metma"].text}
                     </span>
                   </span>
                 </Link>
@@ -351,13 +368,12 @@ export default function AboutPage() {
       <section className="bg-white py-12 sm:py-16 md:py-20">
         <div className="container-metma">
           <Reveal>
-            <p className="eyebrow text-[var(--metma-rose)]">От фабриката</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{ui.factory}</p>
             <h2 className="mt-2 max-w-2xl font-display text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
-              Затворено производство в {siteConfig.address.city}
+              {ui.factoryTitle} {siteConfig.address.city}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--metma-mute)]">
-              Офисът е на {siteConfig.address.street}. Боите, комплектите, украсите
-              и дисплеите минават през собствено производство.
+              {ui.officeAt} {siteConfig.address.street}. {ui.factoryText}
             </p>
           </Reveal>
 
@@ -365,7 +381,7 @@ export default function AboutPage() {
             {madeHere.map((item, index) => (
               <Reveal key={item.slug} delayMs={index * 40}>
                 <Link
-                  href={item.href}
+                  href={localePath(locale, item.href)}
                   className="group block overflow-hidden rounded-[1.3rem] bg-[#fff8f4]"
                 >
                   <span className="relative block aspect-[5/4] p-4">
@@ -380,7 +396,7 @@ export default function AboutPage() {
                     ) : null}
                   </span>
                   <span className="flex items-center justify-between gap-2 px-4 pb-4 font-display text-lg font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
-                    {item.label}
+                    {categories[item.slug as keyof typeof categories].label}
                     <span className="text-sm text-[var(--metma-rose)] transition group-hover:translate-x-0.5">→</span>
                   </span>
                 </Link>
@@ -389,18 +405,18 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {policies.map((item) => (
+            {policies.map((item, index) => (
               <Link
                 key={item.title}
-                href={item.href}
+                href={localePath(locale, item.href)}
                 className="group flex items-center gap-3 rounded-[1.2rem] border border-[var(--metma-line)] px-4 py-3 transition hover:border-[var(--metma-rose)]"
               >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#fff8f4] text-[var(--metma-rose)]">
                   <item.icon />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-[var(--metma-ink)]">{item.title}</span>
-                  <span className="block text-xs text-[var(--metma-mute)]">{item.text}</span>
+                  <span className="block text-sm font-bold text-[var(--metma-ink)]">{ui.policies[index].title}</span>
+                  <span className="block text-xs text-[var(--metma-mute)]">{ui.policies[index].text}</span>
                 </span>
                 <span className="text-sm font-bold text-[var(--metma-rose)] transition group-hover:translate-x-0.5">
                   →
@@ -414,9 +430,9 @@ export default function AboutPage() {
       <section className="border-t border-[var(--metma-line)] bg-[#fff8f4] py-12 sm:py-16 md:py-20">
         <div className="container-metma">
           <Reveal>
-            <p className="eyebrow text-[var(--metma-rose)]">Екип</p>
+            <p className="eyebrow text-[var(--metma-rose)]">{ui.team}</p>
             <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
-              Хората зад боята
+              {ui.teamTitle}
             </h2>
           </Reveal>
 
@@ -441,7 +457,7 @@ export default function AboutPage() {
                       {person.name}
                     </p>
                     <p className="mt-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--metma-rose-deep)]">
-                      {person.role}
+                      {ui.roles[index] ?? person.role}
                     </p>
                   </figcaption>
                 </figure>
@@ -451,7 +467,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <HomeContact />
+      <HomeContact locale={locale} />
     </>
   );
 }

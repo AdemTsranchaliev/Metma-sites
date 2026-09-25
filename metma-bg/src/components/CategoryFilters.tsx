@@ -1,11 +1,17 @@
-import Link from "next/link";
+"use client";
 
-const cats = [
-  { label: "Всички", href: "/produkti", slug: "alle" },
-  { label: "Бои", href: "/produkti/boi", slug: "boi" },
-  { label: "Комплекти", href: "/produkti/komplekti", slug: "komplekti" },
-  { label: "Украси", href: "/produkti/ukrasi", slug: "ukrasi" },
-  { label: "Дисплеи", href: "/produkti/displei", slug: "displei" },
+import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { localePath } from "@/lib/i18n";
+
+const slugs = [
+  { slug: "alle", href: "/produkti" },
+  { slug: "boi", href: "/produkti/boi" },
+  { slug: "komplekti", href: "/produkti/komplekti" },
+  { slug: "ukrasi", href: "/produkti/ukrasi" },
+  { slug: "displei", href: "/produkti/displei" },
 ] as const;
 
 type Props = {
@@ -15,6 +21,15 @@ type Props = {
 };
 
 export function CategoryFilters({ active = "alle", brand = "all", ink }: Props) {
+  const locale = useLocale();
+  const copy = getMessages(locale);
+  const all = getStatic(locale).catalog.all;
+  const cats = slugs.map((cat) => ({
+    ...cat,
+    href: localePath(locale, cat.href),
+    label: cat.slug === "alle" ? all : copy.categories[cat.slug].label,
+  }));
+
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
       {cats.map((cat) => {

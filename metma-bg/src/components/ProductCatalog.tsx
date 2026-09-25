@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import type { Product } from "@/data/home";
+import { useLocale } from "@/components/LocaleProvider";
 import { CategoryFilters } from "@/components/CategoryFilters";
 import { ProductGrid } from "@/components/ProductGrid";
+import { getStatic } from "@/i18n/static";
 
 type Props = {
   products: Product[];
@@ -34,6 +36,7 @@ export function ProductCatalog({
   brand = "all",
   ink,
 }: Props) {
+  const catalog = getStatic(useLocale()).catalog;
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -59,13 +62,13 @@ export function ProductCatalog({
             {filtered.length}
           </p>
           <label className="group relative w-full md:w-52">
-            <span className="sr-only">Търсене на продукти</span>
+            <span className="sr-only">{catalog.search}</span>
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--metma-mute)]" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Име или код"
+              placeholder={catalog.placeholder}
               autoComplete="off"
               className="product-search w-full rounded-full bg-[var(--metma-sand)] py-2.5 pl-9 pr-8 text-sm text-[var(--metma-ink)] outline-none transition placeholder:text-[var(--metma-mute)] focus:bg-white focus:shadow-[0_0_0_1px_var(--metma-line)]"
             />
@@ -73,7 +76,7 @@ export function ProductCatalog({
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                aria-label="Изчисти"
+                aria-label={catalog.clear}
                 className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-[var(--metma-mute)]"
               >
                 ×
@@ -88,14 +91,10 @@ export function ProductCatalog({
       ) : (
         <div className="px-6 py-16 text-center">
           <p className="font-display text-xl font-bold text-[var(--metma-ink)]">
-            {products.length === 0
-              ? "Все още няма продукти"
-              : "Няма намерени продукти"}
+            {products.length === 0 ? catalog.loading : catalog.empty}
           </p>
           <p className="mt-2 text-sm text-[var(--metma-mute)]">
-            {products.length === 0
-              ? "Каталогът се зарежда от METMA."
-              : "Опитайте с друга дума или код."}
+            {products.length === 0 ? catalog.loadingHint : catalog.emptyHint}
           </p>
           {hasQuery ? (
             <button
@@ -103,7 +102,7 @@ export function ProductCatalog({
               onClick={() => setQuery("")}
               className="mt-6 text-sm font-semibold text-[var(--metma-rose)] underline-offset-4 hover:underline"
             >
-              Изчисти
+              {catalog.clear}
             </button>
           ) : null}
         </div>

@@ -1,5 +1,8 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
+import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
+import { type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 const profile = siteConfig.social.instagramEaster;
@@ -15,7 +18,9 @@ const posts = [
   { src: "/images/instagram/08.jpg", href: "https://www.instagram.com/chudesata.na.velikden/p/DW6aeBRCLzb/", reel: false },
 ];
 
-export function HomeInstagram() {
+export function HomeInstagram({ locale }: { locale: Locale }) {
+  const copy = getMessages(locale);
+  const instagram = getStatic(locale).instagram;
   return (
     <section className="bg-[#fff8f4] py-12 sm:py-16">
       <div className="container-metma">
@@ -23,7 +28,7 @@ export function HomeInstagram() {
           <div>
             <p className="eyebrow text-[var(--metma-rose)]">Instagram</p>
             <h2 className="mt-2 font-display text-[clamp(1.7rem,4vw,2.4rem)] font-bold tracking-[-0.03em] text-[#2f3b4c]">
-              Чудесата на Великден
+              {copy.footer.easter}
             </h2>
             <p className="mt-2 text-sm text-[#5c6b7a]">@chudesata.na.velikden</p>
           </div>
@@ -33,7 +38,7 @@ export function HomeInstagram() {
             rel="noreferrer"
             className="btn-outline shrink-0"
           >
-            Последвайте ни
+            {copy.home.follow}
           </a>
         </Reveal>
 
@@ -45,7 +50,7 @@ export function HomeInstagram() {
               target="_blank"
               rel="noreferrer"
               className="group relative aspect-[3/4] w-36 shrink-0 snap-start overflow-hidden rounded-[1.25rem] bg-white sm:w-44"
-              aria-label={`Публикация ${index + 1} в Instagram`}
+              aria-label={`${instagram} ${index + 1} · Instagram`}
             >
               <Image
                 src={post.src}

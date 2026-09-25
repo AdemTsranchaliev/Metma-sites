@@ -3,7 +3,10 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
 import { brands } from "@/data/brands";
+import { getStatic } from "@/i18n/static";
+import { localePath } from "@/lib/i18n";
 
 type Props = {
   active: string;
@@ -12,16 +15,18 @@ type Props = {
 };
 
 export function BrandSwitch({ active, onSelect, links = false }: Props) {
+  const locale = useLocale();
+  const all = getStatic(locale).catalog.all;
   return (
     <div className="inline-flex w-fit items-center gap-1 rounded-full bg-white/75 p-1.5 shadow-[0_16px_40px_-28px_rgba(23,23,23,0.55)] backdrop-blur-md">
       <BrandControl
-        label="Всички"
+        label={all}
         selected={active === "all"}
         ink="#171717"
-        href={links ? "/produkti" : undefined}
+        href={links ? localePath(locale, "/produkti") : undefined}
         onSelect={onSelect ? () => onSelect("all") : undefined}
       >
-        <span className="text-[0.62rem] font-semibold leading-none tracking-tight">Всички</span>
+        <span className="text-[0.62rem] font-semibold leading-none tracking-tight">{all}</span>
       </BrandControl>
       {brands.map((brand) => (
         <BrandControl
@@ -29,7 +34,7 @@ export function BrandSwitch({ active, onSelect, links = false }: Props) {
           label={brand.name}
           selected={active === brand.id}
           ink={brand.ink}
-          href={links ? `/marki/${brand.id}` : undefined}
+          href={links ? localePath(locale, `/marki/${brand.id}`) : undefined}
           onSelect={onSelect ? () => onSelect(brand.id) : undefined}
         >
           <Image src={brand.logo} alt="" fill className="object-contain p-1.5" sizes="56px" />

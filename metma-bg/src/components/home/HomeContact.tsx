@@ -3,23 +3,26 @@ import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 import { siteConfig } from "@/lib/site";
+import { getMessages } from "@/i18n/messages";
+import { localePath, type Locale } from "@/lib/i18n";
 
-export function HomeContact() {
+export function HomeContact({ locale }: { locale: Locale }) {
+  const copy = getMessages(locale);
   return (
     <section className="relative overflow-hidden bg-[var(--metma-peach)] py-12 sm:py-16 md:py-16">
       <SectionScatter variant="contact" />
       <div className="container-metma relative z-[1] grid items-end gap-8 md:grid-cols-[1.25fr_0.85fr] md:gap-12">
         <Reveal>
-          <p className="eyebrow text-[var(--metma-rose)]">Контакт</p>
+          <p className="eyebrow text-[var(--metma-rose)]">{copy.home.contactEyebrow}</p>
           <h2 className="mt-2.5 max-w-xl font-display text-[clamp(1.7rem,6.5vw,3rem)] font-bold leading-[1.06] tracking-[-0.03em] text-[var(--metma-ink)] sm:mt-3">
-            Свържете се с нас сега.
+            {copy.home.contactTitle}
           </h2>
           <p className="mt-3 max-w-md text-[0.95rem] leading-7 text-[var(--metma-mute)] sm:mt-4 sm:text-base">
-            Въпроси за асортимент, дисплеи или едра поръчка? Ще ви отговорим.
+            {copy.home.contactText}
           </p>
           <MagneticCta className="mt-6 w-full sm:mt-8 sm:w-auto">
-            <Link href="/kontakti" className="btn-metma">
-              Изпратете съобщение
+            <Link href={localePath(locale, "/kontakti")} className="btn-metma">
+              {copy.nav.send}
             </Link>
           </MagneticCta>
         </Reveal>
@@ -28,7 +31,7 @@ export function HomeContact() {
           <div className="grid grid-cols-1 gap-4 border-t border-[var(--metma-ink)]/10 pt-6 sm:grid-cols-2 sm:gap-6 md:grid-cols-1 md:border-0 md:pt-0 md:text-right">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                Телефон
+                {copy.home.phone}
               </p>
               <a
                 href={`tel:${siteConfig.phoneE164}`}
@@ -45,7 +48,7 @@ export function HomeContact() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--metma-mute)]">
-                Имейл
+                {copy.home.email}
               </p>
               <a
                 href={`mailto:${siteConfig.email}`}
