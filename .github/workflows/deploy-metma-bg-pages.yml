@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "metma-bg/**"
+      - "metma-mehanizmi/**"
       - ".github/workflows/deploy-metma-bg-pages.yml"
   workflow_dispatch:
 
@@ -20,21 +21,31 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: metma-bg
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: metma-bg/package-lock.json
+          cache-dependency-path: |
+            metma-bg/package-lock.json
+            metma-mehanizmi/package-lock.json
       - run: npm ci
+        working-directory: metma-bg
       - run: npm run build:gh-pages
+        working-directory: metma-bg
         env:
           GITHUB_PAGES: "true"
           NEXT_PUBLIC_BASE_PATH: "/Metma-sites"
+      - name: Build furniture mechanisms site
+        working-directory: metma-mehanizmi
+        run: npm ci && npm run build:gh-pages
+        env:
+          GITHUB_PAGES: "true"
+          NEXT_PUBLIC_BASE_PATH: "/Metma-sites/mehanizmi"
+      - name: Nest mechanisms pages under /mehanizmi
+        working-directory: .
+        run: rm -rf metma-bg/out/mehanizmi && mkdir -p metma-bg/out/mehanizmi && cp -R metma-mehanizmi/out/. metma-bg/out/mehanizmi/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: metma-bg/out
