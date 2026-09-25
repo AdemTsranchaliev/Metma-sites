@@ -281,7 +281,7 @@ export function HomeBrands() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:relative md:mx-auto md:block md:h-[32rem] md:max-w-2xl">
+          <div className="grid grid-cols-2 gap-3 md:relative md:mx-auto md:block md:h-[32rem] md:w-full md:max-w-2xl">
             {active.products.map((product, index) => {
               const frame = (
                 <span className="relative block h-full w-full bg-white shadow-[0_18px_40px_-24px_rgba(23,23,23,0.45)]">
