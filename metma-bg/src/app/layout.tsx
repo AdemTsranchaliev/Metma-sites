@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Nunito, Rubik } from "next/font/google";
-import { isLocale, localeMeta, type Locale } from "@/lib/i18n";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -16,19 +15,10 @@ const nunito = Nunito({
   weight: ["600", "700", "800"],
 });
 
-async function requestLocale(): Promise<Locale> {
-  if (process.env.GITHUB_PAGES === "true") return "bg";
-  const { headers } = await import("next/headers");
-  const requested = (await headers()).get("x-locale") ?? "bg";
-  return isLocale(requested) ? requested : "bg";
-}
-
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const locale = await requestLocale();
-
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
-      lang={localeMeta[locale].htmlLang}
+      lang="bg"
       className={`${rubik.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="relative flex min-h-full flex-col font-sans">{children}</body>

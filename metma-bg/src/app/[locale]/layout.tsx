@@ -85,6 +85,11 @@ export default async function LocaleLayout({
 
   return (
     <LocaleProvider locale={raw}>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.documentElement.lang=${JSON.stringify(localeMeta[raw].htmlLang)}`,
+        }}
+      />
       <JsonLd data={[organizationJsonLd(), websiteJsonLd(raw)]} />
       <div className="relative z-10 flex min-h-full flex-1 flex-col">
         <Header />
