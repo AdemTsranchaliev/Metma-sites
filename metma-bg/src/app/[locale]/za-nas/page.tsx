@@ -6,7 +6,8 @@ import { EggIcon } from "@/components/easter/EasterMotifs";
 import { HomeContact } from "@/components/home/HomeContact";
 import { Reveal } from "@/components/Reveal";
 import { brands } from "@/data/brands";
-import { productCategories, products, team } from "@/data/home";
+import { team } from "@/data/home";
+import { getCategories, getProducts } from "@/lib/catalog";
 import { pageMetadata } from "@/lib/seo";
 import { getMessages } from "@/i18n/messages";
 import { getStatic } from "@/i18n/static";
@@ -172,11 +173,6 @@ const facts = [
 
 const teamWash = ["#ffd8c8", "#d4e6f8", "#ffe7a8"];
 
-const madeHere = productCategories.map((category) => ({
-  ...category,
-  image: products.find((product) => product.category === category.slug)?.image ?? "",
-}));
-
 const policies = [
   {
     title: "Качество",
@@ -207,6 +203,11 @@ export default async function AboutPage({
   const ui = getStatic(locale).about;
   const brandsCopy = getStatic(locale).brands;
   const categories = getMessages(locale).categories;
+  const [catalogProducts, catalogCategories] = await Promise.all([getProducts(), getCategories()]);
+  const madeHere = catalogCategories.map((category) => ({
+    ...category,
+    image: catalogProducts.find((product) => product.category === category.slug)?.image ?? "",
+  }));
   return (
     <>
       <section className="relative overflow-hidden bg-[#fff8f4] pb-12 pt-10 sm:pb-16 sm:pt-14 md:pb-20">

@@ -23,6 +23,7 @@ const empty: ProductInput = {
   name: "",
   slug: "",
   category: "farbstoffe",
+  brand: "metma",
   shortDescription: "",
   description: "",
   price: null,
@@ -88,6 +89,7 @@ export function ProductsManager({ site }: { site: SiteCode }) {
       name: p.name,
       slug: p.slug,
       category: p.category ?? "farbstoffe",
+      brand: p.brand ?? "metma",
       shortDescription: p.shortDescription ?? "",
       description: p.description ?? "",
       price: null,
@@ -408,6 +410,20 @@ export function ProductsManager({ site }: { site: SiteCode }) {
                 </select>
               </Field>
             </div>
+            {site === "Bg" ? (
+              <Field label="Марка">
+                <select
+                  className={inputClass}
+                  value={form.brand ?? "metma"}
+                  onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))}
+                >
+                  <option value="metma">METMA</option>
+                  <option value="vesache">Весаче</option>
+                  <option value="ino">Ино</option>
+                  <option value="pet">Пет</option>
+                </select>
+              </Field>
+            ) : null}
             <Field label="Кратко описание">
               <input
                 className={inputClass}

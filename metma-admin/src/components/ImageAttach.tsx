@@ -64,7 +64,7 @@ export function ImageAttach({
             Няма снимка
           </div>
         )}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-2">
           <input
             ref={inputRef}
             type="file"
@@ -92,7 +92,7 @@ export function ImageAttach({
             )}
           </Button>
           {value ? (
-            <Button variant="ghost" onClick={() => onChange(null)}>
+            <Button variant="danger" onClick={() => onChange(null)}>
               <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
               Премахни
             </Button>

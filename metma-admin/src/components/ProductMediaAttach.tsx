@@ -100,10 +100,10 @@ export function ProductMediaAttach({
                   <span className="px-1 text-[0.65rem] font-semibold text-[var(--admin-mute)]">
                     {index === 0 ? "Главна" : `#${index + 1}`}
                   </span>
-                  <div className="flex gap-0.5">
+                  <div className="flex flex-nowrap gap-1">
                     <button
                       type="button"
-                      className="flex h-9 w-9 items-center justify-center text-sm text-[var(--admin-mute)] hover:text-[var(--admin-ink)] disabled:opacity-30"
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-300 bg-white text-sm font-semibold text-[var(--admin-ink)] hover:border-[var(--admin-ink)] disabled:opacity-30"
                       disabled={index === 0}
                       onClick={() => moveImage(index, -1)}
                       title="Наляво"
@@ -113,7 +113,7 @@ export function ProductMediaAttach({
                     </button>
                     <button
                       type="button"
-                      className="flex h-9 w-9 items-center justify-center text-sm text-[var(--admin-mute)] hover:text-[var(--admin-ink)] disabled:opacity-30"
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-300 bg-white text-sm font-semibold text-[var(--admin-ink)] hover:border-[var(--admin-ink)] disabled:opacity-30"
                       disabled={index === imageUrls.length - 1}
                       onClick={() => moveImage(index, 1)}
                       title="Надясно"
@@ -123,7 +123,7 @@ export function ProductMediaAttach({
                     </button>
                     <button
                       type="button"
-                      className="flex h-9 w-9 items-center justify-center text-sm font-semibold text-red-600"
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-sm font-semibold text-red-700 hover:border-red-600 hover:bg-red-50"
                       onClick={() => removeImage(index)}
                       aria-label="Премахни"
                     >
@@ -175,7 +175,7 @@ export function ProductMediaAttach({
               preload="metadata"
             />
             <div className="flex justify-end bg-white px-2 py-1.5">
-              <Button variant="ghost" onClick={() => onVideoChange(null)}>
+              <Button variant="danger" onClick={() => onVideoChange(null)}>
                 Премахни видео
               </Button>
             </div>

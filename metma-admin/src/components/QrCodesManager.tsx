@@ -320,10 +320,9 @@ export function QrCodesManager({ site }: { site: SiteCode }) {
                       </a>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex flex-wrap items-center gap-1">
+                      <div className="flex flex-nowrap items-center justify-end gap-2">
                         <Button
-                          variant="ghost"
-                          className="!min-h-9 !px-2.5 !py-2"
+                          variant="secondary"
                           onClick={() => copyLink(item)}
                           aria-label="Копирай QR линк"
                         >
@@ -332,15 +331,16 @@ export function QrCodesManager({ site }: { site: SiteCode }) {
                           ) : (
                             <Copy className="h-4 w-4" strokeWidth={2} />
                           )}
+                          Копирай
                         </Button>
                         <Button
-                          variant="ghost"
-                          className="!min-h-9 !px-2.5 !py-2"
+                          variant="secondary"
                           disabled={qrBusy === item.id}
                           onClick={() => downloadQr(item)}
                           aria-label="Изтегли QR"
                         >
                           <Download className="h-4 w-4" strokeWidth={2} />
+                          QR
                         </Button>
                         <RowActions
                           onEdit={() => openEdit(item)}

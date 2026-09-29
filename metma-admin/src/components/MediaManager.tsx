@@ -169,21 +169,21 @@ export function MediaManager({ site }: { site: SiteCode }) {
                 <p className="mt-1 truncate text-xs text-[var(--admin-mute)]">
                   {asset.contentType} · {Math.round(asset.sizeBytes / 1024)} KB
                 </p>
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex flex-nowrap items-center gap-2">
                   <a
                     href={asset.publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-semibold text-[var(--admin-rose)]"
+                    className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-stone-400 bg-white px-3.5 text-sm font-semibold text-[var(--admin-ink)] hover:border-[var(--admin-ink)]"
                   >
-                    Отвори ↗
+                    Отвори
                   </a>
                   <button
                     type="button"
                     onClick={() => onDelete(asset.id)}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-red-600"
+                    className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-red-300 bg-white px-3.5 text-sm font-semibold text-red-700 hover:border-red-600 hover:bg-red-50"
                   >
-                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+                    <Trash2 className="h-4 w-4" strokeWidth={2} />
                     Изтрий
                   </button>
                 </div>

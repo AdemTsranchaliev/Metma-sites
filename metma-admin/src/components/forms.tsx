@@ -15,17 +15,17 @@ export function Button({
 }) {
   const styles =
     variant === "primary"
-      ? "bg-[var(--admin-rose)] text-white shadow-[0_1px_0_rgba(0,0,0,0.05)] hover:bg-[var(--admin-rose-deep)]"
+      ? "border border-[var(--admin-rose-deep)] bg-[var(--admin-rose)] text-white shadow-[0_1px_2px_rgba(201,69,32,0.35)] hover:bg-[var(--admin-rose-deep)]"
       : variant === "secondary"
-        ? "border border-[var(--admin-line)] bg-white text-[var(--admin-ink)] hover:border-[var(--admin-rose)] hover:text-[var(--admin-rose-deep)]"
+        ? "border border-stone-400 bg-white text-[var(--admin-ink)] shadow-[0_1px_0_rgba(28,25,23,0.06)] hover:border-[var(--admin-ink)] hover:bg-[var(--admin-sand)]"
         : variant === "danger"
-          ? "bg-red-600 text-white hover:bg-red-700"
-          : "text-[var(--admin-mute)] hover:bg-[var(--admin-sand)] hover:text-[var(--admin-ink)]";
+          ? "border border-red-300 bg-white text-red-700 hover:border-red-600 hover:bg-red-50"
+          : "border border-stone-300 bg-white text-[var(--admin-ink)] hover:border-stone-500 hover:bg-[var(--admin-sand)]";
 
   return (
     <button
       type={type}
-      className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0 ${styles} ${className}`}
+      className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-3.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`}
       {...props}
     >
       {children}
@@ -41,24 +41,14 @@ export function RowActions({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex shrink-0 items-center gap-0.5">
-      <Button
-        variant="ghost"
-        className="!min-h-10 !px-2.5 !py-2"
-        onClick={onEdit}
-        aria-label="Редакция"
-      >
+    <div className="flex w-full flex-nowrap items-center justify-end gap-2">
+      <Button variant="secondary" onClick={onEdit} aria-label="Редакция">
         <Pencil className="h-4 w-4" strokeWidth={2} />
-        <span className="hidden md:inline">Редакция</span>
+        Редакция
       </Button>
-      <Button
-        variant="ghost"
-        className="!min-h-10 !px-2.5 !py-2"
-        onClick={onDelete}
-        aria-label="Изтрий"
-      >
+      <Button variant="danger" onClick={onDelete} aria-label="Изтрий">
         <Trash2 className="h-4 w-4" strokeWidth={2} />
-        <span className="hidden md:inline">Изтрий</span>
+        Изтрий
       </Button>
     </div>
   );
@@ -129,7 +119,7 @@ export function Modal({
           {children}
         </div>
         {footer ? (
-          <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-[var(--admin-line)] bg-[var(--admin-paper)] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:justify-end sm:px-5 sm:pb-4">
+          <div className="flex shrink-0 flex-row flex-wrap items-center justify-end gap-2 border-t border-[var(--admin-line)] bg-[var(--admin-paper)] px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 sm:pb-4 [&_button]:w-auto">
             {footer}
           </div>
         ) : null}

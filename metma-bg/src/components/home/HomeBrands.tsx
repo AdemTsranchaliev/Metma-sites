@@ -176,10 +176,10 @@ const brands: Brand[] = [
 ];
 
 const fans = [
-  "md:absolute md:left-0 md:top-[4%] md:z-[1] md:w-[42%] md:-rotate-6",
-  "md:absolute md:right-0 md:top-0 md:z-[2] md:w-[42%] md:rotate-6",
-  "md:absolute md:left-[24%] md:top-[24%] md:z-[3] md:w-[44%]",
-  "md:absolute md:left-[16%] md:bottom-[2%] md:z-[4] md:w-[40%] md:rotate-2",
+  "sm:absolute sm:left-[2%] sm:top-0 sm:z-[2] sm:w-[46%] sm:-rotate-3",
+  "sm:absolute sm:right-[6%] sm:top-[2%] sm:z-[2] sm:w-[44%] sm:rotate-[4deg]",
+  "sm:absolute sm:bottom-0 sm:left-[10%] sm:z-[1] sm:w-[44%] sm:rotate-2",
+  "sm:absolute sm:bottom-[1%] sm:right-[3%] sm:z-[1] sm:w-[42%] sm:-rotate-3",
 ];
 
 const orderedBrands = [
@@ -211,7 +211,7 @@ export function HomeBrands() {
       />
 
       <div className="container-metma relative z-[1]">
-        <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:text-left">
           <div>
             <p className="eyebrow" style={{ color: active.ink }}>
               {copy.home.brandsEyebrow}
@@ -220,23 +220,25 @@ export function HomeBrands() {
               {copy.home.brandsTitle}
             </h2>
           </div>
-          <div className="flex w-full items-end justify-between gap-1 sm:w-auto sm:justify-end sm:gap-3">
+          <div className="flex w-full items-end justify-between gap-2 sm:w-auto sm:justify-end sm:gap-5">
             {orderedBrands.map((brand) => {
               const selected = brand.id === active.id;
               const main = brand.id === "metma";
               return (
-                <div key={brand.id} className="flex flex-col items-center gap-1.5">
+                <div key={brand.id} className="flex flex-col items-center gap-2">
                   <button
                     type="button"
                     aria-pressed={selected}
                     aria-label={main ? brandsCopy.mainAria : brand.name}
                     onClick={() => setActiveId(brand.id)}
                     className={`relative overflow-hidden rounded-full bg-white shadow-sm transition duration-300 ${
-                      main ? "h-14 w-14 sm:h-[4.5rem] sm:w-[4.5rem]" : "h-12 w-12 sm:h-16 sm:w-16"
+                      main
+                        ? "h-[4.5rem] w-[4.5rem] sm:h-24 sm:w-24"
+                        : "h-16 w-16 sm:h-20 sm:w-20"
                     }`}
                     style={{
                       outline: selected ? `3px solid ${brand.ink}` : "3px solid transparent",
-                      outlineOffset: 3,
+                      outlineOffset: 4,
                       transform: selected ? "scale(1.06)" : undefined,
                     }}
                   >
@@ -244,12 +246,12 @@ export function HomeBrands() {
                       src={brand.logo}
                       alt=""
                       fill
-                      className="object-contain p-1.5"
-                      sizes="72px"
+                      className="object-contain p-2"
+                      sizes="96px"
                     />
                   </button>
                   <span
-                    className="max-w-[4.5rem] text-center text-[0.58rem] font-bold uppercase leading-tight tracking-[0.06em] sm:max-w-none sm:text-[0.62rem] sm:tracking-[0.12em]"
+                    className="max-w-[5.5rem] text-center text-[0.68rem] font-bold uppercase leading-tight tracking-[0.06em] sm:max-w-none sm:text-xs sm:tracking-[0.12em]"
                     style={{ color: main || selected ? brand.ink : "rgba(23,23,23,0.45)" }}
                   >
                     {main ? brandsCopy.main : brand.name}
@@ -264,13 +266,13 @@ export function HomeBrands() {
           key={active.id}
           className="brand-reveal mt-8 grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-6"
         >
-          <div>
-            <div className="relative h-28 w-64 sm:h-36 sm:w-80">
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+            <div className="relative mx-auto h-28 w-64 sm:h-36 sm:w-80 lg:mx-0">
               <Image
                 src={active.logo}
                 alt={active.name}
                 fill
-                className="object-contain object-left"
+                className="object-contain object-center lg:object-left"
                 sizes="320px"
               />
             </div>
@@ -280,7 +282,7 @@ export function HomeBrands() {
             >
               {active.since} · {brandsCopy[active.id as "vesache" | "ino" | "pet" | "metma"].tag}
             </p>
-            <p className="mt-4 max-w-md text-sm leading-7 text-[var(--metma-ink)]/80 sm:text-base sm:leading-8">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[var(--metma-ink)]/80 sm:text-base sm:leading-8 lg:mx-0">
               {brandsCopy[active.id as "vesache" | "ino" | "pet" | "metma"].text}
             </p>
             <Link href={localePath(locale, `/marki/${active.id}`)} className="btn-metma mt-6 inline-flex" style={{ background: active.ink }}>
@@ -288,32 +290,38 @@ export function HomeBrands() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:relative md:mx-auto md:block md:h-[32rem] md:w-full md:max-w-2xl">
+          <div className="grid grid-cols-2 gap-3 sm:relative sm:block sm:aspect-square sm:w-full">
             {active.products.map((product, index) => {
-              const frame = (
-                <span className="relative block h-full w-full bg-white shadow-[0_18px_40px_-24px_rgba(23,23,23,0.45)]">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-3"
-                    sizes="280px"
-                    unoptimized={product.image.endsWith(".png")}
-                  />
-                  <span className="absolute bottom-2 left-2 right-2 line-clamp-2 bg-white/90 px-2 py-1 text-[0.65rem] font-bold uppercase leading-tight tracking-wide text-[var(--metma-ink)]">
+              const card = (
+                <>
+                  <span className="relative block aspect-square bg-[var(--metma-paper)]">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-contain p-3"
+                      sizes="(min-width: 640px) 240px, 45vw"
+                      unoptimized={product.image.endsWith(".png")}
+                    />
+                  </span>
+                  <span className="block bg-white px-3 py-2.5 text-center text-[0.7rem] font-bold uppercase leading-snug tracking-wide text-[var(--metma-ink)] sm:text-left sm:text-xs">
                     {product.name}
                   </span>
-                </span>
+                </>
               );
-              const className = `brand-pop relative aspect-square ${fans[index] ?? fans[0]}`;
-              const style = { animationDelay: `${index * 80}ms` };
-              return product.href ? (
-                <Link key={product.code} href={product.href} className={className} style={style}>
-                  {frame}
-                </Link>
-              ) : (
-                <div key={product.code} className={className} style={style}>
-                  {frame}
+              const frame = `brand-pop flex h-full flex-col bg-white shadow-[0_18px_40px_-24px_rgba(23,23,23,0.45)]`;
+              const style = { animationDelay: `${index * 70}ms` };
+              return (
+                <div key={product.code} className={fans[index] ?? fans[0]}>
+                  {product.href ? (
+                    <Link href={product.href} className={frame} style={style}>
+                      {card}
+                    </Link>
+                  ) : (
+                    <div className={frame} style={style}>
+                      {card}
+                    </div>
+                  )}
                 </div>
               );
             })}

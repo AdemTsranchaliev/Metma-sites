@@ -96,7 +96,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           <button
             type="submit"
             disabled={busy}
-            className="mt-5 w-full rounded-lg bg-[var(--admin-ink)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-lg border border-[var(--admin-rose-deep)] bg-[var(--admin-rose)] text-sm font-semibold text-white shadow-[0_1px_2px_rgba(201,69,32,0.35)] disabled:opacity-60"
           >
             {busy ? "Влизане…" : "Вход"}
           </button>

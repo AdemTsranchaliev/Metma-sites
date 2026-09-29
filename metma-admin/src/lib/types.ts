@@ -13,6 +13,17 @@ export type ProductCategory = {
   isActive: boolean;
 };
 
+/** Default BG categories — seeded when the Bulgarian site has none */
+export const BG_PRODUCT_CATEGORIES: Omit<
+  ProductCategory,
+  "id" | "siteId"
+>[] = [
+  { name: "Бои", slug: "boi", description: "Таблетки, капсули и течни", sortOrder: 1, isActive: true },
+  { name: "Комплекти", slug: "komplekti", description: "Всичко за боядисване", sortOrder: 2, isActive: true },
+  { name: "Украси", slug: "ukrasi", description: "Стикери, трева и яйца", sortOrder: 3, isActive: true },
+  { name: "Рекламни дисплеи", slug: "displei", description: "Рекламни стойки", sortOrder: 4, isActive: true },
+];
+
 /** Default DE categories — also used as seed */
 export const DEFAULT_PRODUCT_CATEGORIES: Omit<
   ProductCategory,
@@ -62,6 +73,8 @@ export type Product = {
   siteId: string;
   categoryId?: string | null;
   category?: ProductCategorySlug | null;
+  /** Egg-dye brands on the Bulgarian site */
+  brand?: string | null;
   sku: string;
   name: string;
   slug: string;

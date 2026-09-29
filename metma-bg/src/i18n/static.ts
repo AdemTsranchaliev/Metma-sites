@@ -57,7 +57,7 @@ const bg = {
     factoryText: "Боите, комплектите, украсите и дисплеите минават през собствено производство.",
     officeAt: "Офисът е на",
     team: "Екип",
-    teamTitle: "Хората зад боята",
+    teamTitle: "Нашият екип",
     facts: ["Начало", "Европейски страни", "Марки", "Седалище"],
     steps: [
       { title: "Търговия с храни", text: "Компанията започва търговия с хранителни продукти." },
@@ -168,7 +168,7 @@ const en: StaticCopy = {
     factoryText: "The dyes, kits, decorations and displays all pass through our own production.",
     officeAt: "The office is at",
     team: "Team",
-    teamTitle: "The people behind the dye",
+    teamTitle: "Our team",
     facts: ["Start", "European countries", "Brands", "Headquarters"],
     steps: [
       { title: "Food trading", text: "The company starts trading food products." },
@@ -277,7 +277,7 @@ const de: StaticCopy = {
     factoryText: "Farben, Sets, Deko und Displays durchlaufen die eigene Produktion.",
     officeAt: "Das Büro ist in",
     team: "Team",
-    teamTitle: "Die Menschen hinter der Farbe",
+    teamTitle: "Unser Team",
     facts: ["Beginn", "Europäische Länder", "Marken", "Sitz"],
     steps: [
       { title: "Lebensmittelhandel", text: "Das Unternehmen beginnt mit dem Handel von Lebensmitteln." },
@@ -386,7 +386,7 @@ const fr: StaticCopy = {
     factoryText: "Les colorants, coffrets, décorations et présentoirs passent par notre propre production.",
     officeAt: "Le bureau est au",
     team: "Équipe",
-    teamTitle: "Les gens derrière le colorant",
+    teamTitle: "Notre équipe",
     facts: ["Début", "Pays européens", "Marques", "Siège"],
     steps: [
       { title: "Commerce alimentaire", text: "L’entreprise commence à commercer des produits alimentaires." },
@@ -495,7 +495,7 @@ const es: StaticCopy = {
     factoryText: "Los tintes, kits, adornos y expositores pasan por nuestra propia producción.",
     officeAt: "La oficina está en",
     team: "Equipo",
-    teamTitle: "Las personas detrás del tinte",
+    teamTitle: "Nuestro equipo",
     facts: ["Inicio", "Países europeos", "Marcas", "Sede"],
     steps: [
       { title: "Comercio de alimentos", text: "La empresa empieza a comerciar productos alimentarios." },
@@ -604,7 +604,7 @@ const it: StaticCopy = {
     factoryText: "Coloranti, kit, decorazioni ed espositori passano dalla nostra produzione.",
     officeAt: "L’ufficio è in",
     team: "Team",
-    teamTitle: "Le persone dietro il colore",
+    teamTitle: "Il nostro team",
     facts: ["Inizio", "Paesi europei", "Marchi", "Sede"],
     steps: [
       { title: "Commercio alimentare", text: "L’azienda inizia a commerciare prodotti alimentari." },

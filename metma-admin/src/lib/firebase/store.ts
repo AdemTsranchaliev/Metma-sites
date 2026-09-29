@@ -30,7 +30,7 @@ import type {
   QrLink,
   SiteCode,
 } from "@/lib/types";
-import { DEFAULT_PRODUCT_CATEGORIES } from "@/lib/types";
+import { BG_PRODUCT_CATEGORIES, DEFAULT_PRODUCT_CATEGORIES } from "@/lib/types";
 import { newId } from "@/lib/utils";
 
 export const COLLECTIONS = {
@@ -75,6 +75,7 @@ export async function fbGetProducts(site: SiteCode, featuredOnly = false) {
         siteId: data.siteId ?? siteIdFor(site),
         categoryId: data.categoryId ?? null,
         category: data.category ?? null,
+        brand: data.brand ?? null,
         sku: data.sku ?? "",
         name: data.name ?? "",
         slug: data.slug ?? "",
@@ -110,6 +111,7 @@ export async function fbSaveProduct(
     siteId,
     categoryId: input.categoryId ?? null,
     category: input.category ?? null,
+    brand: input.brand ?? null,
     sku: input.sku,
     name: input.name,
     slug: input.slug,
@@ -394,8 +396,9 @@ export async function fbGetCategories(site: SiteCode) {
 
   // Seed defaults once per site
   const siteId = siteIdFor(site);
+  const defaults = site === "Bg" ? BG_PRODUCT_CATEGORIES : DEFAULT_PRODUCT_CATEGORIES;
   const seeded: ProductCategory[] = [];
-  for (const [i, c] of DEFAULT_PRODUCT_CATEGORIES.entries()) {
+  for (const [i, c] of defaults.entries()) {
     const id = `cat-${site.toLowerCase()}-${c.slug}`;
     const row: ProductCategory = {
       id,

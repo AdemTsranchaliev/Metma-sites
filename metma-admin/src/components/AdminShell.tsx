@@ -300,7 +300,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 href={siteLocalOrigin(site)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-[var(--admin-line)] bg-white px-2.5 text-sm font-medium text-[var(--admin-ink)] transition hover:border-[var(--admin-rose)] hover:text-[var(--admin-rose)] sm:px-3"
+                className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-lg border border-stone-400 bg-white px-3.5 text-sm font-semibold text-[var(--admin-ink)] shadow-[0_1px_0_rgba(28,25,23,0.06)] transition hover:border-[var(--admin-ink)] hover:bg-[var(--admin-sand)]"
                 aria-label="Отвори сайта"
               >
                 <span className="hidden sm:inline">Отвори сайта</span>

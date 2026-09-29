@@ -278,6 +278,7 @@ export type ProductInput = {
   name: string;
   slug: string;
   category?: ProductCategorySlug | null;
+  brand?: string | null;
   shortDescription?: string | null;
   description?: string | null;
   price?: number | null;

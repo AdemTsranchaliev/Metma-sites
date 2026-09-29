@@ -47,10 +47,10 @@ export function ListToolbar({
   search: React.ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="w-full sm:max-w-sm">{search}</div>
+    <div className="mb-4 flex flex-row flex-wrap items-center justify-between gap-3">
+      <div className="min-w-[12rem] flex-1 sm:max-w-sm">{search}</div>
       {children ? (
-        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center [&_button]:w-full sm:[&_button]:w-auto">
+        <div className="flex flex-row flex-wrap items-center justify-end gap-2 [&_button]:w-auto">
           {children}
         </div>
       ) : null}
