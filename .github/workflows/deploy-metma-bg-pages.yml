@@ -36,7 +36,8 @@ jobs:
         working-directory: metma-bg
         env:
           GITHUB_PAGES: "true"
-          NEXT_PUBLIC_BASE_PATH: "/Metma-sites"
+          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_SITE_URL: "https://metma-bg.com"
           NEXT_PUBLIC_USE_FIREBASE: "true"
           NEXT_PUBLIC_FIREBASE_API_KEY: AIzaSyB7lyONAEf7mazRUPQEYWzvW_oeEjPsNkg
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: metma-d78fd.firebaseapp.com
@@ -49,7 +50,8 @@ jobs:
         run: npm ci && npm run build:gh-pages
         env:
           GITHUB_PAGES: "true"
-          NEXT_PUBLIC_BASE_PATH: "/Metma-sites/mehanizmi"
+          NEXT_PUBLIC_BASE_PATH: "/mehanizmi"
+          NEXT_PUBLIC_SITE_URL: "https://metma-bg.com/mehanizmi"
       - name: Nest mechanisms pages under /mehanizmi
         working-directory: .
         run: rm -rf metma-bg/out/mehanizmi && mkdir -p metma-bg/out/mehanizmi && cp -R metma-mehanizmi/out/. metma-bg/out/mehanizmi/

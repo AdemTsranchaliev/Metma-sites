@@ -6,10 +6,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "/Metma-sites";
+const BASE = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
 const outDir = path.join(process.cwd(), "out");
 
 function rewrite(content) {
+  if (!BASE) return content;
   let next = content.replaceAll(`${BASE}/images/`, "\0BASEIMG\0");
   next = next.replaceAll(`${BASE}/videos/`, "\0BASEVID\0");
   next = next.replaceAll(`${BASE}/favicon.png`, "\0BASEFAV\0");
@@ -107,12 +108,15 @@ function copyDir(src, dest) {
   }
 }
 
-walk(outDir);
+if (BASE) {
+  walk(outDir);
+  console.log(`Prefixed /images, /videos and /favicon with ${BASE}`);
+} else {
+  console.log("No NEXT_PUBLIC_BASE_PATH — skipping image prefix rewrite");
+}
 
 const bgDir = path.join(outDir, "bg");
 if (fs.existsSync(bgDir)) {
   copyDir(bgDir, outDir);
   console.log("Copied Bulgarian pages to the site root");
 }
-
-console.log(`Prefixed /images, /videos and /favicon with ${BASE}`);

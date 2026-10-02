@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
-const basePath = isGithubPages ? "/Metma-sites" : "";
+// Custom domain (metma-bg.com) serves from site root — no /Metma-sites prefix.
+const basePath = isGithubPages
+  ? (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "")
+  : "";
 
 const nextConfig: NextConfig = {
   images: {
@@ -9,7 +12,14 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
   },
   ...(isGithubPages
-    ? { output: "export", basePath, assetPrefix: basePath, trailingSlash: true }
+    ? {
+        output: "export" as const,
+        ...(basePath ? { basePath, assetPrefix: basePath } : {}),
+        trailingSlash: true,
+        env: {
+          NEXT_PUBLIC_BASE_PATH: basePath,
+        },
+      }
     : {}),
 };
 

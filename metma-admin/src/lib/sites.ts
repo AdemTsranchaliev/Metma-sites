@@ -16,7 +16,7 @@ const LOCAL_ORIGINS: Record<SiteCode, string> = {
 
 const LIVE_ORIGINS: Record<SiteCode, string> = {
   De: "https://metma-de.com",
-  Bg: "https://metma.bg",
+  Bg: "https://metma-bg.com",
   Usa: "https://metma-usa.com",
 };
 
@@ -71,4 +71,40 @@ export function qrPublicUrl(site: SiteCode, code: string, origin?: string) {
     origin ??
     (typeof window !== "undefined" ? window.location.origin : "http://localhost:3003");
   return `${base}/go/${encodeURIComponent(code)}?site=${site}`;
+}
+
+/**
+ * The new German catalog. metma-de.com still serves the old WordPress
+ * pages, which have a title and no product content.
+ */
+const DE_CATALOG_ORIGIN = "https://metma-de.com";
+
+/**
+ * QR targets saved as https://metma-de.com/{old-slug}/ open an empty page.
+ * Send those to the product that actually exists.
+ */
+export function resolveQrDestination(link: {
+  redirectUrl?: string | null;
+  productSlug?: string | null;
+}) {
+  const target = link.redirectUrl?.trim() ?? "";
+  const slug = (link.productSlug ?? "").replace(/^\/+|\/+$/g, "");
+  if (!target || !slug) return target;
+
+  try {
+    const url = new URL(target);
+    const host = url.hostname.replace(/^www\./, "");
+    const path = decodeURIComponent(url.pathname).replace(/\/+$/, "");
+    const legacyRoot =
+      host === "metma-de.com" &&
+      path.length > 1 &&
+      !path.startsWith("/produkte");
+    if (legacyRoot) {
+      return `${DE_CATALOG_ORIGIN}/produkte/${slug}/`;
+    }
+  } catch {
+    return target;
+  }
+
+  return target;
 }
