@@ -46,6 +46,23 @@ export function Footer({ locale }: { locale: Locale }) {
             <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--metma-mute)]">
               {copy.footer.blurb}
             </p>
+
+            <ul className="mt-5 flex items-center gap-1.5" aria-label={copy.footer.follow}>
+              {socialProfiles.map((item) => (
+                <li key={item.id}>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={item.label}
+                    title={item.label}
+                    className="inline-flex h-9 w-9 items-center justify-center text-[var(--metma-ink)] transition hover:text-[var(--metma-rose)]"
+                  >
+                    <SocialIcon id={item.id} />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>
@@ -109,7 +126,7 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <div className="mt-9 flex flex-col gap-2 border-t border-[var(--metma-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-9 flex flex-col gap-3 border-t border-[var(--metma-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[var(--metma-mute)]">
             © {year} {siteConfig.legalName}
           </p>
@@ -134,29 +151,6 @@ export function Footer({ locale }: { locale: Locale }) {
           >
             {copy.footer.send}
           </Link>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10 bg-[var(--metma-ink)] text-white">
-        <div className="container-metma flex flex-col items-start gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white/70">
-            {copy.footer.follow}
-          </p>
-          <ul className="flex items-center gap-2">
-            {socialProfiles.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={item.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-[var(--metma-rose)]"
-                >
-                  <SocialIcon id={item.id} />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </footer>

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 function Icon({ children }: { children: ReactNode }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 fill-current">
+    <svg viewBox="0 0 24 24" aria-hidden className="h-[1.15rem] w-[1.15rem] fill-current">
       {children}
     </svg>
   );
@@ -15,11 +15,6 @@ const icons = {
     </Icon>
   ),
   instagram: (
-    <Icon>
-      <path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm8 1.8H8A3.2 3.2 0 0 0 4.8 8v8A3.2 3.2 0 0 0 8 19.2h8a3.2 3.2 0 0 0 3.2-3.2V8A3.2 3.2 0 0 0 16 4.8ZM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2Zm0 1.6A2.2 2.2 0 1 0 14.2 12 2.2 2.2 0 0 0 12 9.8ZM17.35 6.4a.95.95 0 1 1-.95.95.95.95 0 0 1 .95-.95Z" />
-    </Icon>
-  ),
-  "instagram-easter": (
     <Icon>
       <path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm8 1.8H8A3.2 3.2 0 0 0 4.8 8v8A3.2 3.2 0 0 0 8 19.2h8a3.2 3.2 0 0 0 3.2-3.2V8A3.2 3.2 0 0 0 16 4.8ZM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2Zm0 1.6A2.2 2.2 0 1 0 14.2 12 2.2 2.2 0 0 0 12 9.8ZM17.35 6.4a.95.95 0 1 1-.95.95.95.95 0 0 1 .95-.95Z" />
     </Icon>
