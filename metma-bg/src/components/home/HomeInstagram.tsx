@@ -5,7 +5,7 @@ import { getStatic } from "@/i18n/static";
 import { type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-const profile = siteConfig.social.instagramEaster;
+const profile = siteConfig.social.instagram;
 
 const posts = [
   { src: "/images/instagram/01.jpg", href: "https://www.instagram.com/chudesata.na.velikden/reel/DWhCPI7iJv-/", reel: true },

@@ -25,10 +25,9 @@ export const siteConfig = {
   },
   social: {
     facebook: "https://www.facebook.com/MetmaBulgaria",
-    instagram: "https://www.instagram.com/metma_bg/",
-    instagramEaster: "https://www.instagram.com/chudesata.na.velikden/",
-    tiktok: "https://www.tiktok.com/@metma.eu",
-    youtube: "https://www.youtube.com/channel/UCzY6FBzb_mcHeoCmr82m7Og",
+    instagram: "https://www.instagram.com/chudesata.na.velikden",
+    tiktok: "https://www.tiktok.com/@chudesata.na.velikden",
+    youtube: "https://www.youtube.com/@metmaltd3345",
   },
 };
 
@@ -42,25 +41,19 @@ export const socialProfiles = [
   {
     id: "instagram",
     label: "Instagram",
-    handle: "@metma_bg",
-    href: siteConfig.social.instagram,
-  },
-  {
-    id: "instagram-easter",
-    label: "Чудесата на Великден",
     handle: "@chudesata.na.velikden",
-    href: siteConfig.social.instagramEaster,
-  },
-  {
-    id: "youtube",
-    label: "YouTube",
-    handle: "METMA",
-    href: siteConfig.social.youtube,
+    href: siteConfig.social.instagram,
   },
   {
     id: "tiktok",
     label: "TikTok",
-    handle: "@metma.eu",
+    handle: "@chudesata.na.velikden",
     href: siteConfig.social.tiktok,
+  },
+  {
+    id: "youtube",
+    label: "YouTube",
+    handle: "@metmaltd3345",
+    href: siteConfig.social.youtube,
   },
 ] as const;
