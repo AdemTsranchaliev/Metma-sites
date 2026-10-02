@@ -65,6 +65,8 @@ export type StoreProduct = {
   name: string;
   slug: string;
   image: string;
+  videoUrl: string | null;
+  videoIsInstruction: boolean;
   category: string;
   shortDescription: string;
   description: string;
@@ -89,6 +91,13 @@ export type StoreBlogPost = {
   content: BlogBlock[];
 };
 
+function asVideoUrl(value: unknown): string | null {
+  const url = String(value ?? "").trim();
+  if (!url) return null;
+  if (url.startsWith("https://") || url.startsWith("http://") || url.startsWith("/")) return url;
+  return null;
+}
+
 function mapProduct(id: string, data: DocumentData): StoreProduct | null {
   if (data.isActive === false) return null;
   const sku = String(data.sku ?? id);
@@ -106,6 +115,7 @@ function mapProduct(id: string, data: DocumentData): StoreProduct | null {
     image = image.replace(/\.jpg$/i, ".png");
   }
   image = optimizeMediaUrl(String(image), { width: 900 });
+  const videoUrl = asVideoUrl(data.videoUrl);
   const name = String(data.name ?? "");
   const shortDescription = String(data.shortDescription ?? "");
   const description = String(data.description ?? shortDescription);
@@ -122,6 +132,8 @@ function mapProduct(id: string, data: DocumentData): StoreProduct | null {
     name,
     slug: String(data.slug ?? id),
     image: String(image),
+    videoUrl,
+    videoIsInstruction: Boolean(videoUrl) && data.videoIsInstruction !== false,
     category,
     shortDescription,
     description,

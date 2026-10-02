@@ -9,8 +9,7 @@ import {
   getBlogPostBySlug,
   getBlogPosts,
 } from "@/lib/catalog";
-import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -56,6 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/blog/${post.slug}`,
     image: post.image,
     type: "article",
+    publishedTime: post.date,
   });
 }
 
@@ -76,39 +76,21 @@ export default async function BlogPostPage({ params }: Props) {
       <JsonLd
         data={[
           breadcrumbJsonLd([
+            { name: "Startseite", path: "/" },
             { name: "Blog", path: "/blog" },
             { name: post.title, path: `/blog/${post.slug}` },
           ]),
-          {
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
+          articleJsonLd({
+            title: post.title,
             description: post.excerpt,
-            articleBody: post.content
-              .map((block) =>
-                block.type === "ul" ? block.items.join(" ") : block.text,
-              )
-              .join("\n\n"),
-            image: absoluteUrl(post.image),
+            path: `/blog/${post.slug}`,
+            image: post.image,
             datePublished: post.date,
-            dateModified: post.date,
             inLanguage: "de",
-            mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
-            author: {
-              "@type": "Organization",
-              name: siteConfig.name,
-              url: siteConfig.url,
-            },
-            publisher: {
-              "@type": "Organization",
-              name: siteConfig.name,
-              url: siteConfig.url,
-              logo: {
-                "@type": "ImageObject",
-                url: absoluteUrl("/images/logo-brand-v3.png"),
-              },
-            },
-          },
+            body: post.content
+              .map((block) => (block.type === "ul" ? block.items.join(" ") : block.text))
+              .join("\n\n"),
+          }),
         ]}
       />
       <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)]">

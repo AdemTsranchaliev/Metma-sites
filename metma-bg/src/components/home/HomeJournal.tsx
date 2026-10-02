@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { readingLabel } from "@/components/blog/BlogFacts";
 import { Reveal } from "@/components/Reveal";
 import { getMessages } from "@/i18n/messages";
-import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+import { getStatic } from "@/i18n/static";
+import { formatBlogDate, getBlogPosts, readingMinutes } from "@/lib/catalog";
 import { localePath, type Locale } from "@/lib/i18n";
 
 function ArrowIcon() {
@@ -22,6 +24,7 @@ function ArrowIcon() {
 export async function HomeJournal({ locale }: { locale: Locale }) {
   const t = getMessages(locale);
   const copy = t.home;
+  const blog = getStatic(locale).blog;
   const posts = await getBlogPosts();
   const [featured, ...rest] = posts;
   const more = rest.slice(0, 3);
@@ -63,7 +66,11 @@ export async function HomeJournal({ locale }: { locale: Locale }) {
                 <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#5c6b7a]">
                   <span className="text-[var(--metma-rose)]">{featured.category}</span>
                   <span aria-hidden> · </span>
-                  <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
+                  <time dateTime={featured.date}>{formatBlogDate(featured.date, locale)}</time>
+                  <span aria-hidden> · </span>
+                  <span className="normal-case tracking-normal">
+                    {readingLabel(readingMinutes(featured), blog)}
+                  </span>
                 </p>
                 <h3 className="mt-3 font-display text-[clamp(1.25rem,2vw,1.65rem)] font-bold leading-snug tracking-[-0.03em] text-[#2f3b4c]">
                   <Link href={localePath(locale, `/blog/${featured.slug}`)} className="transition hover:text-[var(--metma-rose)]">
@@ -108,12 +115,11 @@ export async function HomeJournal({ locale }: { locale: Locale }) {
                       <span className="mt-1 line-clamp-2 font-display text-[0.95rem] font-bold leading-snug text-[#2f3b4c] transition group-hover:text-[var(--metma-rose)] sm:text-base">
                         {post.title}
                       </span>
-                      <time
-                        dateTime={post.date}
-                        className="mt-1 text-xs font-semibold text-[#5c6b7a]"
-                      >
-                        {formatBlogDate(post.date)}
-                      </time>
+                      <span className="mt-1 text-xs font-semibold text-[#5c6b7a]">
+                        <time dateTime={post.date}>{formatBlogDate(post.date, locale)}</time>
+                        <span aria-hidden> · </span>
+                        {readingLabel(readingMinutes(post), blog)}
+                      </span>
                     </span>
                     <span className="mr-1 hidden text-[var(--metma-rose)] opacity-0 transition group-hover:opacity-100 sm:grid">
                       <ArrowIcon />

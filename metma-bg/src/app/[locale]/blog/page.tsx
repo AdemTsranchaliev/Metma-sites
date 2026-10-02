@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { readingLabel } from "@/components/blog/BlogFacts";
+import { JsonLd } from "@/components/JsonLd";
 import { PageIntro } from "@/components/PageIntro";
 import { getMessages } from "@/i18n/messages";
-import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
+import { formatBlogDate, getBlogPosts, readingMinutes } from "@/lib/catalog";
 import { getStatic } from "@/i18n/static";
 import { localePath, parseLocale } from "@/lib/i18n";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -35,6 +37,21 @@ export default async function BlogPage({
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: copy.nav.home, path: localePath(locale, "/") },
+            { name: copy.nav.blog, path: localePath(locale, "/blog") },
+          ]),
+          itemListJsonLd(
+            copy.meta.blogTitle,
+            blogPosts.map((post) => ({
+              name: post.title,
+              path: localePath(locale, `/blog/${post.slug}`),
+            })),
+          ),
+        ]}
+      />
       <PageIntro
         eyebrow={ui.blog.eyebrow}
         title={copy.meta.blogTitle}
@@ -62,7 +79,11 @@ export default async function BlogPage({
                 <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#5c6b7a]">
                   <span className="text-[var(--metma-rose)]">{featured.category}</span>
                   <span aria-hidden>·</span>
-                  <time dateTime={featured.date}>{formatBlogDate(featured.date)}</time>
+                  <time dateTime={featured.date}>{formatBlogDate(featured.date, locale)}</time>
+                  <span aria-hidden>·</span>
+                  <span className="normal-case tracking-normal">
+                    {readingLabel(readingMinutes(featured), ui.blog)}
+                  </span>
                 </div>
                 <h2 className="mt-3 font-display text-[clamp(1.55rem,2.6vw,2.15rem)] font-bold leading-[1.15] tracking-[-0.03em] text-[#2f3b4c]">
                   <Link href={localePath(locale, `/blog/${featured.slug}`)} className="transition hover:text-[var(--metma-rose)]">
@@ -81,7 +102,9 @@ export default async function BlogPage({
 
           {rest.length > 0 ? (
             <ul className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2">
-              {rest.map((post) => (
+              {rest.map((post) => {
+                const minutes = readingMinutes(post);
+                return (
                 <li key={post.slug}>
                   <Link
                     href={localePath(locale, `/blog/${post.slug}`)}
@@ -90,7 +113,7 @@ export default async function BlogPage({
                     <span className="relative block aspect-square">
                       <Image
                         src={post.image}
-                        alt=""
+                        alt={post.title}
                         fill
                         className="object-cover transition duration-500 group-hover:scale-[1.03]"
                         style={{ objectPosition: post.imagePosition ?? "center" }}
@@ -101,7 +124,11 @@ export default async function BlogPage({
                       <span className="flex flex-wrap items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#5c6b7a]">
                         <span className="text-[var(--metma-rose)]">{post.category}</span>
                         <span aria-hidden>·</span>
-                        <time dateTime={post.date}>{formatBlogDate(post.date)}</time>
+                        <time dateTime={post.date}>{formatBlogDate(post.date, locale)}</time>
+                        <span aria-hidden>·</span>
+                        <span className="normal-case tracking-normal">
+                          {readingLabel(minutes, ui.blog)}
+                        </span>
                       </span>
                       <span className="mt-2 block font-display text-xl font-bold leading-snug text-[#2f3b4c] transition group-hover:text-[var(--metma-rose)]">
                         {post.title}
@@ -112,7 +139,8 @@ export default async function BlogPage({
                     </span>
                   </Link>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           ) : null}
         </div>

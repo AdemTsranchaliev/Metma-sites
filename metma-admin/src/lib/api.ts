@@ -21,8 +21,10 @@ import {
   mockSaveProduct,
   mockSaveQrLink,
 } from "./mock-store";
-import { isFirebaseConfigured } from "./firebase/client";
+import { useFirebase, useMockData } from "./data-mode";
+import { invalidateSite, readCached } from "./read-cache";
 import {
+  fbDashboardCounts,
   fbDeleteBlog,
   fbDeleteCategory,
   fbDeleteMedia,
@@ -43,6 +45,7 @@ import {
   fbSavePage,
   fbSaveProduct,
   fbSaveQrLink,
+  fbUploadFile,
   siteIdFor,
 } from "./firebase/store";
 import type {
@@ -75,17 +78,7 @@ export { DEFAULT_PRODUCT_CATEGORIES, PRODUCT_CATEGORIES } from "./types";
 export const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5080";
 
-/**
- * Data mode:
- * - firebase: NEXT_PUBLIC_USE_FIREBASE=true (+ configured keys)
- * - mock: default localStorage demo
- * - api: legacy ASP.NET (USE_MOCK=false, USE_FIREBASE≠true)
- */
-export const useFirebase =
-  process.env.NEXT_PUBLIC_USE_FIREBASE === "true" && isFirebaseConfigured;
-
-export const useMockData =
-  !useFirebase && process.env.NEXT_PUBLIC_USE_MOCK_DATA !== "false";
+export { useFirebase, useMockData };
 
 function normalizeSiteCode(code: Site["code"]): SiteCode | null {
   if (code === "Bg" || code === 1 || code === "1") return "Bg";
@@ -142,7 +135,31 @@ export async function resolveSiteId(siteCode: SiteCode) {
   return match.id;
 }
 
+export async function getDashboardCounts(siteCode: SiteCode) {
+  return readCached(`counts:${siteCode}`, async () => {
+    if (useFirebase) return fbDashboardCounts(siteCode);
+    const [products, pages, posts, categories] = await Promise.all([
+      getProducts(siteCode),
+      getPages(siteCode),
+      getBlogPosts(siteCode, false),
+      getCategories(siteCode),
+    ]);
+    return {
+      products: products.length,
+      categories: categories.length,
+      pages: pages.length,
+      posts: posts.length,
+    };
+  });
+}
+
 export async function getProducts(siteCode: SiteCode, featuredOnly = false) {
+  return readCached(`products:${siteCode}:${featuredOnly}`, () =>
+    loadProducts(siteCode, featuredOnly),
+  );
+}
+
+async function loadProducts(siteCode: SiteCode, featuredOnly = false) {
   if (useFirebase) return fbGetProducts(siteCode, featuredOnly);
 
   if (useMockData) {
@@ -161,6 +178,10 @@ export async function getProducts(siteCode: SiteCode, featuredOnly = false) {
 }
 
 export async function getPages(siteCode: SiteCode) {
+  return readCached(`pages:${siteCode}`, () => loadPages(siteCode));
+}
+
+async function loadPages(siteCode: SiteCode) {
   if (useFirebase) return fbGetPages(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
@@ -190,6 +211,12 @@ export async function getPageBySlug(siteCode: SiteCode, slug: string) {
 }
 
 export async function getBlogPosts(siteCode: SiteCode, publishedOnly = false) {
+  return readCached(`blog:${siteCode}:${publishedOnly}`, () =>
+    loadBlogPosts(siteCode, publishedOnly),
+  );
+}
+
+async function loadBlogPosts(siteCode: SiteCode, publishedOnly = false) {
   if (useFirebase) return fbGetBlog(siteCode, publishedOnly);
   if (useMockData) {
     const list =
@@ -208,6 +235,10 @@ export async function getBlogPosts(siteCode: SiteCode, publishedOnly = false) {
 }
 
 export async function getMedia(siteCode: SiteCode) {
+  return readCached(`media:${siteCode}`, () => loadMedia(siteCode));
+}
+
+async function loadMedia(siteCode: SiteCode) {
   if (useFirebase) return fbGetMedia(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
@@ -219,6 +250,10 @@ export async function getMedia(siteCode: SiteCode) {
 }
 
 export async function getCategories(siteCode: SiteCode) {
+  return readCached(`categories:${siteCode}`, () => loadCategories(siteCode));
+}
+
+async function loadCategories(siteCode: SiteCode) {
   if (useFirebase) return fbGetCategories(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
@@ -247,7 +282,11 @@ export async function saveCategory(
   input: CategoryInput,
   id?: string,
 ) {
-  if (useFirebase) return fbSaveCategory(siteCode, input, id);
+  if (useFirebase) {
+    const saved = await fbSaveCategory(siteCode, input, id);
+    invalidateSite(siteCode);
+    return saved;
+  }
 
   const siteId = await resolveSiteId(siteCode);
   if (useMockData) {
@@ -256,7 +295,9 @@ export async function saveCategory(
       siteId,
       ...input,
     };
-    return mockSaveCategory(siteCode, category);
+    const saved = mockSaveCategory(siteCode, category);
+    invalidateSite(siteCode);
+    return saved;
   }
   throw new Error("Категориите през API още не са налични.");
 }
@@ -264,10 +305,12 @@ export async function saveCategory(
 export async function deleteCategory(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeleteCategory(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeleteCategory(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   throw new Error("Категориите през API още не са налични.");
@@ -286,6 +329,7 @@ export type ProductInput = {
   imageUrl?: string | null;
   imageUrls?: string[];
   videoUrl?: string | null;
+  videoIsInstruction?: boolean;
   isFeatured: boolean;
   isActive: boolean;
   sortOrder: number;
@@ -307,11 +351,14 @@ export async function saveProduct(
     imageUrls,
     imageUrl,
     videoUrl: input.videoUrl ?? null,
+    videoIsInstruction: Boolean(input.videoUrl && input.videoIsInstruction),
     price: null as number | null,
   };
 
   if (useFirebase) {
-    return fbSaveProduct(siteCode, normalized, id);
+    const saved = await fbSaveProduct(siteCode, normalized, id);
+    invalidateSite(siteCode);
+    return saved;
   }
 
   const siteId = await resolveSiteId(siteCode);
@@ -322,11 +369,13 @@ export async function saveProduct(
       siteId,
       ...normalized,
     };
-    return mockSaveProduct(siteCode, product);
+    const saved = mockSaveProduct(siteCode, product);
+    invalidateSite(siteCode);
+    return saved;
   }
 
   if (id) {
-    return apiFetch<Product>(`/api/products/${id}`, {
+    const saved = await apiFetch<Product>(`/api/products/${id}`, {
       method: "PUT",
       body: JSON.stringify({
         categoryId: null,
@@ -343,9 +392,11 @@ export async function saveProduct(
         sortOrder: normalized.sortOrder,
       }),
     });
+    invalidateSite(siteCode);
+    return saved;
   }
 
-  return apiFetch<Product>("/api/products", {
+  const created = await apiFetch<Product>("/api/products", {
     method: "POST",
     body: JSON.stringify({
       siteId,
@@ -362,18 +413,23 @@ export async function saveProduct(
       sortOrder: normalized.sortOrder,
     }),
   });
+  invalidateSite(siteCode);
+  return created;
 }
 
 export async function deleteProduct(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeleteProduct(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeleteProduct(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   await apiFetch(`/api/products/${id}`, { method: "DELETE" });
+  invalidateSite(siteCode);
 }
 
 export type PageInput = {
@@ -392,35 +448,47 @@ export async function savePage(
   input: PageInput,
   id?: string,
 ) {
-  if (useFirebase) return fbSavePage(siteCode, input, id);
+  if (useFirebase) {
+    const saved = await fbSavePage(siteCode, input, id);
+    invalidateSite(siteCode);
+    return saved;
+  }
 
   const siteId = await resolveSiteId(siteCode);
 
   if (useMockData) {
     const page: Page = { id: id ?? newId(), siteId, ...input };
-    return mockSavePage(siteCode, page);
+    const saved = mockSavePage(siteCode, page);
+    invalidateSite(siteCode);
+    return saved;
   }
 
   if (id) {
-    return apiFetch<Page>(`/api/pages/${id}`, {
+    const saved = await apiFetch<Page>(`/api/pages/${id}`, {
       method: "PUT",
       body: JSON.stringify(input),
     });
+    invalidateSite(siteCode);
+    return saved;
   }
 
-  return apiFetch<Page>("/api/pages", {
+  const created = await apiFetch<Page>("/api/pages", {
     method: "POST",
     body: JSON.stringify({ siteId, ...input }),
   });
+  invalidateSite(siteCode);
+  return created;
 }
 
 export async function deletePage(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeletePage(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeletePage(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   throw new Error("Изтриването на страници все още не се поддържа от API.");
@@ -429,12 +497,17 @@ export async function deletePage(siteCode: SiteCode, id: string) {
 export type QrLinkInput = {
   code: string;
   redirectUrl: string;
+  forwardUrl?: string | null;
   productId?: string | null;
   productName?: string | null;
   productSlug?: string | null;
 };
 
 export async function getQrLinks(siteCode: SiteCode) {
+  return readCached(`qr:${siteCode}`, () => loadQrLinks(siteCode));
+}
+
+async function loadQrLinks(siteCode: SiteCode) {
   if (useFirebase) return fbGetQrLinks(siteCode);
   if (useMockData) {
     return typeof window === "undefined"
@@ -465,7 +538,7 @@ export async function saveQrLink(
     const existing = id
       ? (await fbGetQrLinks(siteCode)).find((q) => q.id === id)
       : null;
-    return fbSaveQrLink(
+    const saved = await fbSaveQrLink(
       siteCode,
       {
         ...input,
@@ -473,6 +546,8 @@ export async function saveQrLink(
       },
       id,
     );
+    invalidateSite(siteCode);
+    return saved;
   }
 
   const siteId = await resolveSiteId(siteCode);
@@ -485,12 +560,15 @@ export async function saveQrLink(
       siteId,
       code: input.code,
       redirectUrl: input.redirectUrl.trim(),
+      forwardUrl: input.forwardUrl?.trim() || null,
       productId: input.productId || null,
       productName: input.productName || null,
       productSlug: input.productSlug || null,
       createdAtUtc: existing?.createdAtUtc ?? new Date().toISOString(),
     };
-    return mockSaveQrLink(siteCode, link);
+    const saved = mockSaveQrLink(siteCode, link);
+    invalidateSite(siteCode);
+    return saved;
   }
   throw new Error("QR API все още не е налично — включете Firebase или mock.");
 }
@@ -498,10 +576,12 @@ export async function saveQrLink(
 export async function deleteQrLink(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeleteQrLink(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeleteQrLink(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   throw new Error("QR API все още не е налично — включете Firebase или mock.");
@@ -522,7 +602,7 @@ export async function saveBlogPost(
   id?: string,
 ) {
   if (useFirebase) {
-    return fbSaveBlog(
+    const saved = await fbSaveBlog(
       siteCode,
       {
         ...input,
@@ -530,6 +610,8 @@ export async function saveBlogPost(
       },
       id,
     );
+    invalidateSite(siteCode);
+    return saved;
   }
 
   const siteId = await resolveSiteId(siteCode);
@@ -541,29 +623,37 @@ export async function saveBlogPost(
       ...input,
       publishedAtUtc: input.isPublished ? new Date().toISOString() : null,
     };
-    return mockSaveBlog(siteCode, post);
+    const saved = mockSaveBlog(siteCode, post);
+    invalidateSite(siteCode);
+    return saved;
   }
 
   if (id) {
-    return apiFetch<BlogPost>(`/api/blogposts/${id}`, {
+    const saved = await apiFetch<BlogPost>(`/api/blogposts/${id}`, {
       method: "PUT",
       body: JSON.stringify(input),
     });
+    invalidateSite(siteCode);
+    return saved;
   }
 
-  return apiFetch<BlogPost>("/api/blogposts", {
+  const created = await apiFetch<BlogPost>("/api/blogposts", {
     method: "POST",
     body: JSON.stringify({ siteId, ...input }),
   });
+  invalidateSite(siteCode);
+  return created;
 }
 
 export async function deleteBlogPost(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeleteBlog(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeleteBlog(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   throw new Error(
@@ -586,7 +676,12 @@ export async function uploadFile(
   file: File,
   altText?: string,
 ): Promise<UploadResult> {
-  // Local site hosting (no Firebase Storage / Blaze)
+  // Static GitHub Pages / Firebase: upload from the browser
+  if (useFirebase) {
+    return fbUploadFile(siteCode, file, altText);
+  }
+
+  // Local dev fallback (Cloudinary / disk via API route)
   const form = new FormData();
   form.append("file", file);
   form.append("site", siteCode);
@@ -612,7 +707,7 @@ export async function registerMedia(
   upload: UploadResult,
 ): Promise<MediaAsset> {
   if (useFirebase) {
-    return fbSaveMedia(siteCode, {
+    const saved = await fbSaveMedia(siteCode, {
       fileName: upload.fileName,
       contentType: upload.contentType,
       sizeBytes: upload.sizeBytes,
@@ -620,6 +715,8 @@ export async function registerMedia(
       altText: upload.altText ?? null,
       storagePath: upload.storagePath ?? upload.r2Key,
     });
+    invalidateSite(siteCode);
+    return saved;
   }
 
   const siteId = await resolveSiteId(siteCode);
@@ -634,10 +731,12 @@ export async function registerMedia(
       publicUrl: upload.publicUrl,
       altText: upload.altText ?? null,
     };
-    return mockSaveMedia(siteCode, asset);
+    const saved = mockSaveMedia(siteCode, asset);
+    invalidateSite(siteCode);
+    return saved;
   }
 
-  return apiFetch<MediaAsset>("/api/media/register", {
+  const created = await apiFetch<MediaAsset>("/api/media/register", {
     method: "POST",
     body: JSON.stringify({
       siteId,
@@ -649,6 +748,8 @@ export async function registerMedia(
       altText: upload.altText ?? null,
     }),
   });
+  invalidateSite(siteCode);
+  return created;
 }
 
 export async function uploadAndRegister(
@@ -663,11 +764,14 @@ export async function uploadAndRegister(
 export async function deleteMedia(siteCode: SiteCode, id: string) {
   if (useFirebase) {
     await fbDeleteMedia(id);
+    invalidateSite(siteCode);
     return;
   }
   if (useMockData) {
     mockDeleteMedia(siteCode, id);
+    invalidateSite(siteCode);
     return;
   }
   await apiFetch(`/api/media/${id}`, { method: "DELETE" });
+  invalidateSite(siteCode);
 }

@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
-const basePath = isGithubPages ? "/metma-de" : "";
+// Custom domain (metma-de.com) serves from site root — no /metma-de prefix.
+const basePath = isGithubPages
+  ? (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "")
+  : "";
 
 const remotePatterns = [
   {

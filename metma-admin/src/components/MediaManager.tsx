@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   deleteMedia,
   getMedia,
@@ -11,6 +11,7 @@ import type { SiteCode } from "@/lib/types";
 import { EmptyState } from "@/components/ui";
 import { Button, Field, inputClass } from "@/components/forms";
 import { SearchField, matchesQuery } from "@/components/SearchField";
+import { AdminThumb } from "@/components/AdminThumb";
 import { Trash2, Upload } from "lucide-react";
 
 export function MediaManager({ site }: { site: SiteCode }) {
@@ -53,6 +54,20 @@ export function MediaManager({ site }: { site: SiteCode }) {
       if (inputRef.current) inputRef.current.value = "";
     }
   }
+
+  const visible = useMemo(
+    () =>
+      items.filter((asset) =>
+        matchesQuery(
+          query,
+          asset.fileName,
+          asset.contentType,
+          asset.altText,
+          asset.publicUrl,
+        ),
+      ),
+    [items, query],
+  );
 
   async function onDelete(id: string) {
     if (!confirm("Премахване на този медиен файл?")) return;
@@ -114,15 +129,7 @@ export function MediaManager({ site }: { site: SiteCode }) {
 
       {loading ? (
         <p className="text-sm text-[var(--admin-mute)]">Зареждане…</p>
-      ) : items.filter((asset) =>
-          matchesQuery(
-            query,
-            asset.fileName,
-            asset.contentType,
-            asset.altText,
-            asset.publicUrl,
-          ),
-        ).length === 0 ? (
+      ) : visible.length === 0 ? (
         <EmptyState
           message={
             query.trim()
@@ -132,17 +139,7 @@ export function MediaManager({ site }: { site: SiteCode }) {
         />
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {items
-            .filter((asset) =>
-              matchesQuery(
-                query,
-                asset.fileName,
-                asset.contentType,
-                asset.altText,
-                asset.publicUrl,
-              ),
-            )
-            .map((asset) => (
+          {visible.map((asset) => (
             <li
               key={asset.id}
               className="overflow-hidden rounded-[var(--admin-radius)] border border-[var(--admin-line)] bg-[var(--admin-paper)] shadow-[0_1px_0_rgba(28,25,23,0.03)] transition hover:border-[color-mix(in_srgb,var(--admin-rose)_30%,var(--admin-line))]"
@@ -156,10 +153,10 @@ export function MediaManager({ site }: { site: SiteCode }) {
                     preload="metadata"
                   />
                 ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <AdminThumb
                     src={asset.publicUrl}
                     alt={asset.altText ?? asset.fileName}
+                    width={640}
                     className="h-full w-full object-cover"
                   />
                 )}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 import { ProductCatalog } from "@/components/ProductCatalog";
+import { ProductMedia } from "@/components/ProductMedia";
 import { ProductGrid } from "@/components/ProductGrid";
 import { JsonLd } from "@/components/JsonLd";
 import {
@@ -11,7 +12,8 @@ import {
   getProductBySlug,
   getProducts,
 } from "@/lib/catalog";
-import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { optimizeVideoUrl } from "@/lib/media";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata, productJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type Props = {
@@ -71,10 +73,20 @@ export default async function ProdukteSlugPage({ params }: Props) {
     return (
       <>
         <JsonLd
-          data={breadcrumbJsonLd([
-            { name: "Produkte", path: "/produkte" },
-            { name: cat.label, path: `/produkte/${cat.slug}` },
-          ])}
+          data={[
+            breadcrumbJsonLd([
+              { name: "Startseite", path: "/" },
+              { name: "Produkte", path: "/produkte" },
+              { name: cat.label, path: `/produkte/${cat.slug}` },
+            ]),
+            itemListJsonLd(
+              cat.label,
+              filtered.map((item) => ({
+                name: item.name,
+                path: `/produkte/${item.slug}`,
+              })),
+            ),
+          ]}
         />
         <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-12 md:py-14">
           <SectionScatter variant="story" />
@@ -118,25 +130,20 @@ export default async function ProdukteSlugPage({ params }: Props) {
       <JsonLd
         data={[
           breadcrumbJsonLd([
+            { name: "Startseite", path: "/" },
             { name: "Produkte", path: "/produkte" },
             { name: categoryLabel, path: `/produkte/${product.category}` },
             { name: product.name, path: `/produkte/${product.slug}` },
           ]),
-          {
-            "@context": "https://schema.org",
-            "@type": "Product",
+          productJsonLd({
             name: product.name,
             description: product.description || product.shortDescription,
+            path: `/produkte/${product.slug}`,
+            images: [product.image],
             sku: product.id,
-            image: absoluteUrl(product.image),
-            brand: { "@type": "Brand", name: siteConfig.shortName },
+            brand: siteConfig.shortName,
             category: categoryLabel,
-            manufacturer: {
-              "@type": "Organization",
-              name: siteConfig.name,
-              url: siteConfig.url,
-            },
-          },
+          }),
         ]}
       />
       <section className="relative overflow-hidden bg-white py-10 md:py-14">
@@ -164,21 +171,29 @@ export default async function ProdukteSlugPage({ params }: Props) {
           </nav>
 
           <div className="mt-8 grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-            <div className="relative aspect-square overflow-hidden bg-white">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                priority
-                quality={85}
-                className="object-contain p-5 transition duration-500 md:p-8"
-                sizes="(max-width:1024px) 90vw, 520px"
-                unoptimized={
-                  product.image.startsWith("http") ||
-                  product.image.endsWith(".png")
-                }
+            {product.videoUrl ? (
+              <ProductMedia
+                name={product.name}
+                image={product.image}
+                videoUrl={product.videoUrl}
               />
-            </div>
+            ) : (
+              <div className="relative aspect-square overflow-hidden bg-white">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  priority
+                  quality={85}
+                  className="object-contain p-5 transition duration-500 md:p-8"
+                  sizes="(max-width:1024px) 90vw, 520px"
+                  unoptimized={
+                    product.image.startsWith("http") ||
+                    product.image.endsWith(".png")
+                  }
+                />
+              </div>
+            )}
 
             <div className="lg:pt-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -214,6 +229,11 @@ export default async function ProdukteSlugPage({ params }: Props) {
               </ul>
 
               <div className="mt-8 flex flex-wrap gap-3">
+                {product.videoUrl && product.videoIsInstruction ? (
+                  <a href="#anleitung" className="btn-outline">
+                    Anleitung
+                  </a>
+                ) : null}
                 <Link
                   href={`/kontakt?produkt=${product.slug}`}
                   className="btn-metma"
@@ -241,6 +261,27 @@ export default async function ProdukteSlugPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {product.videoUrl && product.videoIsInstruction ? (
+        <section id="anleitung" className="scroll-mt-24 border-t border-[var(--metma-line)] bg-white py-12 md:py-16">
+          <div className="container-metma">
+            <p className="eyebrow text-[var(--metma-rose)]">Anleitung</p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-[var(--metma-ink)] md:text-[1.75rem]">
+              So wird es verwendet
+            </h2>
+            <div className="mt-6 overflow-hidden bg-black">
+              <video
+                src={optimizeVideoUrl(product.videoUrl)}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label={`Anleitung: ${product.name}`}
+                className="aspect-video max-h-[70vh] w-full bg-black object-contain"
+              />
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="border-t border-[var(--metma-line)] bg-[var(--metma-sand)] py-12 md:py-16">
         <div className="container-metma grid gap-10 lg:grid-cols-2 lg:gap-14">

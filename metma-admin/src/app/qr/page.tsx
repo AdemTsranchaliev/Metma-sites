@@ -1,20 +1,17 @@
-import type { SiteCode } from "@/lib/sites";
+"use client";
+
 import { PageHeader } from "@/components/ui";
 import { QrCodesManager } from "@/components/QrCodesManager";
+import { useAdminSite } from "@/lib/use-admin-site";
 
-type Props = {
-  searchParams: Promise<{ site?: string }>;
-};
-
-export default async function QrCodesPage({ searchParams }: Props) {
-  const { site: raw } = await searchParams;
-  const site = (raw as SiteCode) || "De";
+export default function QrCodesPage() {
+  const site = useAdminSite();
 
   return (
     <>
       <PageHeader
         title="QR кодове"
-        description="Поставяте линк за пренасочване. Продуктът е по избор — само за ориентация."
+        description="Напишете URL и по желание пренасочване. При сканиране води към пренасочването (ако го има) или към URL."
       />
       <QrCodesManager site={site} />
     </>

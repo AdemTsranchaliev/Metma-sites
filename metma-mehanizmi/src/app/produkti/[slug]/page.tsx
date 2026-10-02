@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Gallery } from "@/components/Gallery";
+import { JsonLd } from "@/components/JsonLd";
 import { ProductCard } from "@/components/ProductCard";
 import { getCategory, getProduct, products, productsByCategory } from "@/data/products";
+import { breadcrumbJsonLd, pageMetadata, productJsonLd } from "@/lib/seo";
 
 type Params = { slug: string };
 
@@ -18,12 +20,23 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
-  return {
-    title: product?.title ?? "Продукт",
-    description: product
-      ? `${product.title} — продукт от каталога на МЕТМА.`
-      : undefined,
-  };
+  if (!product) {
+    return pageMetadata({
+      title: "Продукт",
+      description: "Продукт от каталога на МЕТМА.",
+      path: "/produkti",
+      noIndex: true,
+    });
+  }
+  const category = getCategory(product.category);
+  return pageMetadata({
+    title: product.title,
+    description: category
+      ? `${product.title}. ${category.summary} Размери и наличност при запитване.`
+      : `${product.title} — продукт на МЕТМА ООД. Размери и наличност при запитване.`,
+    path: `/produkti/${product.slug}`,
+    image: product.images[0],
+  });
 }
 
 export default async function ProductPage({
@@ -42,6 +55,27 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Начало", path: "/" },
+            { name: "Продукти", path: "/produkti" },
+            ...(category
+              ? [{ name: category.name, path: `/produkti/kategoria/${category.id}` }]
+              : []),
+            { name: product.title, path: `/produkti/${product.slug}` },
+          ]),
+          productJsonLd({
+            name: product.title,
+            description: category
+              ? `${product.title}. ${category.summary}`
+              : product.title,
+            path: `/produkti/${product.slug}`,
+            images: product.images,
+            category: category?.name,
+          }),
+        ]}
+      />
       <p className="text-sm text-muted">
         <Link href="/produkti" className="hover:text-ink">
           Продукти
@@ -49,7 +83,7 @@ export default async function ProductPage({
         {category ? (
           <>
             {" / "}
-            <Link href={`/produkti?kategoria=${category.id}`} className="hover:text-ink">
+            <Link href={`/produkti/kategoria/${category.id}`} className="hover:text-ink">
               {category.name}
             </Link>
           </>

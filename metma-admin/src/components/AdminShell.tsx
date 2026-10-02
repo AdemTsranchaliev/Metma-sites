@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ExternalLink,
-  FileText,
   FolderTree,
   Globe2,
   ImageIcon,
@@ -16,7 +15,7 @@ import {
   QrCode,
   X,
 } from "lucide-react";
-import { useFirebase } from "@/lib/api";
+import { useFirebase } from "@/lib/data-mode";
 import { SITE_OPTIONS, siteLocalOrigin, type SiteCode } from "@/lib/sites";
 import { useAuth } from "@/lib/firebase/auth";
 
@@ -25,7 +24,6 @@ const nav = [
   { href: "/products", label: "Продукти", icon: Package },
   { href: "/categories", label: "Категории", icon: FolderTree },
   { href: "/qr", label: "QR кодове", icon: QrCode },
-  { href: "/pages", label: "Страници", icon: FileText },
   { href: "/blog", label: "Блог", icon: Newspaper },
   { href: "/media", label: "Медия", icon: ImageIcon },
   { href: "/sites", label: "Сайтове", icon: Globe2 },
@@ -72,7 +70,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     nav.find((item) => isActive(pathname, item.href))?.label ?? "Админ";
 
   // Public short links — no admin chrome
-  if (pathname.startsWith("/go/")) {
+  if (pathname === "/go" || pathname.startsWith("/go/")) {
     return <>{children}</>;
   }
 

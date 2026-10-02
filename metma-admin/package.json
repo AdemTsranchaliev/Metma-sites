@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
+    "build:gh-pages": "node scripts/gh-pages-api.mjs park && GITHUB_PAGES=true next build; status=$?; node scripts/gh-pages-api.mjs restore; exit $status",
     "start": "next start -p 3003",
     "lint": "eslint"
   },

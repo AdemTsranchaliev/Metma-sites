@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IconArrow } from "@/components/icons";
+import { JsonLd } from "@/components/JsonLd";
 import { ProductCard } from "@/components/ProductCard";
 import { getPost, posts } from "@/data/blog";
 import { getProduct } from "@/data/products";
+import { articleJsonLd, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -16,8 +18,22 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost(slug);
-  if (!post) return { title: "Блог" };
-  return { title: post.title, description: post.excerpt };
+  if (!post) {
+    return pageMetadata({
+      title: "Блог",
+      description: "Бележки от каталога на МЕТМА.",
+      path: "/blog",
+      noIndex: true,
+    });
+  }
+  return pageMetadata({
+    title: post.title,
+    description: post.excerpt,
+    path: `/blog/${post.slug}`,
+    image: post.image,
+    type: "article",
+    publishedTime: post.date,
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -32,6 +48,23 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Начало", path: "/" },
+            { name: "Блог", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+          articleJsonLd({
+            title: post.title,
+            description: post.excerpt,
+            path: `/blog/${post.slug}`,
+            image: post.image,
+            datePublished: post.date,
+            body: [post.excerpt, ...post.paragraphs].join("\n\n"),
+          }),
+        ]}
+      />
       <Link href="/blog" className="text-sm text-muted hover:text-ink">
         Блог
       </Link>
@@ -41,7 +74,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-mist">
           <Image
             src={post.image}
-            alt=""
+            alt={post.title}
             fill
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"

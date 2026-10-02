@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { JsonLd } from "@/components/JsonLd";
 import { PageIntro } from "@/components/PageIntro";
 import { formatBlogDate, getBlogPosts } from "@/lib/catalog";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "Blog",
@@ -20,6 +21,21 @@ export default async function BlogPage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Startseite", path: "/" },
+            { name: "Blog", path: "/blog" },
+          ]),
+          itemListJsonLd(
+            "Blog",
+            blogPosts.map((post) => ({
+              name: post.title,
+              path: `/blog/${post.slug}`,
+            })),
+          ),
+        ]}
+      />
       <PageIntro
         eyebrow="Journal"
         title="Blog"

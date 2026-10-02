@@ -4,17 +4,11 @@ import Link from "next/link";
 import { useEffect, useState, type ComponentType } from "react";
 import {
   ArrowRight,
-  FileText,
   FolderTree,
   Newspaper,
   Package,
 } from "lucide-react";
-import {
-  getBlogPosts,
-  getCategories,
-  getPages,
-  getProducts,
-} from "@/lib/api";
+import { getDashboardCounts } from "@/lib/api";
 import type { SiteCode } from "@/lib/sites";
 import { Card } from "@/components/ui";
 
@@ -40,12 +34,6 @@ export function DashboardCounts({ site }: { site: SiteCode }) {
       icon: FolderTree,
     },
     {
-      label: "Страници",
-      value: "…",
-      href: `/pages?site=${site}`,
-      icon: FileText,
-    },
-    {
       label: "Блог публикации",
       value: "…",
       href: `/blog?site=${site}`,
@@ -56,39 +44,33 @@ export function DashboardCounts({ site }: { site: SiteCode }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [products, pages, posts, categories] = await Promise.all([
-        getProducts(site),
-        getPages(site),
-        getBlogPosts(site, false),
-        getCategories(site),
-      ]);
-      if (cancelled) return;
-      setCards([
-        {
-          label: "Продукти",
-          value: products.length,
-          href: `/products?site=${site}`,
-          icon: Package,
-        },
-        {
-          label: "Категории",
-          value: categories.length,
-          href: `/categories?site=${site}`,
-          icon: FolderTree,
-        },
-        {
-          label: "Страници",
-          value: pages.length,
-          href: `/pages?site=${site}`,
-          icon: FileText,
-        },
-        {
-          label: "Блог публикации",
-          value: posts.length,
-          href: `/blog?site=${site}`,
-          icon: Newspaper,
-        },
-      ]);
+      try {
+        const counts = await getDashboardCounts(site);
+        if (cancelled) return;
+        setCards([
+          {
+            label: "Продукти",
+            value: counts.products,
+            href: `/products?site=${site}`,
+            icon: Package,
+          },
+          {
+            label: "Категории",
+            value: counts.categories,
+            href: `/categories?site=${site}`,
+            icon: FolderTree,
+          },
+          {
+            label: "Блог публикации",
+            value: counts.posts,
+            href: `/blog?site=${site}`,
+            icon: Newspaper,
+          },
+        ]);
+      } catch {
+        if (cancelled) return;
+        setCards((prev) => prev.map((card) => ({ ...card, value: "—" })));
+      }
     })();
     return () => {
       cancelled = true;
@@ -96,7 +78,7 @@ export function DashboardCounts({ site }: { site: SiteCode }) {
   }, [site]);
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
       {cards.map((card, i) => {
         const Icon = card.icon;
         return (

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import type { SiteCode } from "@/lib/types";
 import { uploadAndRegister, uploadFile } from "@/lib/api";
+import { AdminThumb } from "@/components/AdminThumb";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "./forms";
 
@@ -53,10 +54,9 @@ export function ImageAttach({
       </p>
       <div className="flex flex-wrap items-start gap-3">
         {value ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <AdminThumb
             src={value}
-            alt=""
+            width={192}
             className="h-24 w-24 rounded-lg border border-[var(--admin-line)] object-cover"
           />
         ) : (

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { SectionScatter } from "@/components/easter/EasterScatter";
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
   centered?: boolean;
   /** Soft Easter accents in this intro band */
   scatter?: boolean;
+  children?: ReactNode;
 };
 
 /** Shared blue-soft page intro */
@@ -16,12 +18,13 @@ export function PageIntro({
   subtitle,
   centered,
   scatter = true,
+  children,
 }: Props) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--metma-line)] bg-[var(--metma-blue-soft)] py-10 md:py-12">
       {scatter ? <SectionScatter variant="story" /> : null}
       <div
-        className={`container-metma relative z-[1] ${centered ? "text-center" : ""}`}
+        className={`container-metma relative z-[3] ${centered ? "text-center" : ""}`}
       >
         <p className="eyebrow text-[var(--metma-rose)]">{eyebrow}</p>
         <h1 className="mt-2 font-display text-[clamp(2rem,4vw,2.9rem)] font-bold tracking-[-0.03em] text-[var(--metma-ink)]">
@@ -36,6 +39,7 @@ export function PageIntro({
             {subtitle}
           </p>
         ) : null}
+        {children}
       </div>
     </section>
   );

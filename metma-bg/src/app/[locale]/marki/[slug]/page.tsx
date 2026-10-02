@@ -4,12 +4,13 @@ import { notFound } from "next/navigation";
 import { brands, getBrand } from "@/data/brands";
 import { BrandSwitch } from "@/components/BrandSwitch";
 import { BrandWash } from "@/components/BrandWash";
+import { JsonLd } from "@/components/JsonLd";
 import { ProductGrid } from "@/components/ProductGrid";
 import { getMessages } from "@/i18n/messages";
 import { getProducts } from "@/lib/catalog";
 import { getStatic } from "@/i18n/static";
 import { localePath, parseLocale } from "@/lib/i18n";
-import { pageMetadata } from "@/lib/seo";
+import { absoluteUrl, breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -30,9 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale,
     });
   }
+  const localized = getStatic(locale).brands[brand.id];
   return pageMetadata({
-    title: brand.name,
-    description: brand.text,
+    title: `${brand.name} — ${localized.tag}`,
+    description: localized.text,
     path: `/marki/${brand.id}`,
     image: brand.logo,
     locale,
@@ -48,9 +50,33 @@ export default async function BrandPage({ params }: Props) {
   const toProducts = getStatic(locale).products.toProducts;
 
   const products = await getProducts({ brand: brand.id });
+  const messages = getMessages(locale);
 
   return (
     <div style={{ background: brand.wash }} className="min-h-[70vh]">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: messages.nav.home, path: localePath(locale, "/") },
+            { name: brand.name, path: localePath(locale, `/marki/${brand.id}`) },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Brand",
+            name: brand.name,
+            description: copy.text,
+            logo: absoluteUrl(brand.logo),
+            url: absoluteUrl(localePath(locale, `/marki/${brand.id}`)),
+          },
+          itemListJsonLd(
+            brand.name,
+            products.map((item) => ({
+              name: item.name,
+              path: localePath(locale, `/produkti/${item.slug}`),
+            })),
+          ),
+        ]}
+      />
       <BrandWash color={brand.wash} />
       <div className="container-metma flex flex-col gap-8 py-10 md:flex-row md:items-end md:justify-between md:py-14">
         <div className="min-w-0">

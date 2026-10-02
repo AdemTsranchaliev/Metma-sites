@@ -1,27 +1,45 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { JsonLd } from "@/components/JsonLd";
 import { PageHead } from "@/components/PageHead";
 import { posts } from "@/data/blog";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Блог",
   description: "Кратки бележки за механизмите, рамките и дървените дисплеи на МЕТМА.",
-};
+  path: "/blog",
+});
 
 export default function BlogPage() {
   const [lead, ...rest] = posts;
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Начало", path: "/" },
+            { name: "Блог", path: "/blog" },
+          ]),
+          itemListJsonLd(
+            "Блог",
+            posts.map((post) => ({
+              name: post.title,
+              path: `/blog/${post.slug}`,
+            })),
+          ),
+        ]}
+      />
       <PageHead eyebrow="Бележки" title="Блог" lede="Три кратки текста от каталога." />
 
       {lead ? (
         <Link href={`/blog/${lead.slug}`} className="group mt-12 grid items-center gap-8 lg:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-mist">
-            <Image
+              <Image
               src={lead.image}
-              alt=""
+              alt={lead.title}
               fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -45,7 +63,7 @@ export default function BlogPage() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-mist">
                 <Image
                   src={post.image}
-                  alt=""
+                  alt={post.title}
                   fill
                   sizes="(min-width: 1024px) 40vw, 50vw"
                   className={`transition duration-700 group-hover:scale-[1.03] ${

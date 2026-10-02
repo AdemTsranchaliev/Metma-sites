@@ -1,20 +1,17 @@
-import type { SiteCode } from "@/lib/sites";
+"use client";
+
 import { PageHeader } from "@/components/ui";
 import { DashboardCounts } from "@/components/DashboardCounts";
+import { useAdminSite } from "@/lib/use-admin-site";
 
-type Props = {
-  searchParams: Promise<{ site?: string }>;
-};
-
-export default async function DashboardPage({ searchParams }: Props) {
-  const { site: raw } = await searchParams;
-  const site = (raw as SiteCode) || "De";
+export default function DashboardPage() {
+  const site = useAdminSite();
 
   return (
     <>
       <PageHeader
         title="Табло"
-        description="Преглед за избрания пазарен сайт. В демо режим промените се пазят в браузъра."
+        description="Преглед за избрания пазарен сайт."
       />
       <DashboardCounts site={site} />
     </>

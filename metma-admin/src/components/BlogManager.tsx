@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deleteBlogPost,
   getBlogPosts,
@@ -10,6 +10,8 @@ import {
 } from "@/lib/api";
 import type { SiteCode } from "@/lib/types";
 import { slugify } from "@/lib/utils";
+import { useListLayout } from "@/lib/use-list-layout";
+import { AdminThumb } from "@/components/AdminThumb";
 import { Badge, EmptyState } from "@/components/ui";
 import { Button, Field, Modal, RowActions, inputClass, textareaClass } from "@/components/forms";
 import { ImageAttach } from "@/components/ImageAttach";
@@ -35,6 +37,7 @@ export function BlogManager({ site }: { site: SiteCode }) {
   const [slugManual, setSlugManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const layout = useListLayout();
 
   const reload = useCallback(async () => {
     setLoading(true);
@@ -104,8 +107,9 @@ export function BlogManager({ site }: { site: SiteCode }) {
   }
 
   const open = creating || editing;
-  const visible = items.filter((post) =>
-    matchesQuery(query, post.title, post.slug, post.excerpt),
+  const visible = useMemo(
+    () => items.filter((post) => matchesQuery(query, post.title, post.slug, post.excerpt)),
+    [items, query],
   );
 
   return (
@@ -128,7 +132,7 @@ export function BlogManager({ site }: { site: SiteCode }) {
         </p>
       ) : null}
 
-      {loading ? (
+      {loading || layout === "pending" ? (
         <p className="text-sm text-[var(--admin-mute)]">Зареждане…</p>
       ) : visible.length === 0 ? (
         <EmptyState
@@ -140,18 +144,16 @@ export function BlogManager({ site }: { site: SiteCode }) {
         />
       ) : (
         <>
-          <div className="admin-mobile-list grid md:hidden">
+          {layout === "mobile" ? (
+          <div className="admin-mobile-list grid">
             {visible.map((post) => (
               <div key={post.id} className="admin-mobile-card">
                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-[var(--admin-sand)]">
-                  {post.coverImageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={post.coverImageUrl}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : null}
+                  <AdminThumb
+                    src={post.coverImageUrl}
+                    width={112}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium leading-snug">{post.title}</p>
@@ -173,8 +175,8 @@ export function BlogManager({ site }: { site: SiteCode }) {
               </div>
             ))}
           </div>
-
-          <div className="admin-panel admin-panel-scroll hidden md:block">
+          ) : (
+          <div className="admin-panel admin-panel-scroll">
             <table className="admin-table">
               <thead>
                 <tr>
@@ -190,10 +192,9 @@ export function BlogManager({ site }: { site: SiteCode }) {
                   <tr key={post.id}>
                     <td className="px-4 py-3">
                       {post.coverImageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <AdminThumb
                           src={post.coverImageUrl}
-                          alt=""
+                          width={80}
                           className="h-10 w-10 rounded object-cover"
                         />
                       ) : (
@@ -222,29 +223,22 @@ export function BlogManager({ site }: { site: SiteCode }) {
               </tbody>
             </table>
           </div>
+          )}
         </>
       )}
 
       {open ? (
         <Modal
           title={editing ? "Редакция на публикация" : "Нова публикация"}
+          description="Заглавие, slug, корица и HTML съдържание за блога."
           onClose={close}
           wide
           footer={
             <>
-              <Button
-                variant="secondary"
-                className="w-full sm:w-auto"
-                onClick={close}
-              >
+              <Button variant="secondary" onClick={close}>
                 Отказ
               </Button>
-              <Button
-                type="submit"
-                form="blog-form"
-                disabled={saving}
-                className="w-full sm:w-auto"
-              >
+              <Button type="submit" form="blog-form" disabled={saving}>
                 {saving ? (
                   "Запис…"
                 ) : (

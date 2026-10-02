@@ -6,6 +6,7 @@ import { getBrand } from "@/data/brands";
 import { BrandWash } from "@/components/BrandWash";
 import { CatalogShell } from "@/components/CatalogShell";
 import { ExpandableText } from "@/components/ExpandableText";
+import { ProductMedia } from "@/components/ProductMedia";
 import { ProductGrid } from "@/components/ProductGrid";
 import { JsonLd } from "@/components/JsonLd";
 import {
@@ -16,7 +17,8 @@ import {
 import { getMessages } from "@/i18n/messages";
 import { getStatic } from "@/i18n/static";
 import { localePath, parseLocale } from "@/lib/i18n";
-import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import { optimizeVideoUrl } from "@/lib/media";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata, productJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 type Props = {
@@ -77,10 +79,20 @@ export default async function ProductSlugPage({ params }: Props) {
     return (
       <>
         <JsonLd
-          data={breadcrumbJsonLd([
-            { name: copy.nav.products, path: localePath(locale, "/produkti") },
-            { name: copy.categories[cat.slug as keyof typeof copy.categories]?.label ?? cat.label, path: localePath(locale, `/produkti/${cat.slug}`) },
-          ])}
+          data={[
+            breadcrumbJsonLd([
+              { name: copy.nav.home, path: localePath(locale, "/") },
+              { name: copy.nav.products, path: localePath(locale, "/produkti") },
+              { name: copy.categories[cat.slug as keyof typeof copy.categories]?.label ?? cat.label, path: localePath(locale, `/produkti/${cat.slug}`) },
+            ]),
+            itemListJsonLd(
+              copy.categories[cat.slug as keyof typeof copy.categories]?.label ?? cat.label,
+              filtered.map((item) => ({
+                name: item.name,
+                path: localePath(locale, `/produkti/${item.slug}`),
+              })),
+            ),
+          ]}
         />
         <CatalogShell
           products={filtered}
@@ -110,21 +122,24 @@ export default async function ProductSlugPage({ params }: Props) {
       <JsonLd
         data={[
           breadcrumbJsonLd([
+            { name: copy.nav.home, path: localePath(locale, "/") },
             { name: copy.nav.products, path: localePath(locale, "/produkti") },
             ...(category
               ? [{ name: copy.categories[category.slug as keyof typeof copy.categories]?.label ?? category.label, path: localePath(locale, `/produkti/${category.slug}`) }]
               : []),
             { name: product.name, path: localePath(locale, `/produkti/${product.slug}`) },
           ]),
-          {
-            "@context": "https://schema.org",
-            "@type": "Product",
+          productJsonLd({
             name: product.name,
-            sku: product.id,
-            image: product.images.map((img) => absoluteUrl(img)),
             description: product.shortDescription || product.description,
-            brand: { "@type": "Brand", name: brand?.name ?? siteConfig.shortName },
-          },
+            path: localePath(locale, `/produkti/${product.slug}`),
+            images: product.images,
+            sku: product.id,
+            brand: brand?.name ?? siteConfig.shortName,
+            category: category
+              ? copy.categories[category.slug as keyof typeof copy.categories]?.label ?? category.label
+              : undefined,
+          }),
         ]}
       />
       <BrandWash color={brand?.wash ?? "#f4f1ec"} />
@@ -142,18 +157,27 @@ export default async function ProductSlugPage({ params }: Props) {
         <div className="rounded-t-[1.75rem] bg-white pb-16 shadow-[0_-20px_50px_-36px_rgba(23,23,23,0.35)]">
           <div className="container-metma grid gap-10 py-8 md:py-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             <div className="grid gap-3">
-              {product.images.map((src) => (
-                <div key={src} className="relative aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-black/[0.06]">
-                  <Image
-                    src={src}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-8"
-                    sizes="(max-width:1024px) 100vw, 50vw"
-                    unoptimized={src.endsWith(".png")}
-                  />
-                </div>
-              ))}
+              {product.videoUrl ? (
+                <ProductMedia
+                  name={product.name}
+                  images={product.images}
+                  videoUrl={product.videoUrl}
+                  videoLabel={ui.video}
+                />
+              ) : (
+                product.images.map((src) => (
+                  <div key={src} className="relative aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-black/[0.06]">
+                    <Image
+                      src={src}
+                      alt={product.name}
+                      fill
+                      className="object-contain p-8"
+                      sizes="(max-width:1024px) 100vw, 50vw"
+                      unoptimized={src.endsWith(".png")}
+                    />
+                  </div>
+                ))
+              )}
             </div>
             <div className="lg:pt-4">
               <p className="text-sm text-[var(--metma-mute)]">
@@ -169,9 +193,16 @@ export default async function ProductSlugPage({ params }: Props) {
               <div className="mt-6 text-sm leading-7 text-[var(--metma-ink)]/80 md:text-base md:leading-8">
                 <ExpandableText paragraphs={paragraphs} />
               </div>
-              <Link href={localePath(locale, "/kontakti")} className="btn-metma mt-8 inline-flex" style={{ background: brand?.ink }}>
-                {ui.enquiry}
-              </Link>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {product.videoUrl && product.videoIsInstruction ? (
+                  <a href="#instrukcii" className="btn-outline">
+                    {ui.instructions}
+                  </a>
+                ) : null}
+                <Link href={localePath(locale, "/kontakti")} className="btn-metma inline-flex" style={{ background: brand?.ink }}>
+                  {ui.enquiry}
+                </Link>
+              </div>
             </div>
           </div>
           {related.length > 0 ? (
@@ -184,6 +215,26 @@ export default async function ProductSlugPage({ params }: Props) {
           ) : null}
         </div>
       </div>
+      {product.videoUrl && product.videoIsInstruction ? (
+        <section id="instrukcii" className="scroll-mt-24 border-t border-[var(--metma-line)] bg-white py-12 md:py-16">
+          <div className="container-metma">
+            <p className="eyebrow text-[var(--metma-rose)]">{ui.instructions}</p>
+            <h2 className="mt-2 max-w-xl font-display text-[clamp(1.8rem,3vw,2.6rem)] font-bold leading-none tracking-[-0.04em] text-[var(--metma-ink)]">
+              {ui.instructionsText}
+            </h2>
+            <div className="mt-6 overflow-hidden rounded-2xl bg-black ring-1 ring-black/[0.06]">
+              <video
+                src={optimizeVideoUrl(product.videoUrl)}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label={`${ui.instructions}: ${product.name}`}
+                className="aspect-video max-h-[70vh] w-full bg-black object-contain"
+              />
+            </div>
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }

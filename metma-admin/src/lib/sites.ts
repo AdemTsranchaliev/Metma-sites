@@ -70,7 +70,8 @@ export function qrPublicUrl(site: SiteCode, code: string, origin?: string) {
   const base =
     origin ??
     (typeof window !== "undefined" ? window.location.origin : "http://localhost:3003");
-  return `${base}/go/${encodeURIComponent(code)}?site=${site}`;
+  const root = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, "") ?? "";
+  return `${base}${root}/go/?c=${encodeURIComponent(code)}&site=${site}`;
 }
 
 /**
@@ -80,13 +81,17 @@ export function qrPublicUrl(site: SiteCode, code: string, origin?: string) {
 const DE_CATALOG_ORIGIN = "https://metma-de.com";
 
 /**
- * QR targets saved as https://metma-de.com/{old-slug}/ open an empty page.
- * Send those to the product that actually exists.
+ * Final URL after scanning /go/…
+ * Prefer optional forwardUrl; otherwise redirectUrl (with DE legacy rewrite).
  */
 export function resolveQrDestination(link: {
   redirectUrl?: string | null;
+  forwardUrl?: string | null;
   productSlug?: string | null;
 }) {
+  const override = link.forwardUrl?.trim() ?? "";
+  if (override) return override;
+
   const target = link.redirectUrl?.trim() ?? "";
   const slug = (link.productSlug ?? "").replace(/^\/+|\/+$/g, "");
   if (!target || !slug) return target;

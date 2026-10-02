@@ -225,10 +225,32 @@ export function getBlogPost(slug: string) {
   return blogPosts.find((post) => post.slug === slug);
 }
 
-export function formatBlogDate(date: string) {
-  return new Date(date).toLocaleDateString("bg-BG", {
+function dateValue(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, (month || 1) - 1, day || 1);
+}
+
+export function formatBlogDate(date: string, locale = "bg") {
+  return dateValue(date).toLocaleDateString(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
+}
+
+export function blogDateParts(date: string, locale = "bg") {
+  const [year, , day] = date.split("-");
+  const month = dateValue(date).toLocaleDateString(locale, { month: "long" });
+  const label = month.charAt(0).toLocaleUpperCase(locale) + month.slice(1);
+  return { day: String(Number(day)), month: label, year };
+}
+
+export function readingMinutes(post: Pick<BlogPost, "title" | "excerpt" | "content">) {
+  const chunks = [post.title, post.excerpt];
+  for (const block of post.content) {
+    if (block.type === "ul") chunks.push(...block.items);
+    else chunks.push(block.text);
+  }
+  const words = chunks.join(" ").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 160));
 }

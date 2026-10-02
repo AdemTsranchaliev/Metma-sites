@@ -15,6 +15,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Metma Админ",
   description: "Админ панел за сайтовете на Metma BG / DE / USA",
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {

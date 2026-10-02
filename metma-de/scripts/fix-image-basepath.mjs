@@ -6,10 +6,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "/metma-de";
+const BASE = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
 const outDir = path.join(process.cwd(), "out");
 
 function rewrite(content) {
+  if (!BASE) return content;
   let next = content.replaceAll(`${BASE}/images/`, "\0BASEIMG\0");
   next = next.replaceAll(`${BASE}/videos/`, "\0BASEVID\0");
   next = next.replaceAll(`${BASE}/favicon.png`, "\0BASEFAV\0");
@@ -47,6 +48,11 @@ function walk(dir) {
 if (!fs.existsSync(outDir)) {
   console.error("out/ missing — run next build first");
   process.exit(1);
+}
+
+if (!BASE) {
+  console.log("No NEXT_PUBLIC_BASE_PATH — skipping image prefix rewrite");
+  process.exit(0);
 }
 
 walk(outDir);

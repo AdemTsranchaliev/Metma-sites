@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FaqList } from "@/components/FaqList";
+import { JsonLd } from "@/components/JsonLd";
 import { IconArrow } from "@/components/icons";
 import { MechanismLift } from "@/components/MechanismLift";
 import { ProductCard } from "@/components/ProductCard";
@@ -14,6 +16,13 @@ import {
   productCountLabel,
   productsByCategory,
 } from "@/data/products";
+import { faqJsonLd, pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
+
+export const metadata: Metadata = pageMetadata({
+  description: siteConfig.defaultDescription,
+  path: "/",
+});
 
 const steps = [
   { n: "1", title: "Запитване", text: "Телефон, имейл или формата." },
@@ -52,6 +61,7 @@ export default function Home() {
 
   return (
     <>
+      <JsonLd data={faqJsonLd(faqs.slice(0, 4))} />
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:py-16">
         <div>
           <h1 className="display text-[clamp(3rem,6vw,5.2rem)]">
@@ -98,7 +108,7 @@ export default function Home() {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/produkti?kategoria=${category.id}`}
+              href={`/produkti/kategoria/${category.id}`}
               className="shrink-0 rounded-full border border-line bg-paper px-4 py-2 text-sm transition hover:border-brand hover:text-brand"
             >
               {category.name}
@@ -133,14 +143,14 @@ export default function Home() {
               return (
                 <Link
                   key={category.id}
-                  href={`/produkti?kategoria=${category.id}`}
+                  href={`/produkti/kategoria/${category.id}`}
                   className="group overflow-hidden rounded-2xl border border-line bg-foam"
                 >
                   <span className="relative block aspect-[4/3] bg-mist">
                     {sample ? (
                       <Image
                         src={sample.images[0]}
-                        alt=""
+                        alt={category.name}
                         fill
                         sizes="(min-width: 1024px) 33vw, 50vw"
                         className={`transition duration-700 group-hover:scale-[1.04] ${
@@ -205,7 +215,7 @@ export default function Home() {
                     <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-mist">
                       <Image
                         src={post.image}
-                        alt=""
+                        alt={post.title}
                         fill
                         sizes="64px"
                         className={post.cover ? "object-cover" : "object-contain p-1.5"}

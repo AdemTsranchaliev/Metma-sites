@@ -1,7 +1,6 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
-import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { firebaseConfigured } from "@/lib/data-mode";
 
 const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,16 +11,12 @@ const config = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const isFirebaseConfigured = Boolean(
-  config.apiKey && config.projectId && config.appId,
-);
+export const isFirebaseConfigured = firebaseConfigured;
 
 let app: FirebaseApp | undefined;
 let auth: Auth | undefined;
-let db: Firestore | undefined;
-let storage: FirebaseStorage | undefined;
 
-function getApp() {
+export function getApp() {
   if (!isFirebaseConfigured) {
     throw new Error(
       "Firebase не е конфигуриран. Попълнете NEXT_PUBLIC_FIREBASE_* в .env.local",
@@ -36,14 +31,4 @@ function getApp() {
 export function getFirebaseAuth() {
   if (!auth) auth = getAuth(getApp());
   return auth;
-}
-
-export function getDb() {
-  if (!db) db = getFirestore(getApp());
-  return db;
-}
-
-export function getFirebaseStorage() {
-  if (!storage) storage = getStorage(getApp());
-  return storage;
 }

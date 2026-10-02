@@ -2,6 +2,7 @@ export type Post = {
   slug: string;
   title: string;
   excerpt: string;
+  date: string;
   dateLabel: string;
   image: string;
   cover: boolean;
@@ -16,10 +17,11 @@ export const posts: Post[] = [
     slug: "mehanizmi-za-povdigane-na-matrak",
     title: "Повдигане на матрак",
     excerpt: "Подматрак, 45° и вариант с амортисьор.",
+    date: "2026-09-12",
     dateLabel: "12 септември 2026",
     image: "/images/products/meh8.jpg",
     cover: false,
-    categoryHref: "/produkti?kategoria=mechanisms",
+    categoryHref: "/produkti/kategoria/mechanisms",
     categoryLabel: "Механизми",
     paragraphs: [
       "Серийни механизми за мека мебел: малък и голям подматрак, включително 2-КА и 3-КА.",
@@ -35,10 +37,11 @@ export const posts: Post[] = [
     slug: "ramkovi-mehanizmi-za-fotoyli-i-kuhnya",
     title: "Рамки за фотьойл и кухня",
     excerpt: "Поли, Аква, Габи и кухненски ъгъл.",
+    date: "2026-09-05",
     dateLabel: "5 септември 2026",
     image: "/images/products/ram16.jpg",
     cover: false,
-    categoryHref: "/produkti?kategoria=frame",
+    categoryHref: "/produkti/kategoria/frame",
     categoryLabel: "Рамкови механизми",
     paragraphs: [
       "Рамки за фотьойли, кухненски ъгли и ламелни системи. Серийно, в няколко дължини.",
@@ -54,10 +57,11 @@ export const posts: Post[] = [
     slug: "darveni-displei-i-kutii-za-vino",
     title: "Дървени дисплеи",
     excerpt: "Кенди, ИНО и кутии за вино.",
+    date: "2026-08-28",
     dateLabel: "28 август 2026",
     image: "/images/products/displey-kendi.jpg",
     cover: true,
-    categoryHref: "/produkti?kategoria=displays",
+    categoryHref: "/produkti/kategoria/displays",
     categoryLabel: "Дървени дисплеи",
     paragraphs: [
       "Отделна линия до металните механизми: Кенди, ИНО, дисплей № 3 и № 4.",

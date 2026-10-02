@@ -62,6 +62,13 @@ function asCategory(value: unknown): ProductCategorySlug {
   return CATEGORIES.has(slug as ProductCategorySlug) ? (slug as ProductCategorySlug) : "komplekti";
 }
 
+function asVideoUrl(value: unknown): string | null {
+  const url = String(value ?? "").trim();
+  if (!url) return null;
+  if (url.startsWith("https://") || url.startsWith("http://") || url.startsWith("/")) return url;
+  return null;
+}
+
 function asBrand(value: unknown): BrandId {
   const brand = String(value ?? "");
   return isBrandId(brand) ? brand : "metma";
@@ -77,12 +84,15 @@ function mapProduct(id: string, data: DocumentData): Product | null {
     { width: 1200 },
   );
   const images = urls.length > 0 ? urls : [image];
+  const videoUrl = asVideoUrl(data.videoUrl);
   return {
     id: String(data.sku ?? id),
     name: String(data.name ?? ""),
     slug: String(data.slug ?? id),
     image,
     images,
+    videoUrl,
+    videoIsInstruction: Boolean(videoUrl) && data.videoIsInstruction !== false,
     category: asCategory(data.category),
     brand: asBrand(data.brand),
     shortDescription: String(data.shortDescription ?? ""),

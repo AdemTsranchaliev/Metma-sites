@@ -1,14 +1,11 @@
-import type { SiteCode } from "@/lib/sites";
+"use client";
+
 import { PageHeader } from "@/components/ui";
 import { MediaManager } from "@/components/MediaManager";
+import { useAdminSite } from "@/lib/use-admin-site";
 
-type Props = {
-  searchParams: Promise<{ site?: string }>;
-};
-
-export default async function MediaAdminPage({ searchParams }: Props) {
-  const { site: raw } = await searchParams;
-  const site = (raw as SiteCode) || "De";
+export default function MediaAdminPage() {
+  const site = useAdminSite();
 
   return (
     <>

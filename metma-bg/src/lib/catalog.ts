@@ -4,7 +4,7 @@ import { productCategories, products, type Product } from "@/data/home";
 import { blogPosts, type BlogPost } from "@/data/blog";
 
 export type { StoreCategory };
-export { formatBlogDate } from "@/data/blog";
+export { blogDateParts, formatBlogDate, readingMinutes } from "@/data/blog";
 
 const useFirebase = process.env.NEXT_PUBLIC_USE_FIREBASE === "true" && isFirebaseConfigured;
 

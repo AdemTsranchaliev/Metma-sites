@@ -85,6 +85,8 @@ export type Product = {
   imageUrl?: string | null;
   imageUrls?: string[];
   videoUrl?: string | null;
+  /** When true, the video stays in the gallery and also appears in the instructions section. */
+  videoIsInstruction?: boolean;
   isFeatured: boolean;
   isActive: boolean;
   sortOrder: number;
@@ -125,13 +127,15 @@ export type MediaAsset = {
   altText?: string | null;
 };
 
-/** Short QR link — redirects to a URL; product is optional label only */
+/** Short QR link — /go/… redirects to target (or optional override). */
 export type QrLink = {
   id: string;
   siteId: string;
   code: string;
-  /** Full URL the QR /go link redirects to */
+  /** Default destination (usually the product / page URL). */
   redirectUrl: string;
+  /** Optional override — if set, /go/ redirects here instead. */
+  forwardUrl?: string | null;
   /** Optional — only for orientation in the admin list */
   productId?: string | null;
   productName?: string | null;

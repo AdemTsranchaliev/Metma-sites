@@ -1,14 +1,11 @@
-import type { SiteCode } from "@/lib/sites";
+"use client";
+
 import { PageHeader } from "@/components/ui";
 import { PagesManager } from "@/components/PagesManager";
+import { useAdminSite } from "@/lib/use-admin-site";
 
-type Props = {
-  searchParams: Promise<{ site?: string }>;
-};
-
-export default async function PagesAdminPage({ searchParams }: Props) {
-  const { site: raw } = await searchParams;
-  const site = (raw as SiteCode) || "De";
+export default function PagesAdminPage() {
+  const site = useAdminSite();
 
   return (
     <>

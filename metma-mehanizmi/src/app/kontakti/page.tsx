@@ -2,17 +2,29 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { ContactForm } from "@/components/ContactForm";
+import { JsonLd } from "@/components/JsonLd";
 import { PageHead } from "@/components/PageHead";
+import { breadcrumbJsonLd, contactPageJsonLd, pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Контакти",
   description: `Контакти на ${siteConfig.legalName}: ${siteConfig.addressLines.join(", ")}. Телефон ${siteConfig.phone}.`,
-};
+  path: "/kontakti",
+});
 
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Начало", path: "/" },
+            { name: "Контакти", path: "/kontakti" },
+          ]),
+          contactPageJsonLd(),
+        ]}
+      />
       <PageHead
         eyebrow="Пазарджик"
         title="Контакти"

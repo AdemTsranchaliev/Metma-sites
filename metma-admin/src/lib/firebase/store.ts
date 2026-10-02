@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   orderBy,
@@ -13,13 +14,7 @@ import {
   where,
   type DocumentData,
 } from "firebase/firestore";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { getDb, getFirebaseStorage } from "./client";
+import { getDb } from "./db";
 import { MOCK_SITES } from "@/lib/mock-data";
 import type {
   BlogPost,
@@ -64,32 +59,80 @@ async function listBySite<T extends { id: string }>(
   return snap.docs.map((d) => map(d.id, d.data()));
 }
 
+async function countBySite(col: string, site: SiteCode) {
+  const snap = await getCountFromServer(
+    query(collection(getDb(), col), where("site", "==", site)),
+  );
+  return snap.data().count;
+}
+
+export async function fbDashboardCounts(site: SiteCode) {
+  const [products, categories, pages, posts] = await Promise.all([
+    countBySite(COLLECTIONS.products, site),
+    countBySite(COLLECTIONS.categories, site),
+    countBySite(COLLECTIONS.pages, site),
+    countBySite(COLLECTIONS.blogPosts, site),
+  ]);
+  return { products, categories, pages, posts };
+}
+
+function mapProduct(id: string, data: DocumentData, site: SiteCode): Product {
+  return withId(id, {
+    siteId: data.siteId ?? siteIdFor(site),
+    categoryId: data.categoryId ?? null,
+    category: data.category ?? null,
+    brand: data.brand ?? null,
+    sku: data.sku ?? "",
+    name: data.name ?? "",
+    slug: data.slug ?? "",
+    shortDescription: data.shortDescription ?? null,
+    description: data.description ?? null,
+    price: null,
+    currency: data.currency ?? "EUR",
+    imageUrl: data.imageUrl ?? null,
+    imageUrls: data.imageUrls ?? (data.imageUrl ? [data.imageUrl] : []),
+    videoUrl: data.videoUrl ?? null,
+    videoIsInstruction: Boolean(data.videoUrl) && data.videoIsInstruction !== false,
+    isFeatured: Boolean(data.isFeatured),
+    isActive: data.isActive !== false,
+    sortOrder: Number(data.sortOrder ?? 0),
+  });
+}
+
+function mapPage(id: string, data: DocumentData, site: SiteCode): Page {
+  return withId(id, {
+    siteId: data.siteId ?? siteIdFor(site),
+    title: data.title ?? "",
+    slug: data.slug ?? "",
+    heroTitle: data.heroTitle ?? null,
+    heroSubtitle: data.heroSubtitle ?? null,
+    bodyHtml: data.bodyHtml ?? null,
+    metaTitle: data.metaTitle ?? null,
+    metaDescription: data.metaDescription ?? null,
+    isPublished: Boolean(data.isPublished),
+  });
+}
+
+function mapBlog(id: string, data: DocumentData, site: SiteCode): BlogPost {
+  return withId(id, {
+    siteId: data.siteId ?? siteIdFor(site),
+    title: data.title ?? "",
+    slug: data.slug ?? "",
+    excerpt: data.excerpt ?? null,
+    bodyHtml: data.bodyHtml ?? null,
+    coverImageUrl: data.coverImageUrl ?? null,
+    isPublished: Boolean(data.isPublished),
+    publishedAtUtc: data.publishedAtUtc ?? null,
+  });
+}
+
 /* ─── Products ─── */
 
 export async function fbGetProducts(site: SiteCode, featuredOnly = false) {
   const list = await listBySite<Product>(
     COLLECTIONS.products,
     site,
-    (id, data) =>
-      withId(id, {
-        siteId: data.siteId ?? siteIdFor(site),
-        categoryId: data.categoryId ?? null,
-        category: data.category ?? null,
-        brand: data.brand ?? null,
-        sku: data.sku ?? "",
-        name: data.name ?? "",
-        slug: data.slug ?? "",
-        shortDescription: data.shortDescription ?? null,
-        description: data.description ?? null,
-        price: null,
-        currency: data.currency ?? "EUR",
-        imageUrl: data.imageUrl ?? null,
-        imageUrls: data.imageUrls ?? (data.imageUrl ? [data.imageUrl] : []),
-        videoUrl: data.videoUrl ?? null,
-        isFeatured: Boolean(data.isFeatured),
-        isActive: data.isActive !== false,
-        sortOrder: Number(data.sortOrder ?? 0),
-      }),
+    (id, data) => mapProduct(id, data, site),
     "sortOrder",
   );
   return featuredOnly ? list.filter((p) => p.isFeatured) : list;
@@ -122,6 +165,7 @@ export async function fbSaveProduct(
     imageUrl: imageUrls[0] ?? null,
     imageUrls,
     videoUrl: input.videoUrl ?? null,
+    videoIsInstruction: Boolean(input.videoUrl && input.videoIsInstruction),
     isFeatured: input.isFeatured,
     isActive: input.isActive,
     sortOrder: input.sortOrder,
@@ -156,17 +200,7 @@ export async function fbDeleteProduct(id: string) {
 
 export async function fbGetPages(site: SiteCode) {
   return listBySite<Page>(COLLECTIONS.pages, site, (id, data) =>
-    withId(id, {
-      siteId: data.siteId ?? siteIdFor(site),
-      title: data.title ?? "",
-      slug: data.slug ?? "",
-      heroTitle: data.heroTitle ?? null,
-      heroSubtitle: data.heroSubtitle ?? null,
-      bodyHtml: data.bodyHtml ?? null,
-      metaTitle: data.metaTitle ?? null,
-      metaDescription: data.metaDescription ?? null,
-      isPublished: Boolean(data.isPublished),
-    }),
+    mapPage(id, data, site),
   );
 }
 
@@ -181,17 +215,7 @@ export async function fbGetPageBySlug(site: SiteCode, slug: string) {
   if (!d) return null;
   const data = d.data();
   if (!data.isPublished) return null;
-  return withId(d.id, {
-    siteId: data.siteId ?? siteIdFor(site),
-    title: data.title ?? "",
-    slug: data.slug ?? "",
-    heroTitle: data.heroTitle ?? null,
-    heroSubtitle: data.heroSubtitle ?? null,
-    bodyHtml: data.bodyHtml ?? null,
-    metaTitle: data.metaTitle ?? null,
-    metaDescription: data.metaDescription ?? null,
-    isPublished: true,
-  }) as Page;
+  return mapPage(d.id, data, site);
 }
 
 export async function fbSavePage(
@@ -227,17 +251,7 @@ export async function fbGetBlog(site: SiteCode, publishedOnly = false) {
   const list = await listBySite<BlogPost>(
     COLLECTIONS.blogPosts,
     site,
-    (id, data) =>
-      withId(id, {
-        siteId: data.siteId ?? siteIdFor(site),
-        title: data.title ?? "",
-        slug: data.slug ?? "",
-        excerpt: data.excerpt ?? null,
-        bodyHtml: data.bodyHtml ?? null,
-        coverImageUrl: data.coverImageUrl ?? null,
-        isPublished: Boolean(data.isPublished),
-        publishedAtUtc: data.publishedAtUtc ?? null,
-      }),
+    (id, data) => mapBlog(id, data, site),
   );
   return publishedOnly ? list.filter((p) => p.isPublished) : list;
 }
@@ -338,13 +352,26 @@ export async function fbSaveMedia(
   } satisfies MediaAsset;
 }
 
+async function storageApi() {
+  const [{ deleteObject, getDownloadURL, ref, uploadBytes }, { getFirebaseStorage }] =
+    await Promise.all([import("firebase/storage"), import("./storage")]);
+  return {
+    deleteObject,
+    getDownloadURL,
+    ref,
+    uploadBytes,
+    bucket: await getFirebaseStorage(),
+  };
+}
+
 export async function fbDeleteMedia(id: string) {
   const snap = await getDoc(doc(getDb(), COLLECTIONS.media, id));
   const path = snap.data()?.storagePath as string | undefined;
   await deleteDoc(doc(getDb(), COLLECTIONS.media, id));
   if (path) {
     try {
-      await deleteObject(ref(getFirebaseStorage(), path));
+      const { deleteObject, ref, bucket } = await storageApi();
+      await deleteObject(ref(bucket, path));
     } catch {
       /* file may already be gone */
     }
@@ -360,7 +387,8 @@ export async function fbUploadFile(
     ? file.name.slice(file.name.lastIndexOf("."))
     : "";
   const storagePath = `sites/${site}/${Date.now()}-${newId()}${ext}`;
-  const storageRef = ref(getFirebaseStorage(), storagePath);
+  const { uploadBytes, getDownloadURL, ref, bucket } = await storageApi();
+  const storageRef = ref(bucket, storagePath);
   await uploadBytes(storageRef, file, { contentType: file.type });
   const publicUrl = await getDownloadURL(storageRef);
   return {
@@ -452,6 +480,7 @@ export async function fbGetQrLinks(site: SiteCode) {
       siteId: data.siteId ?? siteIdFor(site),
       code: data.code ?? "",
       redirectUrl: data.redirectUrl ?? "",
+      forwardUrl: data.forwardUrl ?? null,
       productId: data.productId ?? null,
       productName: data.productName ?? null,
       productSlug: data.productSlug ?? null,
@@ -474,6 +503,7 @@ export async function fbGetQrLinkByCode(site: SiteCode, code: string) {
     siteId: data.siteId ?? siteIdFor(site),
     code: data.code ?? "",
     redirectUrl: data.redirectUrl ?? "",
+    forwardUrl: data.forwardUrl ?? null,
     productId: data.productId ?? null,
     productName: data.productName ?? null,
     productSlug: data.productSlug ?? null,
@@ -486,6 +516,7 @@ export async function fbSaveQrLink(
   input: {
     code: string;
     redirectUrl: string;
+    forwardUrl?: string | null;
     productId?: string | null;
     productName?: string | null;
     productSlug?: string | null;
@@ -495,11 +526,13 @@ export async function fbSaveQrLink(
 ) {
   const siteId = siteIdFor(site);
   const createdAtUtc = input.createdAtUtc ?? new Date().toISOString();
+  const forward = input.forwardUrl?.trim() || null;
   const payload = {
     site,
     siteId,
     code: input.code,
     redirectUrl: input.redirectUrl.trim(),
+    forwardUrl: forward,
     productId: input.productId || null,
     productName: input.productName || null,
     productSlug: input.productSlug || null,
@@ -515,6 +548,7 @@ export async function fbSaveQrLink(
       siteId,
       code: payload.code,
       redirectUrl: payload.redirectUrl,
+      forwardUrl: payload.forwardUrl,
       productId: payload.productId,
       productName: payload.productName,
       productSlug: payload.productSlug,
@@ -527,6 +561,7 @@ export async function fbSaveQrLink(
     siteId,
     code: payload.code,
     redirectUrl: payload.redirectUrl,
+    forwardUrl: payload.forwardUrl,
     productId: payload.productId,
     productName: payload.productName,
     productSlug: payload.productSlug,

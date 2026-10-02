@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useFirebase } from "@/lib/api";
+import { useFirebase } from "@/lib/data-mode";
 import { useAuth } from "@/lib/firebase/auth";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
@@ -14,7 +14,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const [busy, setBusy] = useState(false);
 
   // Public QR redirects — no login
-  if (pathname.startsWith("/go/")) {
+  if (pathname === "/go" || pathname.startsWith("/go/")) {
     return <>{children}</>;
   }
 

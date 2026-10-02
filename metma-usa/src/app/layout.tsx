@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: siteConfig.name,
-  description: "Metma USA — custom Next.js frontend",
+  description: siteConfig.name,
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

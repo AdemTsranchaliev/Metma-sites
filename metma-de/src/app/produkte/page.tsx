@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/JsonLd";
 import { PageIntro } from "@/components/PageIntro";
 import { ProductCatalog } from "@/components/ProductCatalog";
 import { getProducts } from "@/lib/catalog";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "Produkte",
@@ -18,6 +19,21 @@ export default async function ProduktePage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Startseite", path: "/" },
+            { name: "Produkte", path: "/produkte" },
+          ]),
+          itemListJsonLd(
+            "Produkte",
+            products.map((item) => ({
+              name: item.name,
+              path: `/produkte/${item.slug}`,
+            })),
+          ),
+        ]}
+      />
       <PageIntro
         eyebrow="Sortiment"
         title="Produkte"

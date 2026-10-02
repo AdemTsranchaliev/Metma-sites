@@ -1,14 +1,11 @@
-import type { SiteCode } from "@/lib/sites";
+"use client";
+
 import { PageHeader } from "@/components/ui";
 import { CategoriesManager } from "@/components/CategoriesManager";
+import { useAdminSite } from "@/lib/use-admin-site";
 
-type Props = {
-  searchParams: Promise<{ site?: string }>;
-};
-
-export default async function CategoriesPage({ searchParams }: Props) {
-  const { site: raw } = await searchParams;
-  const site = (raw as SiteCode) || "De";
+export default function CategoriesPage() {
+  const site = useAdminSite();
 
   return (
     <>

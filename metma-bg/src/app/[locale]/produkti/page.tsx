@@ -1,9 +1,10 @@
 import { CatalogShell } from "@/components/CatalogShell";
+import { JsonLd } from "@/components/JsonLd";
 import { getMessages } from "@/i18n/messages";
 import { getProducts } from "@/lib/catalog";
 import { getStatic } from "@/i18n/static";
-import { parseLocale } from "@/lib/i18n";
-import { pageMetadata } from "@/lib/seo";
+import { localePath, parseLocale } from "@/lib/i18n";
+import { breadcrumbJsonLd, itemListJsonLd, pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -30,11 +31,28 @@ export default async function ProductsPage({
   const copy = getMessages(locale);
 
   return (
-    <CatalogShell
-      products={products}
-      activeCategory="alle"
-      title={copy.meta.productsTitle}
-      subtitle={getStatic(locale).products.subtitle}
-    />
+    <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: copy.nav.home, path: localePath(locale, "/") },
+            { name: copy.nav.products, path: localePath(locale, "/produkti") },
+          ]),
+          itemListJsonLd(
+            copy.meta.productsTitle,
+            products.map((item) => ({
+              name: item.name,
+              path: localePath(locale, `/produkti/${item.slug}`),
+            })),
+          ),
+        ]}
+      />
+      <CatalogShell
+        products={products}
+        activeCategory="alle"
+        title={copy.meta.productsTitle}
+        subtitle={getStatic(locale).products.subtitle}
+      />
+    </>
   );
 }

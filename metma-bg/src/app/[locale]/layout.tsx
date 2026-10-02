@@ -10,6 +10,8 @@ import { isLocale, localeMeta, localePath, locales, type Locale } from "@/lib/i1
 import { absoluteUrl, languageAlternates, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -70,6 +72,7 @@ export async function generateMetadata({
       icon: [{ url: "/favicon.png", type: "image/png" }],
       apple: "/favicon.png",
     },
+    ...(googleVerification ? { verification: { google: googleVerification } } : {}),
   };
 }
 

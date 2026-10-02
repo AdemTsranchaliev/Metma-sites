@@ -236,22 +236,14 @@ export function CategoriesManager({ site }: { site: SiteCode }) {
       {open ? (
         <Modal
           title={editing ? "Редакция на категория" : "Нова категория"}
+          description="Име и slug за навигацията в каталога."
           onClose={close}
           footer={
             <>
-              <Button
-                variant="secondary"
-                className="w-full sm:w-auto"
-                onClick={close}
-              >
+              <Button variant="secondary" onClick={close}>
                 Отказ
               </Button>
-              <Button
-                type="submit"
-                form="category-form"
-                disabled={saving}
-                className="w-full sm:w-auto"
-              >
+              <Button type="submit" form="category-form" disabled={saving}>
                 {saving ? (
                   "Запис…"
                 ) : (

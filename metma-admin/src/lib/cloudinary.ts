@@ -32,6 +32,7 @@ export function optimizeCloudinaryUrl(
   if (!url || !url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
     return url;
   }
+  if (url.includes("/video/upload/")) return url;
   // Already transformed
   if (/\/upload\/[^/]*f_auto/.test(url)) return url;
 

@@ -116,6 +116,8 @@ textarea {
 }
 
 .admin-mobile-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 5.5rem;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -142,6 +144,103 @@ textarea {
 
 @media (max-width: 639px) {
   .admin-fade {
+    animation: none;
+  }
+}
+
+@keyframes admin-modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 640px) {
+  @keyframes admin-modal-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+.admin-modal-root {
+  animation: admin-modal-overlay-in 0.22s ease both;
+}
+
+.admin-modal-backdrop {
+  background: color-mix(in srgb, var(--admin-ink) 52%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.admin-modal-panel {
+  animation: admin-modal-panel-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--admin-line) 80%, transparent),
+    0 28px 90px -24px rgba(28, 25, 23, 0.45);
+}
+
+.admin-modal-handle {
+  width: 2.5rem;
+  height: 0.25rem;
+  margin: 0.65rem auto 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--admin-mute) 35%, var(--admin-line));
+}
+
+.admin-modal-header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--admin-sand) 65%, white) 0%,
+    var(--admin-paper) 100%
+  );
+}
+
+.admin-modal-body {
+  background: var(--admin-paper);
+}
+
+.admin-modal-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: color-mix(in srgb, var(--admin-sand) 45%, var(--admin-paper));
+}
+
+@media (min-width: 640px) {
+  .admin-modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .admin-modal-footer > * {
+    width: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-modal-root,
+  .admin-modal-panel {
     animation: none;
   }
 }

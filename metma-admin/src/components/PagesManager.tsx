@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deletePage,
   getPages,
@@ -114,15 +114,19 @@ export function PagesManager({ site }: { site: SiteCode }) {
   }
 
   const open = creating || editing;
-  const visible = items.filter((page) =>
-    matchesQuery(
-      query,
-      page.title,
-      page.slug,
-      page.heroTitle,
-      page.heroSubtitle,
-      page.metaTitle,
-    ),
+  const visible = useMemo(
+    () =>
+      items.filter((page) =>
+        matchesQuery(
+          query,
+          page.title,
+          page.slug,
+          page.heroTitle,
+          page.heroSubtitle,
+          page.metaTitle,
+        ),
+      ),
+    [items, query],
   );
 
   return (
@@ -225,23 +229,15 @@ export function PagesManager({ site }: { site: SiteCode }) {
       {open ? (
         <Modal
           title={editing ? "Редакция на страница" : "Нова страница"}
+          description="Hero блок, съдържание и SEO полета за статична страница."
           onClose={close}
           wide
           footer={
             <>
-              <Button
-                variant="secondary"
-                className="w-full sm:w-auto"
-                onClick={close}
-              >
+              <Button variant="secondary" onClick={close}>
                 Отказ
               </Button>
-              <Button
-                type="submit"
-                form="page-form"
-                disabled={saving}
-                className="w-full sm:w-auto"
-              >
+              <Button type="submit" form="page-form" disabled={saving}>
                 {saving ? (
                   "Запис…"
                 ) : (

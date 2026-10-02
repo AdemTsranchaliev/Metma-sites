@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/JsonLd";
 import { KontaktClient } from "@/components/KontaktClient";
-
-import { pageMetadata } from "@/lib/seo";
+import { contactPageJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "Kontakt",
@@ -13,8 +13,11 @@ export const metadata: Metadata = pageMetadata({
 
 export default function KontaktPage() {
   return (
-    <Suspense fallback={null}>
-      <KontaktClient />
-    </Suspense>
+    <>
+      <JsonLd data={contactPageJsonLd({ title: "Kontakt", path: "/kontakt" })} />
+      <Suspense fallback={null}>
+        <KontaktClient />
+      </Suspense>
+    </>
   );
 }

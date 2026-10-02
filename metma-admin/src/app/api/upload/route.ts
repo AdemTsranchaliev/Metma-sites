@@ -9,7 +9,7 @@ import {
 } from "@/lib/cloudinary";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-const MAX_VIDEO_BYTES = 80 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
 
 const IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -74,6 +74,8 @@ function mimeExt(type: string) {
   }
 }
 
+export const maxDuration = 300;
+
 /** Primary: Cloudinary (one free place for all sites). Fallback: local public. */
 export async function POST(request: NextRequest) {
   try {
@@ -103,7 +105,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: isVideo
-            ? "Видеото е твърде голямо (макс. 80 MB)."
+            ? "Видеото е твърде голямо (макс. 200 MB)."
             : "Файлът е твърде голям (макс. 8 MB).",
         },
         { status: 400 },
@@ -130,13 +132,16 @@ export async function POST(request: NextRequest) {
         bytes: number;
         format?: string;
       }>((resolve, reject) => {
-        const stream = cld.uploader.upload_stream(
+        const upload = isVideo
+          ? cld.uploader.upload_chunked_stream.bind(cld.uploader)
+          : cld.uploader.upload_stream.bind(cld.uploader);
+        const stream = upload(
           {
             folder: `metma/${safeSite}`,
             public_id: `${base || kind}-${randomUUID().slice(0, 8)}`,
             resource_type: resourceType,
             overwrite: false,
-            // Optimize on upload: max 1600px, auto quality
+            // Images: max 1600px. Videos: chunked so files over 100 MB can upload.
             ...(isImage
               ? {
                   transformation: [
@@ -144,7 +149,7 @@ export async function POST(request: NextRequest) {
                     { quality: "auto:good", fetch_format: "auto" },
                   ],
                 }
-              : {}),
+              : { chunk_size: 20_000_000 }),
           },
           (err, result) => {
             if (err || !result) reject(err ?? new Error("Cloudinary fail"));

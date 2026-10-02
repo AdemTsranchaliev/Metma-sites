@@ -1,50 +1,32 @@
-"use client";
-
-import { useMemo, useState, type ReactNode } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import type { ReactNode } from "react";
+import Link from "next/link";
 import {
   categories,
-  isCategoryId,
   products,
   productsByCategory,
   type CategoryId,
 } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 
-export function Catalog() {
-  const router = useRouter();
-  const kategoria = useSearchParams().get("kategoria");
-  const initial = kategoria && isCategoryId(kategoria) ? kategoria : "all";
-  const [active, setActive] = useState<CategoryId | "all">(initial);
-
-  const visible = useMemo(
-    () => (active === "all" ? products : productsByCategory(active)),
-    [active],
-  );
-
-  function select(id: CategoryId | "all") {
-    setActive(id);
-    router.replace(id === "all" ? "/produkti" : `/produkti?kategoria=${id}`, {
-      scroll: false,
-    });
-  }
+export function Catalog({ active = "all" }: { active?: CategoryId | "all" }) {
+  const visible = active === "all" ? products : productsByCategory(active);
 
   return (
     <div>
-      <div className="flex gap-6 overflow-x-auto border-b border-line" role="tablist" aria-label="Категории">
-        <FilterButton active={active === "all"} onClick={() => select("all")}>
+      <nav className="flex gap-6 overflow-x-auto border-b border-line" aria-label="Категории">
+        <FilterLink href="/produkti" active={active === "all"}>
           Всички · {products.length}
-        </FilterButton>
+        </FilterLink>
         {categories.map((category) => (
-          <FilterButton
+          <FilterLink
             key={category.id}
+            href={`/produkti/kategoria/${category.id}`}
             active={active === category.id}
-            onClick={() => select(category.id)}
           >
             {category.name} · {productsByCategory(category.id).length}
-          </FilterButton>
+          </FilterLink>
         ))}
-      </div>
+      </nav>
       <p className="mt-6 text-sm text-muted">
         {visible.length} {visible.length === 1 ? "продукт" : "продукта"}
       </p>
@@ -57,26 +39,24 @@ export function Catalog() {
   );
 }
 
-function FilterButton({
+function FilterLink({
+  href,
   active,
-  onClick,
   children,
 }: {
+  href: string;
   active: boolean;
-  onClick: () => void;
   children: ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
       className={`shrink-0 border-b-2 px-0.5 py-3 text-sm transition ${
         active ? "border-brand text-ink" : "border-transparent text-muted hover:text-ink"
       }`}
     >
       {children}
-    </button>
+    </Link>
   );
 }

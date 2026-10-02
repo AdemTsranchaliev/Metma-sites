@@ -3,15 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaqList } from "@/components/FaqList";
 import { IconArrow } from "@/components/icons";
+import { JsonLd } from "@/components/JsonLd";
 import { PageHead } from "@/components/PageHead";
 import { faqs } from "@/data/faq";
 import { getProduct } from "@/data/products";
+import { breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "За нас",
-  description: "МЕТМА ООД, Пазарджик — механизми за мека мебел, серийно и по заявка.",
-};
+  description: "МЕТМА ООД, Пазарджик — механизми за мека мебел, серийно производство и поръчки по заявка.",
+  path: "/za-nas",
+});
 
 const points = [
   { n: "01", title: "Серийно", text: "На склад." },
@@ -29,6 +32,15 @@ const photos = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Начало", path: "/" },
+            { name: "За нас", path: "/za-nas" },
+          ]),
+          faqJsonLd(faqs),
+        ]}
+      />
       <PageHead
         eyebrow={`${siteConfig.legalName} · Пазарджик`}
         title="За нас"

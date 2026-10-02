@@ -10,6 +10,8 @@ export type Product = {
   slug: string;
   image: string;
   images: string[];
+  videoUrl?: string | null;
+  videoIsInstruction?: boolean;
   category: ProductCategorySlug;
   brand: BrandId;
   shortDescription: string;

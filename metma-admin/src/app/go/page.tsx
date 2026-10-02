@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { getQrLinkByCode } from "@/lib/api";
-import type { SiteCode } from "@/lib/sites";
+import { resolveQrDestination, type SiteCode } from "@/lib/sites";
 
 function normalizeSite(raw: string | null): SiteCode {
   if (raw === "Bg" || raw === "Usa" || raw === "De") return raw;
@@ -11,9 +11,8 @@ function normalizeSite(raw: string | null): SiteCode {
 }
 
 export default function GoPage() {
-  const params = useParams<{ slug: string }>();
   const searchParams = useSearchParams();
-  const code = params.slug;
+  const code = (searchParams.get("c") || searchParams.get("code") || "").trim();
   const site = normalizeSite(searchParams.get("site"));
   const [status, setStatus] = useState<"loading" | "missing" | "ok">("loading");
 
@@ -21,10 +20,15 @@ export default function GoPage() {
     let cancelled = false;
 
     (async () => {
+      if (!code) {
+        setStatus("missing");
+        return;
+      }
+
       const link = await getQrLinkByCode(site, code);
       if (cancelled) return;
 
-      const target = link?.redirectUrl?.trim();
+      const target = link ? resolveQrDestination(link) : "";
       if (!target) {
         setStatus("missing");
         return;
@@ -32,7 +36,9 @@ export default function GoPage() {
 
       setStatus("ok");
       window.location.replace(target);
-    })();
+    })().catch(() => {
+      if (!cancelled) setStatus("missing");
+    });
 
     return () => {
       cancelled = true;
