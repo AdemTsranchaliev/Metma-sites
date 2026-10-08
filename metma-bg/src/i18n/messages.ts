@@ -42,6 +42,7 @@ const bg = {
     text: "Комплекти, украси и дисплеи от собствено производство.",
     collection: "Към продуктите",
     about: "За нас",
+    game: "Чукни се",
   },
   home: {
     brandsEyebrow: "METMA е основната",
@@ -156,6 +157,7 @@ const en: Messages = {
     text: "Kits, decorations and displays from our own production.",
     collection: "To the products",
     about: "About us",
+    game: "Knock eggs",
   },
   home: {
     brandsEyebrow: "METMA is the main brand",
@@ -266,6 +268,7 @@ const de: Messages = {
     text: "Sets, Deko und Displays aus eigener Herstellung.",
     collection: "Zu den Produkten",
     about: "Über uns",
+    game: "Eier klopfen",
   },
   home: {
     brandsEyebrow: "METMA ist die Hauptmarke",
@@ -376,6 +379,7 @@ const fr: Messages = {
     text: "Coffrets, décorations et présentoirs de notre propre fabrication.",
     collection: "Vers les produits",
     about: "À propos",
+    game: "Choc d’œufs",
   },
   home: {
     brandsEyebrow: "METMA est la marque principale",
@@ -487,6 +491,7 @@ const es: Messages = {
     text: "Kits, adornos y expositores de producción propia.",
     collection: "A los productos",
     about: "Nosotros",
+    game: "Choca huevos",
   },
   home: {
     brandsEyebrow: "METMA es la marca principal",
@@ -597,6 +602,7 @@ const it: Messages = {
     text: "Kit, decorazioni ed espositori di produzione propria.",
     collection: "Ai prodotti",
     about: "Chi siamo",
+    game: "Scontra le uova",
   },
   home: {
     brandsEyebrow: "METMA è il marchio principale",

@@ -138,7 +138,8 @@ img {
 
 .btn-metma,
 .btn-dark,
-.btn-outline {
+.btn-outline,
+.btn-butter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -158,7 +159,8 @@ img {
 
 .btn-metma:active,
 .btn-dark:active,
-.btn-outline:active {
+.btn-outline:active,
+.btn-butter:active {
   transform: scale(0.97);
 }
 
@@ -171,7 +173,8 @@ img {
 @media (min-width: 640px) {
   .btn-metma,
   .btn-dark,
-  .btn-outline {
+  .btn-outline,
+  .btn-butter {
     font-size: 0.9rem;
     padding: 0.95rem 1.55rem;
   }
@@ -206,6 +209,17 @@ img {
 .btn-outline:hover {
   border-color: var(--metma-ink);
   background: #fff;
+}
+
+.btn-butter {
+  background: var(--metma-butter);
+  color: var(--metma-ink);
+}
+
+.btn-butter:hover {
+  background: #e0b63a;
+  color: var(--metma-ink);
+  transform: translateY(-1px);
 }
 
 .eyebrow {

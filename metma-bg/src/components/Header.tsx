@@ -7,7 +7,13 @@ import { useEffect, useId, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { getMessages } from "@/i18n/messages";
 import { localeMeta, localePath, locales, stripLocale } from "@/lib/i18n";
+import { brands } from "@/data/brands";
 import { menuContact } from "@/data/menu";
+
+const menuBrands = [
+  brands.find((brand) => brand.id === "metma")!,
+  ...brands.filter((brand) => brand.id !== "metma"),
+];
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/" || /^\/(en|de|fr|es|it)$/.test(href)) return pathname === href;
@@ -104,8 +110,25 @@ export function Header() {
                       />
                     ) : null}
                   </Link>
-                  <div className="absolute left-0 top-full z-30 hidden w-60 pt-2 group-hover:block group-focus-within:block">
+                  <div className="absolute left-0 top-full z-30 hidden w-72 pt-2 group-hover:block group-focus-within:block">
                     <div className="border border-[var(--metma-line)] bg-white py-2 shadow-[0_12px_32px_-16px_rgba(0,0,0,0.25)]">
+                      <div className="grid grid-cols-4 gap-1 px-3 pb-2">
+                        {menuBrands.map((brand) => (
+                          <Link
+                            key={brand.id}
+                            href={`${localePath(locale, "/produkti")}?marka=${brand.id}`}
+                            className="flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition hover:bg-[var(--metma-sand)]"
+                          >
+                            <span className="relative block h-11 w-11 overflow-hidden rounded-full bg-white ring-1 ring-black/10">
+                              <Image src={brand.logo} alt="" fill className="object-contain p-1.5" sizes="44px" />
+                            </span>
+                            <span className="text-[0.65rem] font-bold leading-tight" style={{ color: brand.ink }}>
+                              {brand.name}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="border-t border-[var(--metma-line)] pt-1">
                       {menuCategories.map((cat) => {
                         const catActive = isActivePath(pathname, cat.href);
                         return (
@@ -132,13 +155,6 @@ export function Header() {
                           </Link>
                         );
                       })}
-                      <div className="mt-1 border-t border-[var(--metma-line)] px-4 py-2.5">
-                        <Link
-                          href={localePath(locale, "/produkti")}
-                          className="text-xs font-semibold text-[var(--metma-rose)] hover:underline"
-                        >
-                          {copy.nav.allProducts}
-                        </Link>
                       </div>
                     </div>
                   </div>
@@ -287,6 +303,23 @@ export function Header() {
                             ▾
                           </span>
                         </button>
+                      </div>
+                      <div className="grid grid-cols-4 gap-1 px-1 pb-1">
+                        {menuBrands.map((brand) => (
+                          <Link
+                            key={brand.id}
+                            href={`${localePath(locale, "/produkti")}?marka=${brand.id}`}
+                            onClick={() => setOpen(false)}
+                            className="flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-center"
+                          >
+                            <span className="relative block h-11 w-11 overflow-hidden rounded-full bg-white ring-1 ring-black/10">
+                              <Image src={brand.logo} alt="" fill className="object-contain p-1.5" sizes="44px" />
+                            </span>
+                            <span className="text-[0.65rem] font-bold leading-tight" style={{ color: brand.ink }}>
+                              {brand.name}
+                            </span>
+                          </Link>
+                        ))}
                       </div>
                       {catsOpen ? (
                         <div className="mt-2 grid gap-1">

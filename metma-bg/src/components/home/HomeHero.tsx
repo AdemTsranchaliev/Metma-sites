@@ -3,6 +3,16 @@ import Link from "next/link";
 import { getMessages } from "@/i18n/messages";
 import { localePath, type Locale } from "@/lib/i18n";
 
+function KnockEggsIcon() {
+  return (
+    <svg viewBox="0 0 34 20" className="h-5 w-8 shrink-0" aria-hidden>
+      <ellipse cx="9" cy="11" rx="5.6" ry="8.2" transform="rotate(-26 9 11)" fill="#e4572e" />
+      <ellipse cx="8.2" cy="8.4" rx="1.6" ry="2.4" transform="rotate(-26 8.2 8.4)" fill="#fff" opacity="0.45" />
+      <ellipse cx="25" cy="11" rx="5.6" ry="8.2" transform="rotate(26 25 11)" fill="#fff" stroke="#c94520" strokeWidth="1.25" />
+    </svg>
+  );
+}
+
 export function HomeHero({ locale }: { locale: Locale }) {
   const copy = getMessages(locale).hero;
   return (
@@ -38,7 +48,11 @@ export function HomeHero({ locale }: { locale: Locale }) {
             <Link href={localePath(locale, "/produkti")} className="btn-metma min-h-12 w-full px-6 md:w-52">
               {copy.collection}
             </Link>
-            <Link href={localePath(locale, "/za-nas")} className="btn-outline min-h-12 w-full px-6 md:w-52">
+            <a href="#igra" className="btn-butter min-h-12 w-full gap-2 px-5 md:w-52">
+              <KnockEggsIcon />
+              {copy.game}
+            </a>
+            <Link href={localePath(locale, "/za-nas")} className="btn-outline min-h-12 w-full px-6 sm:col-span-2 md:col-span-1 md:w-52">
               {copy.about}
             </Link>
           </div>

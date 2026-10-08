@@ -614,8 +614,9 @@ export function EggPainter() {
 
   return (
     <section
+      id="igra"
       aria-labelledby="egg-paint-title"
-      className="relative overflow-hidden border-y border-[var(--metma-peach)]/50 bg-[linear-gradient(165deg,#fff8ee_0%,#fff_46%,var(--metma-mint)_100%)] py-10 md:py-20"
+      className="relative scroll-mt-24 overflow-hidden border-y border-[var(--metma-peach)]/50 bg-[linear-gradient(165deg,#fff8ee_0%,#fff_46%,var(--metma-mint)_100%)] py-10 md:py-20"
     >
       <div className="container-metma relative z-[1] grid items-center gap-4 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] md:gap-12">
         <div className="flex flex-col items-center">
