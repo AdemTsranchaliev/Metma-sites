@@ -1,4 +1,5 @@
 import { getMessages } from "@/i18n/messages";
+import { getProducts } from "@/lib/catalog";
 import { parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { HomeHero } from "@/components/home/HomeHero";
@@ -30,10 +31,19 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const locale = parseLocale((await params).locale);
+  const products = await getProducts();
   return (
     <>
       <HomeHero locale={locale} />
-      <HomeBrands />
+      <HomeBrands
+        products={products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          image: product.image,
+          brand: product.brand,
+        }))}
+      />
       <HomeCountdownStrip />
       <HomeStory locale={locale} />
       <HomeProducts locale={locale} />

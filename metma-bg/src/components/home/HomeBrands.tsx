@@ -13,7 +13,7 @@ type BrandProduct = {
   name: string;
   code: string;
   image: string;
-  href?: string;
+  href: string;
 };
 
 type Brand = {
@@ -25,7 +25,14 @@ type Brand = {
   logo: string;
   wash: string;
   ink: string;
-  products: BrandProduct[];
+};
+
+export type HomeBrandProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  brand: string;
 };
 
 const brands: Brand[] = [
@@ -38,32 +45,6 @@ const brands: Brand[] = [
     logo: "/images/brands/vesache.png",
     wash: "#ffd0bf",
     ink: "#e4572e",
-    products: [
-      {
-        name: "Боя 8 капсули",
-        code: "P132",
-        image: "/images/brands/vesache-p132.png",
-        href: "/produkti/vesache-p132",
-      },
-      {
-        name: "Седефена писалка",
-        code: "P112",
-        image: "/images/brands/vesache-p112.png",
-        href: "/produkti/vesache-p112",
-      },
-      {
-        name: "Дървено яйце",
-        code: "Весаче",
-        image: "/images/brands/vesache-egg.jpg",
-        href: "/produkti/vesache-darveno-yaytse",
-      },
-      {
-        name: "Декоративни стикери",
-        code: "Микс",
-        image: "/images/brands/vesache-stickers.png",
-        href: "/produkti/vesache-stikeri",
-      },
-    ],
   },
   {
     id: "ino",
@@ -74,32 +55,6 @@ const brands: Brand[] = [
     logo: "/images/brands/ino.png",
     wash: "#cfeab8",
     ink: "#3d7a32",
-    products: [
-      {
-        name: "Комплект Неон",
-        code: "P135",
-        image: "/images/brands/ino-p135.png",
-        href: "/produkti/ino-p135",
-      },
-      {
-        name: "Комплект Робо",
-        code: "P134",
-        image: "/images/brands/ino-p134.png",
-        href: "/produkti/ino-p134",
-      },
-      {
-        name: "Великденска галактика",
-        code: "P133",
-        image: "/images/brands/ino-p133.png",
-        href: "/produkti/ino-p133",
-      },
-      {
-        name: "Великденски герои",
-        code: "P130",
-        image: "/images/brands/ino-p130.png",
-        href: "/produkti/ino-p130",
-      },
-    ],
   },
   {
     id: "pet",
@@ -110,32 +65,6 @@ const brands: Brand[] = [
     logo: "/images/brands/pet.png",
     wash: "#ffe08a",
     ink: "#c4890a",
-    products: [
-      {
-        name: "Бисерни капсули",
-        code: "6 цвята",
-        image: "/images/brands/pet-biserna.png",
-        href: "/produkti/pet-biserni-kapsuli",
-      },
-      {
-        name: "Неон капсули",
-        code: "P131",
-        image: "/images/brands/pet-p131.png",
-        href: "/produkti/pet-p131",
-      },
-      {
-        name: "Бандероли Фаберже",
-        code: "P127",
-        image: "/images/brands/pet-p127.png",
-        href: "/produkti/pet-p127",
-      },
-      {
-        name: "Комплект Пет",
-        code: "P126",
-        image: "/images/brands/pet-p126.png",
-        href: "/produkti/pet-p126",
-      },
-    ],
   },
   {
     id: "metma",
@@ -146,32 +75,6 @@ const brands: Brand[] = [
     logo: "/images/logo-brand-v3.png",
     wash: "#c5ddf6",
     ink: "#3d7ab5",
-    products: [
-      {
-        name: "Блестящи яйца",
-        code: "B638",
-        image: "/images/products/B-638-A-Box-METMA-Shiny-eggs-5col.png",
-        href: "/produkti/b638",
-      },
-      {
-        name: "Комплект Савана",
-        code: "B637",
-        image: "/images/products/B-637-A-Metma-Savannah-r-r-125x180-sht-07435-BG-EN.png",
-        href: "/produkti/b637",
-      },
-      {
-        name: "Великденски шейкър",
-        code: "B636",
-        image: "/images/products/B-636-A-METMA-The-Eggshaker-BG-EN.png",
-        href: "/produkti/b636",
-      },
-      {
-        name: "8 цвята капсули",
-        code: "B612",
-        image: "/images/products/METMA-Kutia-maika-za-8br-kapsuli-B612.png",
-        href: "/produkti/b612",
-      },
-    ],
   },
 ];
 
@@ -187,12 +90,32 @@ const orderedBrands = [
   ...brands.filter((brand) => brand.id !== "metma"),
 ];
 
-export function HomeBrands() {
+function cardName(name: string, id: string) {
+  const code = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return (
+    name
+      .replace(new RegExp(`\\s*[–—-]?\\s*\\(?${code}\\)?\\s*$`, "i"), "")
+      .replace(/\s*[–—-]?\s*\([A-Za-zА-Яа-я0-9-]+\)\s*$/u, "")
+      .replace(/\s*[–—-]\s*$/, "")
+      .trim() || name
+  );
+}
+
+export function HomeBrands({ products }: { products: HomeBrandProduct[] }) {
   const locale = useLocale();
   const copy = getMessages(locale);
   const brandsCopy = getStatic(locale).brands;
   const [activeId, setActiveId] = useState("metma");
   const active = orderedBrands.find((brand) => brand.id === activeId) ?? orderedBrands[0];
+  const activeProducts: BrandProduct[] = products
+    .filter((product) => product.brand === active.id)
+    .slice(0, 4)
+    .map((product) => ({
+      name: cardName(product.name, product.id),
+      code: product.slug,
+      image: product.image,
+      href: localePath(locale, `/produkti/${product.slug}`),
+    }));
 
   return (
     <section
@@ -291,7 +214,7 @@ export function HomeBrands() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:relative sm:block sm:aspect-square sm:w-full">
-            {active.products.map((product, index) => {
+            {activeProducts.map((product, index) => {
               const card = (
                 <>
                   <span className="relative block aspect-square bg-[var(--metma-paper)]">
@@ -313,15 +236,9 @@ export function HomeBrands() {
               const style = { animationDelay: `${index * 70}ms` };
               return (
                 <div key={product.code} className={fans[index] ?? fans[0]}>
-                  {product.href ? (
-                    <Link href={product.href} className={frame} style={style}>
-                      {card}
-                    </Link>
-                  ) : (
-                    <div className={frame} style={style}>
-                      {card}
-                    </div>
-                  )}
+                  <Link href={product.href} className={frame} style={style}>
+                    {card}
+                  </Link>
                 </div>
               );
             })}
