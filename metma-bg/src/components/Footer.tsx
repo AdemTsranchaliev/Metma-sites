@@ -14,6 +14,7 @@ export function Footer({ locale }: { locale: Locale }) {
     { label: copy.nav.blog, href: localePath(locale, "/blog") },
     { label: copy.nav.about, href: localePath(locale, "/za-nas") },
     { label: copy.footer.declarations, href: localePath(locale, "/deklaratsii") },
+    { label: copy.footer.project, href: localePath(locale, "/proekt") },
     { label: copy.nav.contact, href: localePath(locale, "/kontakti") },
   ];
   const categories = [

@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
     { path: "/za-nas", changeFrequency: "monthly" as const, priority: 0.6 },
     { path: "/deklaratsii", changeFrequency: "yearly" as const, priority: 0.4 },
+    { path: "/proekt", changeFrequency: "yearly" as const, priority: 0.4 },
     { path: "/kontakti", changeFrequency: "monthly" as const, priority: 0.6 },
     ...categories.map((category) => ({
       path: `/produkti/${category.slug}`,

@@ -31,6 +31,7 @@ const bg = {
     range: "Асортимент",
     contact: "Контакт",
     declarations: "Декларации",
+    project: "Европейски проект",
     follow: "Последвайте ни",
     easter: "Чудесата на Великден",
     send: "Изпратете съобщение →",
@@ -106,6 +107,9 @@ const bg = {
     declarationsTitle: "Декларации",
     declarationsDescription:
       "Политики и декларации на Метма: социална отговорност, качество, околна среда и проекти.",
+    projectTitle: "Енергийна ефективност в METMA ЕАД",
+    projectDescription:
+      "Проект BG16RFPR001-2.004-2546-C01 на METMA ЕАД по програма „Конкурентоспособност и иновации в предприятията“ 2021–2027.",
     notFoundTitle: "Страницата не е намерена",
     notFound: "Тази страница не съществува.",
     backHome: "Към началото",
@@ -146,6 +150,7 @@ const en: Messages = {
     range: "Range",
     contact: "Contact",
     declarations: "Declarations",
+    project: "EU project",
     follow: "Follow us",
     easter: "Easter wonders",
     send: "Send a message →",
@@ -219,6 +224,9 @@ const en: Messages = {
     declarationsTitle: "Declarations",
     declarationsDescription:
       "Metma policies and declarations: social responsibility, quality, environment and projects.",
+    projectTitle: "Energy efficiency at METMA EAD",
+    projectDescription:
+      "Project BG16RFPR001-2.004-2546-C01 of METMA EAD under the Competitiveness and Innovation in Enterprises programme 2021–2027.",
     notFoundTitle: "Page not found",
     notFound: "This page does not exist.",
     backHome: "Back home",
@@ -257,6 +265,7 @@ const de: Messages = {
     range: "Sortiment",
     contact: "Kontakt",
     declarations: "Erklärungen",
+    project: "EU-Projekt",
     follow: "Folgen Sie uns",
     easter: "Wunder der Ostern",
     send: "Nachricht senden →",
@@ -330,6 +339,9 @@ const de: Messages = {
     declarationsTitle: "Erklärungen",
     declarationsDescription:
       "Richtlinien und Erklärungen von Metma: soziale Verantwortung, Qualität, Umwelt und Projekte.",
+    projectTitle: "Energieeffizienz bei METMA EAD",
+    projectDescription:
+      "Projekt BG16RFPR001-2.004-2546-C01 von METMA EAD im Programm „Wettbewerbsfähigkeit und Innovation in Unternehmen“ 2021–2027.",
     notFoundTitle: "Seite nicht gefunden",
     notFound: "Diese Seite gibt es nicht.",
     backHome: "Zur Startseite",
@@ -368,6 +380,7 @@ const fr: Messages = {
     range: "Gamme",
     contact: "Contact",
     declarations: "Déclarations",
+    project: "Projet européen",
     follow: "Suivez-nous",
     easter: "Merveilles de Pâques",
     send: "Envoyer un message →",
@@ -442,6 +455,9 @@ const fr: Messages = {
     declarationsTitle: "Déclarations",
     declarationsDescription:
       "Politiques et déclarations de Metma : responsabilité sociale, qualité, environnement et projets.",
+    projectTitle: "Efficacité énergétique chez METMA EAD",
+    projectDescription:
+      "Projet BG16RFPR001-2.004-2546-C01 de METMA EAD dans le programme « Compétitivité et innovation dans les entreprises » 2021–2027.",
     notFoundTitle: "Page introuvable",
     notFound: "Cette page n’existe pas.",
     backHome: "Retour à l’accueil",
@@ -480,6 +496,7 @@ const es: Messages = {
     range: "Surtido",
     contact: "Contacto",
     declarations: "Declaraciones",
+    project: "Proyecto europeo",
     follow: "Síguenos",
     easter: "Maravillas de Pascua",
     send: "Enviar un mensaje →",
@@ -553,6 +570,9 @@ const es: Messages = {
     declarationsTitle: "Declaraciones",
     declarationsDescription:
       "Políticas y declaraciones de Metma: responsabilidad social, calidad, medio ambiente y proyectos.",
+    projectTitle: "Eficiencia energética en METMA EAD",
+    projectDescription:
+      "Proyecto BG16RFPR001-2.004-2546-C01 de METMA EAD en el programa «Competitividad e innovación en las empresas» 2021–2027.",
     notFoundTitle: "Página no encontrada",
     notFound: "Esta página no existe.",
     backHome: "Volver al inicio",
@@ -591,6 +611,7 @@ const it: Messages = {
     range: "Assortimento",
     contact: "Contatto",
     declarations: "Dichiarazioni",
+    project: "Progetto europeo",
     follow: "Seguici",
     easter: "Meraviglie di Pasqua",
     send: "Invia un messaggio →",
@@ -665,6 +686,9 @@ const it: Messages = {
     declarationsTitle: "Dichiarazioni",
     declarationsDescription:
       "Politiche e dichiarazioni di Metma: responsabilità sociale, qualità, ambiente e progetti.",
+    projectTitle: "Efficienza energetica in METMA EAD",
+    projectDescription:
+      "Progetto BG16RFPR001-2.004-2546-C01 di METMA EAD nel programma «Competitività e innovazione nelle imprese» 2021–2027.",
     notFoundTitle: "Pagina non trovata",
     notFound: "Questa pagina non esiste.",
     backHome: "Torna alla home",

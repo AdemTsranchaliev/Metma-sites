@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { PageIntro } from "@/components/PageIntro";
 import { getMessages } from "@/i18n/messages";
 import { getDeclarations } from "@/lib/catalog";
 import { getStatic } from "@/i18n/static";
-import { parseLocale } from "@/lib/i18n";
+import { localePath, parseLocale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -67,6 +68,14 @@ export default async function DeclarationsPage({
               </div>
             </article>
           ))}
+          <p className="border-t border-[var(--metma-line)] pt-8">
+            <Link
+              href={localePath(locale, "/proekt")}
+              className="text-sm font-semibold text-[var(--metma-ink)] underline-offset-4 transition hover:text-[var(--metma-rose)] hover:underline"
+            >
+              {getStatic(locale).project.title}
+            </Link>
+          </p>
         </div>
       </section>
     </>
