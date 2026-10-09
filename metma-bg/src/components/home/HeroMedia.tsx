@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const frame =
-  "absolute inset-0 h-full w-full origin-center object-cover object-[86%_58%] max-md:translate-x-[8%] max-md:-translate-y-[8%] max-md:scale-[1.2] md:translate-x-0 md:translate-y-0 md:scale-100 md:object-[68%_46%]";
+  "absolute inset-0 h-full w-full object-cover object-[84%_top] md:static md:inset-auto md:block md:aspect-[1600/870] md:h-auto md:w-full md:object-fill";
 
 export function HeroMedia() {
   const [reduced, setReduced] = useState(false);
