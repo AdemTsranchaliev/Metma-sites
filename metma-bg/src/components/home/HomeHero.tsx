@@ -23,7 +23,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
         className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,248,244,0.2)_0%,rgba(255,248,244,0.55)_55%,#fff8f4_100%)] md:bg-[linear-gradient(90deg,#fff8f4_0%,rgba(255,248,244,0.92)_28%,rgba(255,248,244,0.35)_48%,transparent_68%)]"
       />
 
-      <div className="container-metma relative z-10 flex min-h-[26rem] flex-col justify-end py-8 sm:min-h-[28rem] md:min-h-[32rem] md:pb-8 md:pt-12">
+      <div className="container-metma relative z-10 flex min-h-[26rem] flex-col justify-end py-8 sm:min-h-[28rem] md:min-h-[32rem] md:justify-center md:py-10">
         <div className="max-w-xl">
           <p className="eyebrow text-[0.62rem] text-[var(--metma-rose)] sm:text-[0.7rem]">
             {copy.eyebrow}
