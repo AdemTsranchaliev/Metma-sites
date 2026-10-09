@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const frame = "absolute inset-0 h-full w-full object-cover object-[78%_center] md:object-[68%_center]";
+const frame = "absolute inset-0 h-full w-full object-cover object-[78%_72%] md:object-[68%_70%]";
 
 export function HeroMedia() {
   const [reduced, setReduced] = useState(false);
