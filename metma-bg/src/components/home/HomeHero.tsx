@@ -17,7 +17,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
   const copy = getMessages(locale).hero;
   return (
     <section className="relative isolate overflow-hidden bg-[#fff8f4] text-[var(--metma-ink)]">
-      <div className="relative min-h-[26rem] sm:min-h-[28rem] md:aspect-[1600/870] md:min-h-0">
+      <div className="relative min-h-[26rem] sm:min-h-[28rem] md:h-[min(54.375vw,max(44rem,36.5vw))] md:min-h-0">
       <HeroMedia />
       <div
         aria-hidden
@@ -25,7 +25,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
       />
 
       <div className="absolute inset-0 z-10 flex items-center">
-        <div className="container-metma w-full py-8 md:py-10">
+        <div className="mx-auto w-[min(1120px,calc(100%-2rem))] py-8 sm:w-[min(1120px,calc(100%-2.5rem))] md:py-10 2xl:w-[min(1600px,78vw)]">
           <div className="max-w-xl">
             <p className="eyebrow text-[0.62rem] text-[var(--metma-rose)] sm:text-[0.7rem]">
               {copy.eyebrow}
