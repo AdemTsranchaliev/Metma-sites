@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  Crop,
   ExternalLink,
   FolderTree,
   Globe2,
@@ -17,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useFirebase } from "@/lib/data-mode";
-import { SITE_OPTIONS, siteLocalOrigin, type SiteCode } from "@/lib/sites";
+import { SITE_OPTIONS, sitePublicOrigin, type SiteCode } from "@/lib/sites";
 import { useAuth } from "@/lib/firebase/auth";
 
 const nav = [
@@ -27,6 +28,7 @@ const nav = [
   { href: "/qr", label: "QR кодове", icon: QrCode },
   { href: "/blog", label: "Блог", icon: Newspaper },
   { href: "/media", label: "Медия", icon: ImageIcon },
+  { href: "/hero", label: "Хиро", icon: Crop },
   { href: "/sites", label: "Сайтове", icon: Globe2 },
 ];
 
@@ -307,7 +309,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </div>
               ) : null}
               <a
-                href={siteLocalOrigin(site)}
+                href={sitePublicOrigin(site)}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--admin-rose)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--admin-rose-deep)]"
@@ -347,7 +349,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
               <SiteSwitch site={site} onChange={onSiteChange} />
               <a
-                href={siteLocalOrigin(site)}
+                href={sitePublicOrigin(site)}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--admin-line)] bg-white text-[var(--admin-ink)] transition hover:border-[var(--admin-ink)] hover:bg-[var(--admin-sand)] sm:w-auto sm:gap-2 sm:px-3"

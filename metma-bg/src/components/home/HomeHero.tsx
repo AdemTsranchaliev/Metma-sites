@@ -16,14 +16,15 @@ function KnockEggsIcon() {
 export function HomeHero({ locale }: { locale: Locale }) {
   const copy = getMessages(locale).hero;
   return (
-    <section className="relative isolate min-h-[26rem] overflow-hidden bg-[#fff8f4] text-[var(--metma-ink)] sm:min-h-[28rem] md:min-h-0">
+    <section className="relative isolate overflow-hidden bg-[#fff8f4] text-[var(--metma-ink)]">
+      <div className="relative min-h-[26rem] sm:min-h-[28rem] md:aspect-[1600/870] md:min-h-0">
       <HeroMedia />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,248,244,0.2)_0%,rgba(255,248,244,0.55)_55%,#fff8f4_100%)] md:bg-[linear-gradient(90deg,#fff8f4_0%,rgba(255,248,244,0.92)_28%,rgba(255,248,244,0.35)_48%,transparent_68%)]"
       />
 
-      <div className="absolute inset-0 z-10 flex items-end md:items-center">
+      <div className="absolute inset-0 z-10 flex items-center">
         <div className="container-metma w-full py-8 md:py-10">
           <div className="max-w-xl">
             <p className="eyebrow text-[0.62rem] text-[var(--metma-rose)] sm:text-[0.7rem]">
@@ -48,6 +49,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );
