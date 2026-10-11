@@ -1,4 +1,4 @@
-export const locales = ["bg", "en", "de", "fr", "es", "it"] as const;
+export const locales = ["bg", "en", "ro", "el", "lt", "lv", "et", "cs", "pl", "it"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -10,9 +10,13 @@ export const localeMeta: Record<
 > = {
   bg: { label: "Български", htmlLang: "bg", og: "bg_BG", hreflang: "bg" },
   en: { label: "English", htmlLang: "en", og: "en_US", hreflang: "en" },
-  de: { label: "Deutsch", htmlLang: "de", og: "de_DE", hreflang: "de" },
-  fr: { label: "Français", htmlLang: "fr", og: "fr_FR", hreflang: "fr" },
-  es: { label: "Español", htmlLang: "es", og: "es_ES", hreflang: "es" },
+  ro: { label: "Română", htmlLang: "ro", og: "ro_RO", hreflang: "ro" },
+  el: { label: "Ελληνικά", htmlLang: "el", og: "el_GR", hreflang: "el" },
+  lt: { label: "Lietuvių", htmlLang: "lt", og: "lt_LT", hreflang: "lt" },
+  lv: { label: "Latviešu", htmlLang: "lv", og: "lv_LV", hreflang: "lv" },
+  et: { label: "Eesti", htmlLang: "et", og: "et_EE", hreflang: "et" },
+  cs: { label: "Čeština", htmlLang: "cs", og: "cs_CZ", hreflang: "cs" },
+  pl: { label: "Polski", htmlLang: "pl", og: "pl_PL", hreflang: "pl" },
   it: { label: "Italiano", htmlLang: "it", og: "it_IT", hreflang: "it" },
 };
 

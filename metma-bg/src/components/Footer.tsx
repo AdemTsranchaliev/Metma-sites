@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon } from "@/components/SocialIcon";
 import { getMessages } from "@/i18n/messages";
+import { Flag } from "@/components/Flag";
 import { localeMeta, localePath, locales, type Locale } from "@/lib/i18n";
 import { siteConfig, socialProfiles } from "@/lib/site";
 
@@ -138,10 +139,11 @@ export function Footer({ locale }: { locale: Locale }) {
                 href={localePath(item, "/")}
                 hrefLang={localeMeta[item].hreflang}
                 lang={localeMeta[item].htmlLang}
-                className={`text-xs font-semibold ${
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
                   item === locale ? "text-[var(--metma-rose)]" : "text-[var(--metma-ink)]"
                 }`}
               >
+                <Flag locale={item} />
                 {localeMeta[item].label}
               </Link>
             ))}

@@ -1163,3 +1163,13 @@ img {
     opacity: 1;
   }
 }
+
+/* Rubik and Nunito have no Greek glyphs. */
+html:lang(el) {
+  --font-rubik: var(--font-greek);
+  --font-fredoka: var(--font-greek);
+}
+
+a[lang="el"] {
+  font-family: var(--font-greek), sans-serif;
+}

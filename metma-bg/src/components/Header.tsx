@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { getMessages } from "@/i18n/messages";
+import { Flag } from "@/components/Flag";
 import { localeMeta, localePath, locales, stripLocale } from "@/lib/i18n";
 import { brands } from "@/data/brands";
 import { menuContact } from "@/data/menu";
@@ -16,7 +17,7 @@ const menuBrands = [
 ];
 
 function isActivePath(pathname: string, href: string) {
-  if (href === "/" || /^\/(en|de|fr|es|it)$/.test(href)) return pathname === href;
+  if (href === "/" || /^\/(en|ro|el|lt|lv|et|cs|pl|it)$/.test(href)) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -194,6 +195,7 @@ export function Header() {
             aria-label={copy.nav.language}
             onClick={() => setLangOpen((value) => !value)}
           >
+            <Flag locale={locale} className="mr-1" />
             <span className="hidden sm:inline">{localeMeta[locale].label}</span>
             <span className="sm:hidden">{locale.toUpperCase()}</span>
             <span aria-hidden className={`text-[0.6rem] opacity-70 transition ${langOpen ? "rotate-180" : ""}`}>
@@ -221,7 +223,10 @@ export function Header() {
                     }`}
                     onClick={() => setLangOpen(false)}
                   >
-                    {localeMeta[item].label}
+                    <span className="flex items-center gap-2">
+                      <Flag locale={item} />
+                      {localeMeta[item].label}
+                    </span>
                     <span className="text-[0.65rem] tracking-[0.08em] text-[var(--metma-mute)]">
                       {item.toUpperCase()}
                     </span>
@@ -376,7 +381,7 @@ export function Header() {
                 );
               })}
 
-              <ul aria-label={copy.nav.language} className="flex items-center gap-3 py-2">
+              <ul aria-label={copy.nav.language} className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2">
                 {locales.map((item) => (
                   <li key={item}>
                     <Link
@@ -386,12 +391,13 @@ export function Header() {
                       aria-label={localeMeta[item].label}
                       aria-current={item === locale ? "true" : undefined}
                       onClick={() => setOpen(false)}
-                      className={`text-[0.65rem] font-semibold tracking-[0.08em] ${
+                      className={`inline-flex items-center gap-1 text-[0.65rem] font-semibold tracking-[0.08em] ${
                         item === locale
                           ? "rounded-full bg-[var(--metma-rose)] px-1.5 py-0.5 text-white"
                           : "text-[var(--metma-mute)]"
                       }`}
                     >
+                      <Flag locale={item} />
                       {item.toUpperCase()}
                     </Link>
                   </li>
