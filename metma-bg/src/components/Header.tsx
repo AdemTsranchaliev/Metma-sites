@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { getMessages } from "@/i18n/messages";
+import { getStatic } from "@/i18n/static";
 import { Flag } from "@/components/Flag";
 import { localeMeta, localePath, locales, stripLocale } from "@/lib/i18n";
 import { brands } from "@/data/brands";
@@ -25,6 +26,8 @@ export function Header() {
   const pathname = usePathname();
   const locale = useLocale();
   const copy = getMessages(locale);
+  const project = getStatic(locale).project;
+  const projectHref = localePath(locale, "/proekt");
   const menuId = useId();
   const [open, setOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
@@ -186,7 +189,8 @@ export function Header() {
           })}
         </nav>
 
-        <div className="relative hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+        <div className="relative">
           <button
             type="button"
             className="inline-flex h-9 items-center gap-1 px-2 text-sm font-medium text-[var(--metma-ink)] transition hover:text-[var(--metma-rose)]"
@@ -235,6 +239,27 @@ export function Header() {
               ))}
             </ul>
           ) : null}
+        </div>
+        <div className="flex items-center gap-2">
+          <Link href={projectHref} aria-label={project.cofunded} className="block shrink-0 transition hover:opacity-80">
+            <Image
+              src="/images/proekt/eu-cofunded.png"
+              alt=""
+              width={487}
+              height={410}
+              className="!h-9 w-auto"
+            />
+          </Link>
+          <Link href={projectHref} aria-label={project.programme} className="block shrink-0 transition hover:opacity-80">
+            <Image
+              src="/images/proekt/programa-konkurentosposobnost.png"
+              alt=""
+              width={544}
+              height={419}
+              className="!h-9 w-auto"
+            />
+          </Link>
+        </div>
         </div>
 
         <button

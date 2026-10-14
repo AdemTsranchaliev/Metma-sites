@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { SocialIcon } from "@/components/SocialIcon";
 import { getMessages } from "@/i18n/messages";
-import { getStatic } from "@/i18n/static";
 import { Flag } from "@/components/Flag";
 import { localeMeta, localePath, locales, type Locale } from "@/lib/i18n";
 import { siteConfig, socialProfiles } from "@/lib/site";
@@ -10,8 +9,6 @@ import { siteConfig, socialProfiles } from "@/lib/site";
 export function Footer({ locale }: { locale: Locale }) {
   const year = new Date().getFullYear();
   const copy = getMessages(locale);
-  const project = getStatic(locale).project;
-  const projectHref = localePath(locale, "/proekt");
   const nav = [
     { label: copy.nav.home, href: localePath(locale, "/") },
     { label: copy.nav.products, href: localePath(locale, "/produkti") },
@@ -68,27 +65,6 @@ export function Footer({ locale }: { locale: Locale }) {
                 </li>
               ))}
             </ul>
-
-            <div className="mt-5 flex items-center gap-3">
-              <Link href={projectHref} aria-label={project.cofunded} className="block shrink-0 transition hover:opacity-80">
-                <Image
-                  src="/images/proekt/eu-cofunded.png"
-                  alt=""
-                  width={487}
-                  height={410}
-                  className="!h-16 w-auto"
-                />
-              </Link>
-              <Link href={projectHref} aria-label={project.programme} className="block shrink-0 transition hover:opacity-80">
-                <Image
-                  src="/images/proekt/programa-konkurentosposobnost.png"
-                  alt=""
-                  width={544}
-                  height={419}
-                  className="!h-16 w-auto"
-                />
-              </Link>
-            </div>
           </div>
 
           <div>
