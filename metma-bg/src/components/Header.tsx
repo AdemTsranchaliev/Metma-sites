@@ -262,9 +262,28 @@ export function Header() {
         </div>
         </div>
 
+        <div className="flex items-center gap-1.5 md:hidden">
+          <Link href={projectHref} aria-label={project.cofunded} className="block shrink-0">
+            <Image
+              src="/images/proekt/eu-cofunded.png"
+              alt=""
+              width={487}
+              height={410}
+              className="!h-8 w-auto"
+            />
+          </Link>
+          <Link href={projectHref} aria-label={project.programme} className="block shrink-0">
+            <Image
+              src="/images/proekt/programa-konkurentosposobnost.png"
+              alt=""
+              width={544}
+              height={419}
+              className="!h-8 w-auto"
+            />
+          </Link>
         <button
           type="button"
-          className="relative inline-flex h-11 w-11 items-center justify-center md:hidden"
+          className="relative inline-flex h-11 w-11 items-center justify-center"
           aria-label={open ? copy.nav.close : copy.nav.open}
           aria-expanded={open}
           aria-controls={menuId}
@@ -289,6 +308,7 @@ export function Header() {
             />
           </span>
         </button>
+        </div>
       </div>
 
       {open ? (
