@@ -52,7 +52,11 @@ export function pageMetadata({
       languages: languageAlternates(path),
     },
     robots: noIndex
-      ? { index: false, follow: false }
+      ? {
+          index: false,
+          follow: true,
+          googleBot: { index: false, follow: true },
+        }
       : { index: true, follow: true },
     openGraph: {
       type,

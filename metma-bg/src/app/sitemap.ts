@@ -1,15 +1,14 @@
 import type { MetadataRoute } from "next";
 import { brands } from "@/data/brands";
-import { getBlogPosts, getCategories, getProducts } from "@/lib/catalog";
+import { getBlogPosts, getCategories } from "@/lib/catalog";
 import { locales, localePath } from "@/lib/i18n";
 import { absoluteUrl, languageAlternates } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products, posts] = await Promise.all([
+  const [categories, posts] = await Promise.all([
     getCategories(),
-    getProducts(),
     getBlogPosts(),
   ]);
 
@@ -33,11 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/kontakti", changeFrequency: "monthly" as const, priority: 0.6 },
     ...categories.map((category) => ({
       path: `/produkti/${category.slug}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
-    ...products.map((product) => ({
-      path: `/produkti/${product.slug}`,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),

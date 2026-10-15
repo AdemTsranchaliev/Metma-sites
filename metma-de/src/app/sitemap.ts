@@ -1,13 +1,12 @@
 import type { MetadataRoute } from "next";
-import { getBlogPosts, getCategories, getProducts } from "@/lib/catalog";
+import { getBlogPosts, getCategories } from "@/lib/catalog";
 import { absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products, posts] = await Promise.all([
+  const [categories, posts] = await Promise.all([
     getCategories(),
-    getProducts(),
     getBlogPosts(),
   ]);
 
@@ -25,12 +24,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const productPages: MetadataRoute.Sitemap = products.map((product) => ({
-    url: absoluteUrl(`/produkte/${product.slug}`),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
   const blogPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),
     lastModified: post.date ? new Date(post.date) : undefined,
@@ -38,5 +31,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages, ...blogPages];
+  return [...staticPages, ...categoryPages, ...blogPages];
 }

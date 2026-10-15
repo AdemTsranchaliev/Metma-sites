@@ -56,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/produkti/${product.slug}`,
       image: product.image,
       locale,
+      noIndex: true,
     });
   }
   return pageMetadata({

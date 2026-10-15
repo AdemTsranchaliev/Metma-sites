@@ -51,6 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: product.shortDescription || product.description,
       path: `/produkte/${product.slug}`,
       image: product.image,
+      noIndex: true,
     });
   }
   return pageMetadata({
