@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={siteConfig.locale} className={`${outfit.variable} ${fraunces.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-white text-[var(--usa-ink)]">
+        <ScrollToTop />
         <Header />
         <div className="flex-1">{children}</div>
         <Footer />
