@@ -1,0 +1,278 @@
+@import "tailwindcss";
+
+:root {
+  /* Original Vesache theme color from the old site (menu, links, Vesache block) */
+  --metma-rose: #427ed1;
+  --metma-rose-deep: #2e64b4;
+  --metma-blue: #00a3e6;
+  --metma-blue-soft: #d7f1fb;
+  --metma-ink: #1d242d;
+  --metma-mute: #5d5d5d;
+  --metma-line: #eae9e9;
+  --metma-paper: #ffffff;
+  --metma-sand: #f7f4f4;
+  --metma-wash: #f0f5fb;
+  --background: #ffffff;
+  --foreground: #1d242d;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-rubik);
+  --font-display: var(--font-fredoka);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--metma-paper);
+  color: var(--metma-ink);
+  font-family: var(--font-rubik), Rubik, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--metma-blue-soft);
+  color: var(--metma-ink);
+}
+
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--metma-blue);
+  outline-offset: 3px;
+}
+
+.container-metma {
+  width: min(1120px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .container-metma {
+    width: min(1120px, calc(100% - 2.5rem));
+  }
+}
+
+.font-display {
+  font-family: var(--font-fredoka), Fredoka, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.btn-metma,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 3rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.7rem 1.35rem;
+  border: 1px solid transparent;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s var(--ease);
+}
+
+.btn-metma:active,
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+@media (min-width: 640px) {
+  .btn-metma,
+  .btn-outline {
+    font-size: 0.9rem;
+    padding: 0.95rem 1.55rem;
+  }
+}
+
+.btn-metma {
+  background: var(--metma-rose);
+  color: #fff;
+}
+
+.btn-metma:hover {
+  background: var(--metma-rose-deep);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: #fff;
+  color: var(--metma-ink);
+  border-color: rgba(29, 36, 45, 0.14);
+}
+
+.btn-outline:hover {
+  border-color: var(--metma-ink);
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.product-tile {
+  transition: transform 0.45s var(--ease);
+}
+
+.group:hover .product-tile {
+  transform: translateY(-4px);
+}
+
+.brand-reveal {
+  animation: brand-reveal 0.55s var(--ease) both;
+}
+
+.brand-pop {
+  animation: brand-pop 0.55s var(--ease) both;
+}
+
+.marquee {
+  display: flex;
+  gap: 2.5rem;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes brand-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes brand-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.egg-wobble {
+  animation: egg-wobble 2.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.egg-float {
+  animation: egg-float 5s ease-in-out infinite;
+}
+
+.egg-float-delay {
+  animation: egg-float 5.8s ease-in-out 0.8s infinite;
+}
+
+.egg-num {
+  animation: egg-num 0.35s var(--ease);
+}
+
+.hero-card {
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.hero-card:hover {
+  transform: translateY(-8px) rotate(0deg);
+  box-shadow: 0 24px 40px -24px rgba(29, 36, 45, 0.45);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes egg-wobble {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes egg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes egg-num {
+  from {
+    opacity: 0.35;
+    transform: translateY(6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .btn-metma,
+  .btn-outline,
+  .product-tile {
+    transition: none;
+  }
+
+  .group:hover .product-tile {
+    transform: none;
+  }
+
+  .marquee,
+  .brand-reveal,
+  .brand-pop,
+  .egg-wobble,
+  .egg-float,
+  .egg-float-delay,
+  .egg-num {
+    animation: none;
+  }
+
+  .hero-card,
+  .hero-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
