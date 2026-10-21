@@ -1,0 +1,81 @@
+/**
+ * Plain <img src="/images/..."> is not rewritten by Next's basePath.
+ * Prefix those public assets in the static export for GitHub Pages.
+ */
+import fs from "node:fs";
+import path from "node:path";
+
+const BASE = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
+const outDir = path.join(process.cwd(), "out");
+
+function rewrite(content) {
+  if (!BASE) return content;
+  let next = content.replaceAll(`${BASE}/images/`, "\0BASEIMG\0");
+  next = next.replaceAll(`${BASE}/favicon.png`, "\0BASEFAV\0");
+  next = next.replaceAll("/images/", `${BASE}/images/`);
+  next = next.replaceAll("/favicon.png", `${BASE}/favicon.png`);
+  next = next.replaceAll("\0BASEIMG\0", `${BASE}/images/`);
+  next = next.replaceAll("\0BASEFAV\0", `${BASE}/favicon.png`);
+  return next;
+}
+
+function patchFlightBuffer(input) {
+  const row = /([0-9a-f]+):T([0-9a-f]+),/g;
+  const text = input.toString("utf8");
+  const pieces = [];
+  let cursor = 0;
+  for (const match of text.matchAll(row)) {
+    const start = Buffer.byteLength(text.slice(0, match.index), "utf8");
+    const declared = parseInt(match[2], 16);
+    const bodyStart = start + Buffer.byteLength(match[0], "utf8");
+    if (bodyStart + declared > input.length) break;
+    const body = input.subarray(bodyStart, bodyStart + declared).toString("utf8");
+    const rewritten = Buffer.from(rewrite(body), "utf8");
+    const header = Buffer.from(`${match[1]}:T${rewritten.length.toString(16)},`, "utf8");
+    pieces.push(input.subarray(cursor, start), header, rewritten);
+    cursor = bodyStart + declared;
+  }
+  pieces.push(input.subarray(cursor));
+  const joined = Buffer.concat(pieces);
+  return Buffer.from(rewrite(joined.toString("utf8")), "utf8");
+}
+
+function patchHtml(content) {
+  return content.replace(/self\.__next_f\.push\(\[1,"((?:\\.|[^"\\])*)"\]\)/g, (_full, encoded) => {
+    const decoded = Buffer.from(JSON.parse(`"${encoded}"`), "utf8");
+    const patched = patchFlightBuffer(decoded).toString("utf8");
+    return `self.__next_f.push([1,${JSON.stringify(patched)}])`;
+  });
+}
+
+function walk(dir) {
+  for (const name of fs.readdirSync(dir)) {
+    const full = path.join(dir, name);
+    const st = fs.statSync(full);
+    if (st.isDirectory()) {
+      walk(full);
+      continue;
+    }
+    if (!/\.(html|js|css|json|txt)$/.test(name)) continue;
+    const before = fs.readFileSync(full, "utf8");
+    if (!before.includes("/images/") && !before.includes("/favicon.png")) continue;
+    const after = name.endsWith(".txt")
+      ? patchFlightBuffer(Buffer.from(before, "utf8")).toString("utf8")
+      : name.endsWith(".html")
+        ? rewrite(patchHtml(before))
+        : rewrite(before);
+    if (after !== before) fs.writeFileSync(full, after);
+  }
+}
+
+if (!fs.existsSync(outDir)) {
+  console.error("out/ missing — run next build first");
+  process.exit(1);
+}
+
+if (BASE) {
+  walk(outDir);
+  console.log(`Prefixed /images and /favicon with ${BASE}`);
+} else {
+  console.log("No NEXT_PUBLIC_BASE_PATH — skipping image prefix rewrite");
+}

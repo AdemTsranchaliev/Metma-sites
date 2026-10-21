@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",
+    "build:gh-pages": "GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-/metma-usa} next build && NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-/metma-usa} node scripts/fix-image-basepath.mjs",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "firebase": "^12.19.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8"

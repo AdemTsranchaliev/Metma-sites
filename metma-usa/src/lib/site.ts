@@ -1,6 +1,6 @@
 export const siteConfig = {
   code: "Usa" as const,
-  name: "Metma USA",
+  name: "METMA USA LTD.",
   locale: "en",
   domain: "metma-usa.com",
 };
