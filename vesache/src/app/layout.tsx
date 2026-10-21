@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Nunito, Rubik } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { getCategories } from "@/lib/catalog";
 import "./globals.css";
 
@@ -29,6 +30,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="bg" className={`${rubik.variable} ${nunito.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
+        <Suspense fallback={null}>
+          <ScrollToTop />
+        </Suspense>
         <Header categories={categories} />
         <main className="flex-1">{children}</main>
         <Footer categories={categories} />
