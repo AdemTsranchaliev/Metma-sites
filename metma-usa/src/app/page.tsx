@@ -8,10 +8,10 @@ import { getCategories, getProducts } from "@/lib/catalog";
 export const dynamic = "force-static";
 
 const tiles = [
-  { slug: "classic", title: "Classic Kits", image: "/images/classic-kits.png" },
-  { slug: "children", title: "Children Kits", image: "/images/children-kits.png" },
-  { slug: "display", title: "Display", image: "/images/display-home.png" },
-  { slug: "decoration", title: "Egg Decoration", image: "/images/egg-decoration.png" },
+  { slug: "classic", title: "Classic Kits", image: "/images/classic-kits.webp" },
+  { slug: "children", title: "Children Kits", image: "/images/children-kits.webp" },
+  { slug: "display", title: "Display", image: "/images/display-home.webp" },
+  { slug: "decoration", title: "Egg Decoration", image: "/images/egg-decoration.webp" },
 ];
 
 export default async function HomePage() {
@@ -43,7 +43,7 @@ export default async function HomePage() {
           <div className="relative">
             <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-gradient-to-br from-[var(--usa-red)] via-[var(--usa-gold)] to-[var(--usa-sky)]" />
             <img
-              src="/images/banner-1.jpg"
+              src="/images/banner-1.webp"
               alt="Metma egg coloring kits"
               className="w-full rounded-[1.6rem] bg-white object-contain"
             />
@@ -79,7 +79,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="pointer-events-none relative -mt-6 h-40 overflow-hidden sm:-mt-4 sm:h-52 lg:h-64" aria-hidden>
-          <img src="/images/meadow-band.png" alt="" className="absolute inset-x-0 bottom-0 h-full w-full object-cover object-bottom" />
+          <img src="/images/meadow-band.webp" alt="" className="absolute inset-x-0 bottom-0 h-full w-full object-cover object-bottom" />
         </div>
       </section>
 
@@ -102,7 +102,7 @@ export default async function HomePage() {
         <div className="container-usa grid items-center gap-8 md:grid-cols-2">
           <div className="overflow-hidden rounded-[1.6rem] bg-white shadow-[0_16px_40px_-24px_rgba(12,35,64,0.45)] ring-1 ring-black/5">
             <div className="color-bar" />
-            <img src="/images/map.png" alt="Metma history from 1989 to 2021" className="w-full" />
+            <img src="/images/map.webp" alt="Metma history from 1989 to 2021" className="w-full" />
           </div>
           <div>
             <p className="eyebrow text-[var(--usa-red)]">Since 1989</p>
