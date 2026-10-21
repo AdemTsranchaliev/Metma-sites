@@ -1,7 +1,6 @@
 import { cache } from "react";
 import { collection, getDocs, orderBy, query, where, type DocumentData } from "firebase/firestore";
 import { getDb, isFirebaseConfigured } from "@/lib/firebase/client";
-import { optimizeMediaUrl } from "@/lib/media";
 import { categories as fallbackCategories, type BrandId, type CatalogCategory, type Product } from "@/lib/types";
 
 const BRANDS = new Set<BrandId>(["vesache", "ino", "pet", "metma"]);
@@ -65,9 +64,9 @@ function mapProduct(id: string, data: DocumentData): Product | null {
   const descriptionFix = applyPackagingBrand(sku, storedBrand, String(data.description || data.shortDescription || ""));
   const brand = nameFix.brand;
   const urls = Array.isArray(data.imageUrls)
-    ? data.imageUrls.map((url) => optimizeMediaUrl(String(url))).filter((url) => url.startsWith("http"))
+    ? data.imageUrls.map((url) => String(url).trim()).filter((url) => url.startsWith("http"))
     : [];
-  const image = optimizeMediaUrl(String(urls[0] || data.imageUrl || ""));
+  const image = String(urls[0] || data.imageUrl || "").trim();
   if (!image.startsWith("http")) return null;
   return {
     id: sku,

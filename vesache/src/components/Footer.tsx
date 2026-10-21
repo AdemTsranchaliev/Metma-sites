@@ -27,7 +27,7 @@ export function Footer({ categories }: { categories: CatalogCategory[] }) {
           <div className="lg:col-span-4">
             <Link href="/" className="inline-flex items-center gap-2.5">
               <span className="relative block h-9 w-9">
-                <Image src="/images/logo.png" alt="" fill className="object-contain" sizes="36px" />
+                <Image src="/images/logo.webp" alt="" fill className="object-contain" sizes="36px" />
               </span>
               <span className="font-display text-xl font-bold tracking-wide">ВЕСАЧЕ</span>
             </Link>

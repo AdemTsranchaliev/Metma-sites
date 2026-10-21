@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { EggIcon } from "@/components/Motifs";
+import { optimizeMediaUrl } from "@/lib/media";
 import type { BrandId } from "@/lib/types";
 
 export type ShowcaseBrand = {
@@ -103,7 +104,7 @@ export function BrandShowcase({ brands }: { brands: ShowcaseBrand[] }) {
                   style={{ animationDelay: `${index * 70}ms` }}
                 >
                   <span className="relative block aspect-square">
-                    <Image src={product.image} alt={product.name} fill className="object-contain p-3" sizes="240px" unoptimized />
+                    <Image src={optimizeMediaUrl(product.image, { width: 480, quality: "eco" })} alt={product.name} fill className="object-contain p-3" sizes="240px" unoptimized />
                   </span>
                   <span className="line-clamp-2 block px-3 py-2.5 text-center text-[0.68rem] font-bold uppercase leading-snug sm:text-left sm:text-[0.7rem]">
                     {shortName(product.name)}

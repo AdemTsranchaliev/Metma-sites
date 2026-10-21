@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { optimizeMediaUrl } from "@/lib/media";
 import { companies, companyName, productTitle } from "@/lib/types";
 import type { Product } from "@/lib/types";
 
@@ -15,7 +16,7 @@ export function ProductGrid({ products, tile = "sand" }: { products: Product[]; 
         <Link key={`${product.id}-${product.slug}`} href={`/produkti/${product.slug}`} className="group block">
           <div className={`product-tile relative aspect-square overflow-hidden rounded-2xl ring-1 ring-black/[0.06] ${tile === "white" ? "bg-white" : "bg-[var(--metma-sand)]"}`}>
             <Image
-              src={product.image}
+              src={optimizeMediaUrl(product.image, { width: 480, quality: "eco" })}
               alt={product.name}
               fill
               className="object-contain p-3 transition duration-500 group-hover:scale-[1.03] sm:p-6"

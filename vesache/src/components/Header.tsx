@@ -48,7 +48,7 @@ export function Header({ categories }: { categories: CatalogCategory[] }) {
       <div className="container-metma flex h-14 items-center justify-between gap-4 sm:h-16">
         <Link href="/" aria-label="Весаче" className="flex items-center gap-2">
           <span className="relative block h-9 w-9 shrink-0">
-            <Image src="/images/logo.png" alt="" fill priority className="object-contain" sizes="36px" />
+            <Image src="/images/logo.webp" alt="" fill priority className="object-contain" sizes="36px" />
           </span>
           <span className="font-display text-xl font-bold tracking-wide text-[var(--metma-rose)]">ВЕСАЧЕ</span>
         </Link>

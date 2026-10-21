@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { optimizeMediaUrl } from "@/lib/media";
 
 export function ProductGallery({ images, name, frame = "wash" }: { images: string[]; name: string; frame?: "wash" | "white" }) {
   const [selected, setSelected] = useState(0);
@@ -11,7 +12,7 @@ export function ProductGallery({ images, name, frame = "wash" }: { images: strin
   return (
     <div>
       <div className={`relative aspect-square overflow-hidden rounded-3xl ring-1 ring-black/[0.06] ${frameClass}`}>
-        <Image src={current} alt={name} fill className="object-contain p-6" sizes="(max-width:768px) 100vw, 50vw" unoptimized priority />
+        <Image src={optimizeMediaUrl(current, { width: 960 })} alt={name} fill className="object-contain p-6" sizes="(max-width:768px) 100vw, 50vw" unoptimized priority />
       </div>
       {images.length > 1 ? (
         <div className="mt-3 flex gap-2 overflow-x-auto">
@@ -26,7 +27,7 @@ export function ProductGallery({ images, name, frame = "wash" }: { images: strin
                 index === selected ? "ring-2 ring-[var(--metma-rose)]" : ""
               }`}
             >
-              <Image src={image} alt="" fill className="object-contain p-1" sizes="64px" unoptimized />
+              <Image src={optimizeMediaUrl(image, { width: 160, quality: "eco" })} alt="" fill className="object-contain p-1" sizes="64px" unoptimized />
             </button>
           ))}
         </div>

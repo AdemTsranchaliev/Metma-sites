@@ -5,6 +5,7 @@ import { EasterCountdown } from "@/components/EasterCountdown";
 import { EggIcon } from "@/components/Motifs";
 import { ProductGrid } from "@/components/ProductGrid";
 import { getCategories, getProducts } from "@/lib/catalog";
+import { optimizeMediaUrl } from "@/lib/media";
 import { companies } from "@/lib/types";
 import type { Product } from "@/lib/types";
 
@@ -122,7 +123,7 @@ export default async function HomePage() {
                   }`}
                 >
                   <Image
-                    src={product.image}
+                    src={optimizeMediaUrl(product.image, lead ? { width: 960 } : { width: 480, quality: "eco" })}
                     alt={product.name}
                     fill
                     className={`object-contain ${lead ? "p-4 sm:p-8" : "p-3 sm:p-4"}`}
@@ -192,7 +193,7 @@ export default async function HomePage() {
               <Link key={tile.slug} href={`/produkti?kategoriya=${tile.slug}`} className="group overflow-hidden rounded-[1.4rem] bg-white ring-1 ring-black/[0.05]">
                 <span className="relative block aspect-[5/4]" style={{ background: tile.wash }}>
                   {tile.product ? (
-                    <Image src={tile.product.image} alt="" fill className="object-contain p-4 transition duration-500 group-hover:scale-[1.04] sm:p-6" sizes="240px" unoptimized />
+                    <Image src={optimizeMediaUrl(tile.product.image, { width: 480, quality: "eco" })} alt="" fill className="object-contain p-4 transition duration-500 group-hover:scale-[1.04] sm:p-6" sizes="240px" unoptimized />
                   ) : null}
                 </span>
                 <span className="block px-4 py-3 text-sm font-bold text-[var(--metma-ink)]">{tile.label}</span>
