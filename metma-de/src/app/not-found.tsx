@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { QrRedirect } from "@/components/QrRedirect";
 
 export const metadata: Metadata = {
   title: "Seite nicht gefunden",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
+    <QrRedirect>
     <section className="bg-white py-20 md:py-28">
       <div className="container-metma max-w-xl text-center">
         <p className="eyebrow text-[var(--metma-rose)]">404</p>
@@ -27,5 +29,6 @@ export default function NotFound() {
         </div>
       </div>
     </section>
+    </QrRedirect>
   );
 }

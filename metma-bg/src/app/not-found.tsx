@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { NotFoundView } from "@/components/NotFoundView";
+import { QrRedirect } from "@/components/QrRedirect";
 
 export const metadata: Metadata = {
   title: "404",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
-  return <NotFoundView />;
+  return (
+    <QrRedirect>
+      <NotFoundView />
+    </QrRedirect>
+  );
 }
