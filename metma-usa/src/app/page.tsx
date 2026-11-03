@@ -20,8 +20,8 @@ export default async function HomePage() {
   return (
     <main>
       <section className="hero-wash">
-        <div className="container-usa grid items-center gap-10 py-14 md:grid-cols-2 md:py-20">
-          <div>
+        <div className="container-usa grid items-center gap-8 py-12 sm:py-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.95fr)] lg:gap-10 lg:py-12">
+          <div className="max-w-xl">
             <p className="inline-flex rounded-full bg-[var(--usa-red)] px-3 py-1 text-[0.7rem] font-bold tracking-[0.18em] text-white uppercase">
               Park Ridge, Illinois
             </p>
@@ -40,13 +40,8 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative">
-            <div className="absolute -inset-2 -z-10 rounded-[2rem] bg-gradient-to-br from-[var(--usa-red)] via-[var(--usa-gold)] to-[var(--usa-sky)]" />
-            <img
-              src="/images/banner-1.webp"
-              alt="Metma egg coloring kits"
-              className="w-full rounded-[1.6rem] bg-white object-contain"
-            />
+          <div className="mx-auto w-full max-w-[280px] sm:max-w-[360px] lg:mx-0 lg:max-w-[520px] lg:justify-self-end">
+            <img src="/images/hero-bunny.webp" alt="Easter bunny with colored eggs and paints" className="w-full" />
           </div>
         </div>
       </section>
